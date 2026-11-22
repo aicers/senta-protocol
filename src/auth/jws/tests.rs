@@ -185,8 +185,10 @@ fn header_rules_are_header_errors() {
         r#"{"alg":"EdDSA","typ":"senta-policy"}"#.to_owned(),
         format!(r#"{{"alg":"EdDSA","alg":"EdDSA","typ":"senta-policy","kid":"{kid}"}}"#),
         format!(r#"{{"alg":"EdDSA","typ":"senta-policy","kid":"{kid}","kid":"{kid}"}}"#),
+        // A key written with an escape is the same key.
         format!(r#"{{"alg":"EdDSA","typ":"senta-policy","kid":"{kid}","alg":"EdDSA"}}"#),
         format!(r#"{{"alg":"EdDSA","typ":"senta-policy","kid":"{kid}","kid":"{kid}"}}"#),
+        format!(r#"{{"alg":"EdDSA","alg":"EdDSA","typ":"senta-policy","kid":"{kid}"}}"#),
         format!(r#"{{"alg":"EdDSA","typ":1,"kid":"{kid}"}}"#),
         format!(r#"{{"alg":"EdDSA","typ":null,"kid":"{kid}"}}"#),
         format!(r#"{{"alg":["EdDSA"],"typ":"senta-policy","kid":"{kid}"}}"#),
@@ -204,6 +206,18 @@ fn header_rules_are_header_errors() {
         assert!(matches!(error, VerifyError::Header(_)), "{header}: {error}");
         assert_eq!(error.header(), None, "{header}");
         assert_eq!(inspect(&jws, Typ::Policy).unwrap_err(), error);
+    }
+    // An escaped key is read unescaped: a duplicate, not an unknown member.
+    for header in [
+        format!(r#"{{"alg":"EdDSA","typ":"senta-policy","kid":"{kid}","alg":"EdDSA"}}"#),
+        format!(r#"{{"alg":"EdDSA","typ":"senta-policy","kid":"{kid}","kid":"{kid}"}}"#),
+    ] {
+        let jws = signer.sign_raw(header.as_bytes(), PAYLOAD);
+        let error = verify(&jws, Typ::Policy, &source).unwrap_err();
+        assert!(
+            error.to_string().contains("duplicate header member"),
+            "{header}: {error}"
+        );
     }
     // A header that is not UTF-8.
     let jws = signer.sign_raw(b"{\"alg\":\"EdDSA\xff\"}", PAYLOAD);

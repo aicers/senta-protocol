@@ -155,6 +155,15 @@ fn rejects_duplicate_keys_at_any_depth() {
     // An escaped key is the same key.
     let escaped = base.replacen("{", r#"{"version":3,"#, 1);
     rejected(&escaped, "$.version");
+    let escaped_map = base.replacen(
+        r#""channels":{"#,
+        r#""channels":{"Microsoft-Windows-Sysmon\/Operational":[],"#,
+        1,
+    );
+    rejected(
+        &escaped_map,
+        r#"$.channels["Microsoft-Windows-Sysmon/Operational"]"#,
+    );
     // Even inside a value no field reads.
     let ignored = base.replacen(r#""channels":{"#, r#""channels":{"x":[{"a":1,"a":2}],"#, 1);
     rejected(&ignored, "$.channels.x[0].a");
