@@ -1,6 +1,17 @@
 //! The schema-independent pass: the document is one JSON object, no object
 //! at any depth repeats a key, and every number at any depth is an integer
 //! from 0 to 2^53 − 1.
+//!
+//! With serde_json's `arbitrary_precision` feature, which Cargo turns on
+//! for this crate too wherever another crate in the same build asks for
+//! it, a number that serde_json does not visit as an `i64` or a `u64`
+//! (past `u64::MAX`, below `i64::MIN`, or with a fraction or an exponent)
+//! reaches this pass not as a number but as an object of one key,
+//! `$serde_json::private::Number`, whose value is the number's text. Every
+//! integer from 0 to 2^53 − 1 still arrives as a `u64`, so such an object
+//! is always a number out of rule and is rejected as one. The check runs
+//! whether or not the feature is on, so a real object with that key first
+//! is rejected too; no content has a use for it.
 
 use std::collections::BTreeSet;
 use std::fmt;
@@ -9,6 +20,13 @@ use serde::de::{self, DeserializeSeed, Deserializer, MapAccess, SeqAccess, Visit
 
 use super::MAX_INTEGER;
 use super::de::{Path, Recorder};
+
+/// The key of the object through which serde_json's `arbitrary_precision`
+/// feature hands over a number it does not visit as an `i64` or a `u64`.
+const NUMBER_TOKEN: &str = "$serde_json::private::Number";
+
+const NUMBER_RULE: &str = "numbers must be integers from 0 to 2^53 - 1, \
+     written without a sign, a fraction or an exponent";
 
 /// A JSON value at `path`, checked and discarded.
 pub(super) struct Node<'a> {
@@ -26,9 +44,6 @@ impl<'a> Node<'a> {
         E::custom(message)
     }
 }
-
-const NUMBER_RULE: &str = "numbers must be integers from 0 to 2^53 - 1, \
-     written without a sign, a fraction or an exponent";
 
 impl<'de> DeserializeSeed<'de> for Node<'_> {
     type Value = ();
@@ -93,6 +108,9 @@ impl<'de> Visitor<'de> for Node<'_> {
     fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<(), A::Error> {
         let mut seen = BTreeSet::new();
         while let Some(key) = map.next_key::<String>()? {
+            if seen.is_empty() && key == NUMBER_TOKEN {
+                return Err(self.fail(NUMBER_RULE));
+            }
             let path = Path::Key {
                 parent: self.path,
                 key: &key,

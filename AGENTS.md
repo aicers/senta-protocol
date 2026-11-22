@@ -573,10 +573,11 @@ Where the crate handles key material or secrets:
   files are linted, then the shared instruction-block drift check,
   which fails when the generated regions of this file stop matching the
   release `.agent-instructions.toml` pins. `Rust format`, `Rust (...)`
-  (one job per feature configuration) and `Rust doc` run the Rust
-  commands below. `CI Gate` fails unless every other job passed or was
-  skipped. Run `markdownlint-cli2`, with no arguments, locally before
-  pushing a change to a Markdown file.
+  (one job per feature configuration, and one more with serde_json's
+  `arbitrary_precision`) and `Rust doc` run the Rust commands below.
+  `CI Gate` fails unless every other job passed or was skipped. Run
+  `markdownlint-cli2`, with no arguments, locally before pushing a
+  change to a Markdown file.
 - `Rust format` checks formatting:
 
   ```sh
@@ -619,6 +620,21 @@ Where the crate handles key material or secrets:
       cargo test --no-default-features ${f:+--features} $f
     done
   )
+  ```
+
+- `Rust (auth, serde_json/arbitrary_precision)` checks `auth` with
+  serde_json's `arbitrary_precision` feature on. The crate never turns
+  that feature on itself, but Cargo does wherever another crate in a
+  consumer's build asks for it, and it changes how a number reaches the
+  strict JSON parser. It is named on the command line, so none of the
+  sixteen configurations above has it. The job has no build step,
+  since clippy already compiles the library with the feature on:
+
+  ```sh
+  cargo clippy --all-targets --no-default-features \
+    --features auth,serde_json/arbitrary_precision -- -D warnings
+  cargo test --no-default-features \
+    --features auth,serde_json/arbitrary_precision
   ```
 
 - `Rust doc` builds the documentation:
