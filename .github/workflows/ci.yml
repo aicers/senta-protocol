@@ -107,6 +107,28 @@ jobs:
       - name: Test
         run: cargo test --no-default-features ${FEATURES:+--features "${FEATURES}"}
 
+  # serde_json's `arbitrary_precision` feature changes how a number reaches
+  # the strict JSON parser of `auth`. This crate never turns it on, but
+  # Cargo does wherever another crate in a consumer's build asks for it, so
+  # `auth` is checked with it on too. It is named on the command line, not
+  # in Cargo.toml, so the sixteen configurations above keep it off. No
+  # build step: clippy already compiles the library with the feature on.
+  rust-arbitrary-precision:
+    name: Rust (auth, serde_json/arbitrary_precision)
+    runs-on: ubuntu-latest
+    env:
+      FEATURES: auth,serde_json/arbitrary_precision
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - name: Clippy
+        run: cargo clippy --all-targets --no-default-features --features "${FEATURES}" -- -D warnings
+      - name: Test
+        run: cargo test --no-default-features --features "${FEATURES}"
+
   rust-doc:
     name: Rust doc
     runs-on: ubuntu-latest
@@ -123,7 +145,7 @@ jobs:
     name: CI Gate
     runs-on: ubuntu-latest
     permissions: {}
-    needs: [markdown, rust-format, rust, rust-doc]
+    needs: [markdown, rust-format, rust, rust-arbitrary-precision, rust-doc]
     if: ${{ always() }}
     steps:
       - name: Assert every job passed or was skipped

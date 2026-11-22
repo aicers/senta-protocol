@@ -208,6 +208,111 @@ fn takes_integers_from_zero_to_two_to_the_53_minus_one() {
     }
 }
 
+/// Numbers out of rule, at least one for each way serde_json can hand a
+/// number over, with or without its `arbitrary_precision` feature.
+const OUT_OF_RULE_NUMBERS: [&str; 12] = [
+    "9007199254740992",
+    "18446744073709551615",
+    "18446744073709551616",
+    "100000000000000000000000000000000000000",
+    "1.0",
+    "1e3",
+    "1E3",
+    "1e-3",
+    "-1",
+    "-0",
+    "-18446744073709551617",
+    "0.5",
+];
+
+/// Fields whose type would take a number past 2^53 − 1, a negative one or
+/// one with a fraction, were the shape pass not to stop it first.
+#[derive(Debug, Deserialize)]
+struct Wide {
+    small: u64,
+    big: u128,
+    signed: i128,
+    real: f64,
+    list: Vec<u128>,
+    map: BTreeMap<String, f64>,
+}
+
+const WIDE: &str = r#"{"small":1,"big":2,"signed":3,"real":4,"list":[5],"map":{"a":6}}"#;
+
+#[test]
+fn holds_wide_number_fields_to_the_same_integers() {
+    let wide = from_slice::<Wide>(WIDE.as_bytes()).unwrap();
+    assert_eq!((wide.small, wide.big, wide.signed), (1, 2, 3));
+    assert!((wide.real - 4.0).abs() < f64::EPSILON);
+    assert_eq!(wide.list, [5]);
+    assert_eq!(wide.map.len(), 1);
+    let max = WIDE.replacen(":2,", ":9007199254740991,", 1);
+    assert_eq!(
+        from_slice::<Wide>(max.as_bytes()).unwrap().big,
+        9_007_199_254_740_991
+    );
+    let zero = WIDE.replacen(":4,", ":0,", 1);
+    assert!(from_slice::<Wide>(zero.as_bytes()).is_ok());
+
+    for (old, path) in [
+        ("1", "$.small"),
+        ("2", "$.big"),
+        ("3", "$.signed"),
+        ("4", "$.real"),
+        ("5", "$.list[0]"),
+        ("6", "$.map.a"),
+    ] {
+        for number in OUT_OF_RULE_NUMBERS {
+            let start = WIDE.find(old).unwrap();
+            let json = format!("{}{number}{}", &WIDE[..start], &WIDE[start + 1..]);
+            let error = from_slice::<Wide>(json.as_bytes()).expect_err(&json);
+            // The very same error, position included, whichever way the
+            // number was handed over.
+            assert_eq!(
+                error.to_string(),
+                format!(
+                    "numbers must be integers from 0 to 2^53 - 1, written without a sign, \
+                     a fraction or an exponent at line 1 column {} (at {path})",
+                    start + number.len()
+                ),
+                "{json}"
+            );
+        }
+    }
+}
+
+#[test]
+fn rejects_an_object_led_by_the_serde_json_number_key() {
+    // How serde_json's `arbitrary_precision` feature hands over a number
+    // that is not an `i64` or a `u64`; rejected as a number out of rule even
+    // without the feature.
+    for value in [r#""1""#, r#""1.0""#, "1", "{}"] {
+        let json = valid().to_string().replacen(
+            r#""version":3"#,
+            &format!(r#""version":{{"$serde_json::private::Number":{value}}}"#),
+            1,
+        );
+        let error = rejected(&json, "$.version");
+        assert!(error.message().contains("integers"), "{error}");
+    }
+    let json =
+        valid()
+            .to_string()
+            .replacen("[1,3]", r#"[1,{"$serde_json::private::Number":"1e3"}]"#, 1);
+    rejected(
+        &json,
+        r#"$.channels["Microsoft-Windows-Sysmon/Operational"][1]"#,
+    );
+    // Anywhere but first, it is an ordinary key.
+    let json = valid().to_string().replacen(
+        r#""channels":{"#,
+        r#""channels":{"a":[1],"$serde_json::private::Number":[2],"#,
+        1,
+    );
+    let content = parse(&json).unwrap();
+    assert_eq!(content.channels["$serde_json::private::Number"], [2]);
+}
+
 #[test]
 fn rejects_explicit_null_for_an_optional_field() {
     let error = rejected(
@@ -308,6 +413,25 @@ fn reads_nested_paths_in_errors() {
     assert!(error.to_string().contains("$.inner.sources[1]"));
 }
 
+/// Times at second `60`: mid-minute, at the end of a month with no leap
+/// second, and on the real leap second at the end of 2016, with and without
+/// a fraction, and one past it.
+const LEAP_SECONDS: [&str; 6] = [
+    "2026-01-02T03:04:60Z",
+    "2026-01-31T23:59:60Z",
+    "2016-12-31T23:59:60Z",
+    "2016-12-31T23:59:60.5Z",
+    "2016-12-31T23:59:60.999999999Z",
+    "2026-01-02T03:04:61Z",
+];
+
+#[test]
+fn rejects_second_60_on_any_date() {
+    for text in LEAP_SECONDS {
+        assert_eq!(UtcTimestamp::parse(text), None, "{text}");
+    }
+}
+
 #[test]
 fn reads_utc_timestamps_ending_in_z() {
     for (text, nanos) in [
@@ -318,6 +442,16 @@ fn reads_utc_timestamps_ending_in_z() {
         let parsed = UtcTimestamp::parse(text).unwrap().get();
         assert_eq!(parsed.subsec_nanosecond(), nanos, "{text}");
         assert_eq!(parsed.as_second(), 1_767_323_045, "{text}");
+    }
+    for (text, second, nanos) in [
+        ("2026-01-02T03:04:59Z", 1_767_323_099, 0),
+        ("2016-12-31T23:59:59Z", 1_483_228_799, 0),
+        ("2016-12-31T23:59:59.999999999Z", 1_483_228_799, 999_999_999),
+        ("2017-01-01T00:00:00Z", 1_483_228_800, 0),
+    ] {
+        let parsed = UtcTimestamp::parse(text).unwrap().get();
+        assert_eq!(parsed.as_second(), second, "{text}");
+        assert_eq!(parsed.subsec_nanosecond(), nanos, "{text}");
     }
     for text in [
         "2026-01-02T03:04:05+00:00",
@@ -352,6 +486,10 @@ fn reads_utc_timestamps_ending_in_z() {
     );
     let error = from_slice::<At>(br#"{"at":"2026-01-02T03:04:05+00:00"}"#).unwrap_err();
     assert_eq!(error.path(), "$.at");
+    for text in LEAP_SECONDS {
+        let error = from_slice::<At>(format!(r#"{{"at":"{text}"}}"#).as_bytes()).unwrap_err();
+        assert_eq!(error.path(), "$.at", "{text}");
+    }
     assert_eq!(
         serde_json::to_string(&UtcTimestamp::parse("2026-01-02T03:04:05.5Z").unwrap()).unwrap(),
         r#""2026-01-02T03:04:05.5Z""#
@@ -512,4 +650,62 @@ fn holds_an_alias_to_the_field_name_rules() {
 fn rejected_as<T: serde::de::DeserializeOwned + std::fmt::Debug>(json: &str, path: &str) {
     let error = from_slice::<T>(json.as_bytes()).expect_err(json);
     assert_eq!(error.path(), path, "{json}: {error}");
+}
+
+/// The forms the module documentation says pass although content types
+/// must not use them. Kept in step with that documentation: should one of
+/// these start to fail, the documentation is to say so.
+#[test]
+fn lets_through_what_the_documentation_says_it_does_not_catch() {
+    #[allow(dead_code)] // Only deserialization is under test.
+    #[derive(Debug, Deserialize)]
+    struct Inner {
+        text: Option<String>,
+    }
+    #[allow(dead_code)] // Only deserialization is under test.
+    #[derive(Debug, Deserialize)]
+    struct Flattened {
+        #[serde(rename = "Id")]
+        id: u64,
+        #[serde(flatten)]
+        inner: Inner,
+    }
+    // No key falls to the flattened field, and the declared name `Id` is
+    // not held to snake_case.
+    assert!(from_slice::<Flattened>(br#"{"Id":1}"#).is_ok());
+    unschematic::<Flattened>(r#"{"Id":1,"text":"a"}"#, "$.text");
+
+    #[allow(dead_code)] // Only deserialization is under test.
+    #[derive(Debug, Deserialize)]
+    struct Body {
+        text: String,
+    }
+    #[allow(dead_code)] // Only deserialization is under test.
+    #[derive(Debug, Deserialize)]
+    #[serde(tag = "kind", content = "body", rename_all = "snake_case")]
+    enum Adjacent {
+        Unit,
+        Scalar(u64),
+        Wrapped(Body),
+        Pair(u64, u64),
+        Fields { text: String },
+    }
+    for json in [
+        r#"{"kind":"unit"}"#,
+        r#"{"kind":"scalar","body":1}"#,
+        r#"{"kind":"wrapped","body":{"text":"a"}}"#,
+        r#"{"kind":"pair","body":[1,2]}"#,
+    ] {
+        assert!(from_slice::<Adjacent>(json.as_bytes()).is_ok(), "{json}");
+    }
+    // What passes is still held to the rules.
+    rejected_as::<Adjacent>(
+        r#"{"kind":"wrapped","body":{"text":"a","extra":1}}"#,
+        "$.body.extra",
+    );
+    rejected_as::<Adjacent>(r#"{"kind":"scalar","body":1.0}"#, "$.body");
+    // And the rest fails.
+    unschematic::<Adjacent>(r#"{"kind":"unit","body":null}"#, "$.body");
+    unschematic::<Adjacent>(r#"{"body":1,"kind":"scalar"}"#, "$.body");
+    unschematic::<Adjacent>(r#"{"kind":"fields","body":{"text":"a"}}"#, "$.body");
 }

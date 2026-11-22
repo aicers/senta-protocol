@@ -15,32 +15,49 @@
 //!   depth, keys compared after JSON unescaping;
 //! - a number, at any depth, that is not an integer from 0 to 2^53 − 1
 //!   written without a sign, fraction or exponent (`1.0`, `1e3` and `-1` are
-//!   all rejected);
+//!   all rejected), whether or not the build turns on serde_json's
+//!   `arbitrary_precision` feature;
 //! - an explicit `null` for an [`Option`] field, which is optional only by
 //!   being left out. A field that has to tell `null` apart from a value and
 //!   from absence uses [`Nullable`];
 //! - a struct written as a JSON array.
 //!
 //! Content types write fields as their snake_case Rust names (lowercase
-//! ASCII letters, digits and `_`); a field renamed to anything else fails
-//! every parse. Times are [`UtcTimestamp`], UUIDs [`LowerUuid`], and bytes
-//! [`Base64UrlBytes`] or, at a fixed length, [`Base64UrlArray`]. A map's
-//! keys reach its key type as strings, so the key type reads from a string
-//! (a `String`, a UUID, a [`super::Kid`], an enum of unit variants), not
-//! from a number.
+//! ASCII letters, digits and `_`); in a content type that keeps to the
+//! forms below, a field renamed to anything else fails every parse. Times
+//! are [`UtcTimestamp`], UUIDs [`LowerUuid`], and bytes [`Base64UrlBytes`]
+//! or, at a fixed length, [`Base64UrlArray`]. A map's keys reach its key
+//! type as strings, so the key type reads from a string (a `String`, a
+//! UUID, a [`super::Kid`], an enum of unit variants), not from a number.
 //!
 //! A field's `#[serde(alias)]` names are further names it is read under,
 //! held to the same snake_case rule. Content types must not use
 //! `#[serde(flatten)]`, an internally tagged (`#[serde(tag = "...")]`),
 //! adjacently tagged (`#[serde(tag = "...", content = "...")]`) or
 //! `#[serde(untagged)]` enum, nor a field type that takes any JSON, such as
-//! `serde_json::Value` or `serde::de::IgnoredAny`. Serde reads those
-//! without a schema, buffering the content before handing it to the target
-//! type out of reach of the field rules here, so a value it would read that
-//! way is rejected as a [`SchemaError`] rather than let through unchecked:
-//! a flattened field fails on any key it would receive, and the others on
-//! every input. An externally tagged enum, serde's default, is held to
-//! every rule.
+//! `serde_json::Value` or `serde::de::IgnoredAny`. Serde reads those, in
+//! some or all inputs, without a schema, buffering the content before
+//! handing it to the target type out of reach of the field rules here.
+//!
+//! That is a rule for content types, which the parser enforces only in
+//! part. A value it sees serde read without a schema is rejected as a
+//! [`SchemaError`] rather than let through unchecked, and so an internally
+//! tagged or untagged enum, and a field that takes any JSON, fail on every
+//! value they are given. The other two forms are not always read that way,
+//! and then they pass:
+//!
+//! - A struct with a flattened field fails on any key the flattened field
+//!   would receive, but not when no key falls to it. Serde also reads such
+//!   a struct as a map rather than as a struct, so the names it declares,
+//!   its own and those of the flattened type, are not held to the
+//!   snake_case rule.
+//! - An adjacently tagged enum fails when its content comes before its tag,
+//!   when a unit variant is written with a content, and for a struct
+//!   variant. A unit variant written with its tag alone, and a newtype or
+//!   tuple variant whose tag comes first, pass, their content held to the
+//!   rules here.
+//!
+//! An externally tagged enum, serde's default, is held to every rule.
 
 mod de;
 mod shape;
@@ -223,7 +240,9 @@ macro_rules! deserialize_from_str {
 ///
 /// The time must end in an uppercase `Z`; `+00:00`, `-00:00`, any other
 /// offset and a lowercase `t` or `z` are rejected. The fraction of a second
-/// has 1 to 9 digits, or is left out together with its `.`.
+/// has 1 to 9 digits, or is left out together with its `.`. The second runs
+/// from `00` to `59`: second `60`, a leap second, is not accepted on any
+/// date, so that every time has exactly one spelling up to its fraction.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct UtcTimestamp(jiff::Timestamp);
 
@@ -268,6 +287,8 @@ impl Serialize for UtcTimestamp {
 
 fn parse_utc_timestamp(text: &str) -> Option<jiff::Timestamp> {
     const TEMPLATE: &[u8; 19] = b"0000-00-00T00:00:00";
+    // Where in `TEMPLATE` the tens digit of the second stands.
+    const SECOND_TENS: usize = 17;
     const MAX_FRACTION_DIGITS: usize = 9;
 
     let bytes = text.as_bytes();
@@ -288,11 +309,14 @@ fn parse_utc_timestamp(text: &str) -> Option<jiff::Timestamp> {
         }
         Some(_) => false,
     };
-    if !head_ok || !fraction_ok {
+    // jiff reads second `60` as `59`, which would give one time two
+    // spellings, so the second is held to `00`..=`59` here.
+    let second_ok = head.get(SECOND_TENS).is_some_and(|&b| b <= b'5');
+    if !head_ok || !fraction_ok || !second_ok {
         return None;
     }
-    // The shape is fixed above; jiff checks the ranges (month, day of month,
-    // hour and so on).
+    // The shape is fixed above; jiff checks the other ranges (month, day of
+    // month, hour and so on).
     text.parse().ok()
 }
 
