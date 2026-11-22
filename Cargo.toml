@@ -52,6 +52,8 @@ time = { version = "0.3", optional = true, default-features = false }
 uuid = "1"
 
 [dev-dependencies]
+# Encodes and decodes the CBOR the tests check.
+ciborium = "0.2"
 # Ed25519 key pairs the tests sign with.
 ed25519-dalek = { version = "3", features = ["alloc", "pkcs8"] }
 # Certificates for the test CAs, servers and non-Ed25519 clients.
