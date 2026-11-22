@@ -23,12 +23,13 @@
 //! - a struct written as a JSON array.
 //!
 //! Content types write fields as their snake_case Rust names (lowercase
-//! ASCII letters, digits and `_`); in a content type that keeps to the
-//! forms below, a field renamed to anything else fails every parse. Times
-//! are [`UtcTimestamp`], UUIDs [`LowerUuid`], and bytes [`Base64UrlBytes`]
-//! or, at a fixed length, [`Base64UrlArray`]. A map's keys reach its key
-//! type as strings, so the key type reads from a string (a `String`, a
-//! UUID, a [`super::Kid`], an enum of unit variants), not from a number.
+//! ASCII letters, digits and `_`); in a content type without a
+//! `#[serde(flatten)]` field (see below), a field renamed to anything else
+//! fails every parse. Times are [`UtcTimestamp`], UUIDs [`LowerUuid`], and
+//! bytes [`Base64UrlBytes`] or, at a fixed length, [`Base64UrlArray`]. A
+//! map's keys reach its key type as strings, so the key type reads from a
+//! string (a `String`, a UUID, a [`super::Kid`], an enum of unit variants),
+//! not from a number.
 //!
 //! A field's `#[serde(alias)]` names are further names it is read under,
 //! held to the same snake_case rule. Content types must not use
