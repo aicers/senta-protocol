@@ -16,10 +16,12 @@ auth = [
   "dep:rcgen",
   "dep:rustls",
   "dep:rustls-webpki",
+  "dep:semver",
   "dep:serde_json",
   "dep:sha2",
   "dep:thiserror",
   "dep:time",
+  "dep:url",
 ]
 control = []
 telemetry = []
@@ -42,6 +44,9 @@ rustls = { version = "0.23.41", optional = true, default-features = false, featu
 # The certificate parser `rustls` itself uses, so the SPKI hashed is the
 # one whose key verified the handshake signature.
 rustls-webpki = { version = "0.103.14", optional = true, default-features = false, features = ["std"] }
+# The `SemVer` target version of a signed update document, compared by
+# SemVer precedence.
+semver = { version = "1.0.28", optional = true, default-features = false, features = ["std"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", optional = true }
 # SHA-256 of JWS payloads and of the SubjectPublicKeyInfo.
@@ -50,6 +55,8 @@ sha2 = { version = "0.11", optional = true }
 thiserror = { version = "2", optional = true }
 # The validity time type `rcgen` takes.
 time = { version = "0.3", optional = true, default-features = false }
+# The absolute URLs signed documents carry, parsed by the WHATWG rules.
+url = { version = "2.5.9", optional = true, default-features = false, features = ["std"] }
 uuid = "1"
 
 [dev-dependencies]
