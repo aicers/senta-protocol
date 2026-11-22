@@ -1,10 +1,9 @@
 # senta-protocol
 
 senta-protocol holds the protocol, record formats and trust contracts
-shared by Clumit Endpoint ([senta](https://github.com/aicers/senta)),
-REview and the event store. It is one Rust crate whose features select
-the part a consumer needs: `auth`, `control`, `telemetry` and
-`test-util`.
+shared by Clumit Endpoint (senta, a private repository), REview and the
+event store. It is planned as one Rust crate whose features select the
+part a consumer needs: `auth`, `control`, `telemetry` and `test-util`.
 
 ## Status
 
