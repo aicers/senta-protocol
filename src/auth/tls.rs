@@ -639,25 +639,61 @@ fn root_store<S: AsRef<str>>(trust_roots: &[S]) -> Result<RootCertStore, ClientC
     }
     let mut store = RootCertStore::empty();
     for (index, pem) in trust_roots.iter().enumerate() {
-        let blocks = pem_blocks(pem.as_ref()).ok_or(ClientConfigError::MalformedPem { index })?;
-        if blocks.is_empty() {
-            return Err(ClientConfigError::NoCertificate { index });
-        }
-        for block in blocks {
-            if block.label != PEM_CERTIFICATE_LABEL {
-                return Err(ClientConfigError::NotCertificate {
-                    index,
-                    label: block.label.to_owned(),
-                });
+        let certificates = pem_certificates(pem.as_ref()).map_err(|error| match error {
+            PemElementError::Malformed => ClientConfigError::MalformedPem { index },
+            PemElementError::NoCertificate => ClientConfigError::NoCertificate { index },
+            PemElementError::NotCertificate { label } => {
+                ClientConfigError::NotCertificate { index, label }
             }
-            let der = CertificateDer::from_pem_slice(block.text.as_bytes())
-                .map_err(|_| ClientConfigError::MalformedPem { index })?;
+        })?;
+        for der in certificates {
             store
                 .add(der)
                 .map_err(|source| ClientConfigError::UnusableRoot { index, source })?;
         }
     }
     Ok(store)
+}
+
+/// Why one trust root element is not PEM of certificates.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(crate) enum PemElementError {
+    /// A `BEGIN` line without its `END` line, a stray or malformed boundary
+    /// line, or a body that is not base64.
+    Malformed,
+    /// The element holds no PEM block.
+    NoCertificate,
+    /// The element holds a block that is not a `CERTIFICATE`.
+    NotCertificate {
+        /// The label of the first such block.
+        label: String,
+    },
+}
+
+/// Decodes one trust root element: PEM of one or more `CERTIFICATE` blocks,
+/// with any text outside the blocks ignored.
+///
+/// This is the one PEM rule for trust roots: [`endpoint_client_config`]
+/// reads each element with it, and the address document's schema checks
+/// each element with it, so the two cannot disagree on what is PEM. Whether
+/// a certificate can be a trust anchor is not looked at here.
+pub(crate) fn pem_certificates(pem: &str) -> Result<Vec<CertificateDer<'static>>, PemElementError> {
+    let blocks = pem_blocks(pem).ok_or(PemElementError::Malformed)?;
+    if blocks.is_empty() {
+        return Err(PemElementError::NoCertificate);
+    }
+    blocks
+        .into_iter()
+        .map(|block| {
+            if block.label != PEM_CERTIFICATE_LABEL {
+                return Err(PemElementError::NotCertificate {
+                    label: block.label.to_owned(),
+                });
+            }
+            CertificateDer::from_pem_slice(block.text.as_bytes())
+                .map_err(|_| PemElementError::Malformed)
+        })
+        .collect()
 }
 
 /// A PEM block: its label, and its text from the `BEGIN` line through the
