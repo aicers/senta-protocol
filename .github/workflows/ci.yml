@@ -12,8 +12,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}${{ github.event_name == 'workflow_dispatch' && '-dispatch' || (github.run_attempt != '1' && format('-rerun-{0}', github.run_id) || '') }}
   cancel-in-progress: true
 
-# Read-only. The lint reads the checkout, and the drift check reads the
-# pin and the upstream release.
+# Read-only. The lint and the Rust jobs read the checkout, and the drift
+# check reads the pin and the upstream release.
 permissions:
   contents: read
 
@@ -46,11 +46,84 @@ jobs:
         if: ${{ !cancelled() && steps.checkout.outcome == 'success' }}
         uses: aicers/agent-instructions/check-drift@main
 
+  rust-format:
+    name: Rust format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      # `group_imports` is nightly-gated, so it cannot live in rustfmt.toml
+      # and is passed here instead.
+      - name: Check formatting
+        run: cargo fmt -- --check --config group_imports=StdExternalCrate
+
+  # Every subset of the four features, since none excludes another and a
+  # consumer may turn on any combination. `features` is the subset joined
+  # with commas, empty for the build with no feature at all.
+  rust:
+    name: Rust (${{ matrix.features || 'no features' }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        features:
+          - ""
+          - auth
+          - control
+          - telemetry
+          - test-util
+          - auth,control
+          - auth,telemetry
+          - auth,test-util
+          - control,telemetry
+          - control,test-util
+          - telemetry,test-util
+          - auth,control,telemetry
+          - auth,control,test-util
+          - auth,telemetry,test-util
+          - control,telemetry,test-util
+          - auth,control,telemetry,test-util
+    env:
+      FEATURES: ${{ matrix.features }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      # In bash, the default `run` shell here,
+      # `${FEATURES:+--features "${FEATURES}"}` expands to
+      # `--features <subset>`, or to nothing for the empty subset, which
+      # leaves `--no-default-features` alone.
+      #
+      # The library alone, without dev-dependencies, as a consumer builds it.
+      - name: Build
+        run: cargo build --no-default-features ${FEATURES:+--features "${FEATURES}"}
+      - name: Clippy
+        run: cargo clippy --all-targets --no-default-features ${FEATURES:+--features "${FEATURES}"} -- -D warnings
+      - name: Test
+        run: cargo test --no-default-features ${FEATURES:+--features "${FEATURES}"}
+
+  rust-doc:
+    name: Rust doc
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Build documentation
+        env:
+          RUSTDOCFLAGS: -D warnings
+        run: cargo doc --no-deps --all-features
+
   gate:
     name: CI Gate
     runs-on: ubuntu-latest
     permissions: {}
-    needs: [markdown]
+    needs: [markdown, rust-format, rust, rust-doc]
     if: ${{ always() }}
     steps:
       - name: Assert every job passed or was skipped
