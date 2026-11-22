@@ -1454,6 +1454,124 @@ fn a_pong_for_the_latest_ping_measures_the_clock() {
     assert_eq!(actions, []);
 }
 
+/// A `status` body the caller will accept, then `then`, as one stream.
+fn status_then(then: &Frame) -> Vec<u8> {
+    let mut stream = frame("status", &text("anything")).into_bytes();
+    stream.extend_from_slice(then.as_bytes());
+    stream
+}
+
+#[test]
+fn a_pong_held_behind_a_pending_body_keeps_its_arrival() {
+    let config = || control_endpoint().with_known_kinds(["status"]);
+    let measure = |actions: &[EndpointAction]| match actions {
+        [EndpointAction::ClockMeasured(measurement)] => *measurement,
+        _ => panic!("{actions:?}"),
+    };
+
+    // The ping goes at 60 s, its pong arrives at 61 s behind a body the
+    // caller accepts only at 62 s: the round trip is still 1 s.
+    let (_, mut endpoint) = connect(control_server(), config());
+    let sent_at = ms(2) + PING_INTERVAL;
+    let ping = endpoint_ping(&mut endpoint, sent_at);
+    let server_time = ping.sent_at.checked_add(Duration::from_secs(3)).unwrap();
+    let stream = status_then(&pong_for(&ping, server_time));
+    let arrived = sent_at + ms(1_000);
+    let actions = endpoint.receive(&stream, wall(0), arrived);
+    assert!(matches!(actions.as_slice(), [EndpointAction::Deliver(_)]));
+    let measurement = measure(&endpoint.accept_body(wall(0), sent_at + ms(2_000)));
+    assert_eq!(measurement.received_mono(), arrived);
+    assert_eq!(measurement.offset().offset_ms, 2_500);
+    assert_eq!(measurement.offset().uncertainty_ms, 500);
+    assert_eq!(
+        measurement.offset().measured_at,
+        ping.sent_at.checked_add(Duration::from_secs(1)).unwrap()
+    );
+
+    // Fed a byte at a time, the call that completes the pong is the one
+    // that brought its last byte, whenever the body is accepted.
+    let (_, mut endpoint) = connect(control_server(), config());
+    let ping = endpoint_ping(&mut endpoint, sent_at);
+    let stream = status_then(&pong_for(&ping, server_time));
+    let mut measured = Vec::new();
+    for (i, byte) in stream.iter().enumerate() {
+        let at = sent_at + ms(1_000) + Duration::from_nanos(u64::try_from(i).unwrap());
+        let mut actions = endpoint.receive(std::slice::from_ref(byte), wall(0), at);
+        if endpoint.is_body_pending() {
+            actions.extend(endpoint.accept_body(wall(0), at + ms(5_000)));
+        }
+        measured.extend(actions.into_iter().filter_map(|action| match action {
+            EndpointAction::ClockMeasured(measurement) => Some((measurement, at)),
+            _ => None,
+        }));
+    }
+    let [(measurement, at)] = measured.as_slice() else {
+        panic!("{measured:?}");
+    };
+    assert_eq!(measurement.received_mono(), *at);
+
+    // Half the pong arrives with the body, the rest later while the body
+    // is still pending: the pong arrived with its last byte.
+    let (_, mut endpoint) = connect(control_server(), config());
+    let ping = endpoint_ping(&mut endpoint, sent_at);
+    let stream = status_then(&pong_for(&ping, server_time));
+    let split = stream.len() - 3;
+    let actions = endpoint.receive(stream.get(..split).unwrap(), wall(0), sent_at + ms(500));
+    assert!(matches!(actions.as_slice(), [EndpointAction::Deliver(_)]));
+    let later = sent_at + ms(1_500);
+    let actions = endpoint.receive(stream.get(split..).unwrap(), wall(0), later);
+    assert_eq!(measure(&actions).received_mono(), later);
+}
+
+#[test]
+fn a_frame_held_behind_a_pending_body_restarts_the_idle_timeout_from_its_arrival() {
+    let ping = Frame::from_message(&Ping { sent_at: wall(9) }).unwrap();
+    let stream = status_then(&ping);
+    let arrived = ms(10);
+    let accepted = ms(100_000);
+    let before_idle = arrived + IDLE_TIMEOUT - Duration::from_nanos(1);
+
+    let (mut server, _) = connect(
+        control_server().with_known_kinds(["status"]),
+        control_endpoint(),
+    );
+    let actions = server.receive(&stream, wall(0), arrived);
+    assert!(matches!(actions.as_slice(), [ServerAction::Deliver(_)]));
+    let actions = server.accept_body(wall(0), accepted);
+    assert!(
+        matches!(actions.as_slice(), [ServerAction::Send(_)]),
+        "{actions:?}"
+    );
+    assert!(matches!(
+        server.poll(wall(0), before_idle),
+        Some(ServerAction::Send(_))
+    ));
+    assert_eq!(
+        server.poll(wall(0), arrived + IDLE_TIMEOUT),
+        Some(ServerAction::Close(CloseReason::IdleTimeout))
+    );
+
+    let (_, mut endpoint) = connect(
+        control_server(),
+        control_endpoint().with_known_kinds(["status"]),
+    );
+    let actions = endpoint.receive(&stream, wall(0), arrived);
+    assert!(matches!(actions.as_slice(), [EndpointAction::Deliver(_)]));
+    let actions = endpoint.accept_body(wall(0), accepted);
+    assert!(
+        matches!(actions.as_slice(), [EndpointAction::Send(_)]),
+        "{actions:?}"
+    );
+    assert!(matches!(
+        endpoint.poll(wall(0), before_idle),
+        Some(EndpointAction::Send(_))
+    ));
+    assert_eq!(
+        endpoint.poll(wall(0), arrived + IDLE_TIMEOUT),
+        Some(EndpointAction::Close(CloseReason::IdleTimeout))
+    );
+}
+
 #[test]
 fn a_pong_for_an_earlier_ping_does_not_measure() {
     let (_, mut endpoint) = connect(control_server(), control_endpoint());

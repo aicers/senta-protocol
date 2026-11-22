@@ -1,7 +1,9 @@
 //! Length-prefixed frames: a four-byte big-endian length, then that many
 //! bytes holding one CBOR value.
 
+use std::collections::VecDeque;
 use std::fmt;
+use std::time::Duration;
 
 use super::cbor::{self, EncodeError};
 use super::message::Message;
@@ -233,6 +235,109 @@ impl FrameDecoder {
     }
 }
 
+impl FrameDecoder {
+    /// Returns how many received bytes have not been consumed yet.
+    fn unconsumed(&self) -> usize {
+        self.buf.len().saturating_sub(self.start)
+    }
+}
+
+/// A [`FrameDecoder`] that remembers when the bytes it holds arrived, so a
+/// frame handled late still counts as received when its last byte did.
+///
+/// A connection stops handling frames while a delivered body awaits the
+/// caller's verdict, and picks the frames behind it up again on the
+/// caller's next call, at a later time. What a frame's arrival times — the
+/// round trip of a `pong`, the idle timeout — must not stretch by however
+/// long that verdict took.
+#[derive(Debug, Clone)]
+pub(super) struct TimedDecoder {
+    decoder: FrameDecoder,
+    /// The unconsumed bytes, front first, as runs of bytes that arrived at
+    /// the same monotonic time.
+    arrivals: VecDeque<(usize, Duration)>,
+}
+
+impl TimedDecoder {
+    pub(super) fn new(limit: u32) -> Self {
+        Self {
+            decoder: FrameDecoder::new(limit),
+            arrivals: VecDeque::new(),
+        }
+    }
+
+    pub(super) fn limit(&self) -> u32 {
+        self.decoder.limit()
+    }
+
+    pub(super) fn set_limit(&mut self, limit: u32) {
+        self.decoder.set_limit(limit);
+    }
+
+    /// Adds bytes received at `now`.
+    ///
+    /// `resuming` says the bytes already held may complete frames, because
+    /// handling stopped at a delivered body rather than for want of bytes.
+    /// Otherwise they are all part of one incomplete frame, which only the
+    /// new bytes can complete, so their own arrival no longer matters and
+    /// they merge into the new run: the runs held never outnumber the
+    /// calls made while a body was pending.
+    pub(super) fn push(&mut self, bytes: &[u8], now: Duration, resuming: bool) {
+        self.decoder.push(bytes);
+        if resuming {
+            if !bytes.is_empty() {
+                self.arrivals.push_back((bytes.len(), now));
+            }
+        } else {
+            self.arrivals.clear();
+            let held = self.decoder.unconsumed();
+            if held > 0 {
+                self.arrivals.push_back((held, now));
+            }
+        }
+    }
+
+    /// Returns the next complete frame's payload with the time its last
+    /// byte arrived, or `None` when the bytes so far do not complete one.
+    ///
+    /// `now` stands in for an arrival not on record, which no frame should
+    /// reach.
+    pub(super) fn next_frame(
+        &mut self,
+        now: Duration,
+    ) -> Result<Option<(Vec<u8>, Duration)>, FrameTooLarge> {
+        let before = self.decoder.unconsumed();
+        let result = self.decoder.next_frame();
+        let consumed = before.saturating_sub(self.decoder.unconsumed());
+        let arrived = self.consume(consumed).unwrap_or(now);
+        match result {
+            Ok(Some(payload)) => Ok(Some((payload, arrived))),
+            Ok(None) => Ok(None),
+            Err(error) => {
+                self.arrivals.clear();
+                Err(error)
+            }
+        }
+    }
+
+    /// Drops `count` bytes from the front of the runs, and returns the
+    /// arrival of the last byte dropped.
+    fn consume(&mut self, mut count: usize) -> Option<Duration> {
+        let mut last = None;
+        while count > 0 {
+            let front = self.arrivals.front_mut()?;
+            last = Some(front.1);
+            if front.0 > count {
+                front.0 -= count;
+                break;
+            }
+            count -= front.0;
+            self.arrivals.pop_front();
+        }
+        last
+    }
+}
+
 impl fmt::Debug for FrameDecoder {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("FrameDecoder")
@@ -314,6 +419,31 @@ mod tests {
         assert_eq!(ENDPOINT_RECEIVE_LIMIT, 4_194_304);
         assert_eq!(SERVER_ACTIVE_RECEIVE_LIMIT, 4_194_304);
         assert_eq!(SERVER_OTHER_RECEIVE_LIMIT, 65_536);
+    }
+
+    #[test]
+    fn a_timed_decoder_dates_each_frame_by_its_last_byte() {
+        let at = Duration::from_secs;
+        let one = Frame::from_payload(&[1, 2, 3]).unwrap();
+        let two = Frame::from_payload(&[4]).unwrap();
+        let mut stream = one.as_bytes().to_vec();
+        stream.extend_from_slice(two.as_bytes());
+        let mut decoder = TimedDecoder::new(1024);
+
+        // The first frame in pieces: it arrived with its last piece.
+        decoder.push(&stream[..3], at(1), false);
+        assert_eq!(decoder.next_frame(at(1)), Ok(None));
+        decoder.push(&stream[3..8], at(2), false);
+        assert_eq!(decoder.next_frame(at(2)), Ok(Some((vec![1, 2, 3], at(2)))));
+        // Handling stops here, as at a delivered body, with the second
+        // frame partly in; its rest comes later, and one more frame later
+        // still.
+        decoder.push(&stream[8..], at(3), true);
+        decoder.push(two.as_bytes(), at(4), true);
+        assert_eq!(decoder.next_frame(at(9)), Ok(Some((vec![4], at(3)))));
+        assert_eq!(decoder.next_frame(at(9)), Ok(Some((vec![4], at(4)))));
+        assert_eq!(decoder.next_frame(at(9)), Ok(None));
+        assert!(decoder.arrivals.is_empty());
     }
 
     #[test]

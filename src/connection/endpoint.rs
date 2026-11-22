@@ -10,7 +10,7 @@ use uuid::Uuid;
 use super::cbor::EncodeError;
 use super::clock::ClockMeasurement;
 use super::envelope::Envelope;
-use super::frame::{ENDPOINT_RECEIVE_LIMIT, Frame, FrameDecoder};
+use super::frame::{ENDPOINT_RECEIVE_LIMIT, Frame, TimedDecoder};
 use super::liveness::{Due, Liveness};
 use super::message::{
     AcceptedKind, BuiltIn, Hello, HelloAck, Message, Ping, Pong, Unsupported, VersionRange,
@@ -158,7 +158,7 @@ pub struct EndpointConnection {
     channel: EndpointChannel,
     versions: VersionRange,
     known_kinds: BTreeSet<String>,
-    decoder: FrameDecoder,
+    decoder: TimedDecoder,
     state: State,
     body_pending: bool,
     liveness: Liveness,
@@ -191,7 +191,7 @@ impl EndpointConnection {
             channel: config.channel,
             versions: config.versions,
             known_kinds: config.known_kinds,
-            decoder: FrameDecoder::new(ENDPOINT_RECEIVE_LIMIT),
+            decoder: TimedDecoder::new(ENDPOINT_RECEIVE_LIMIT),
             body_pending: false,
             state: State::AwaitingAck,
             liveness: Liveness::new(now),
@@ -224,23 +224,26 @@ impl EndpointConnection {
     /// complete, up to and including the first [`EndpointAction::Deliver`].
     ///
     /// Called while a delivered body is pending, it takes that body as
-    /// decoded first. `wall` is the wall clock now, put in a `pong`, and `now` the
-    /// monotonic clock now, which times the round trips the clock offset is
-    /// measured from.
+    /// decoded first. `wall` is the wall clock now, put in a `pong`, and
+    /// `now` the monotonic clock now, the time `bytes` arrived. A frame
+    /// counts as received when its last byte arrived, not when it is
+    /// handled: one held back behind a pending body keeps the time of the
+    /// call that brought it in, for the round trip it ends and for the idle
+    /// timeout alike.
     #[must_use]
     pub fn receive(&mut self, bytes: &[u8], wall: Timestamp, now: Duration) -> Vec<EndpointAction> {
         let mut actions = Vec::new();
         if self.is_closed() {
             return actions;
         }
+        self.decoder.push(bytes, now, self.body_pending);
         self.body_pending = false;
-        self.decoder.push(bytes);
         while !self.is_closed() && !self.body_pending {
-            match self.decoder.next_frame() {
+            match self.decoder.next_frame(now) {
                 Ok(None) => break,
-                Ok(Some(payload)) => {
-                    self.liveness.received(now);
-                    self.handle(&payload, wall, now, &mut actions);
+                Ok(Some((payload, arrived))) => {
+                    self.liveness.received(arrived);
+                    self.handle(&payload, wall, arrived, &mut actions);
                 }
                 Err(error) => self.close(&mut actions, CloseReason::FrameTooLarge(error)),
             }
@@ -260,7 +263,8 @@ impl EndpointConnection {
     /// handles the frames received after it.
     ///
     /// Equivalent to calling [`EndpointConnection::receive`] with no bytes;
-    /// `wall` and `now` are as there.
+    /// `wall` and `now` are as there. The frames it handles keep the times
+    /// they arrived at, however long the verdict took.
     #[must_use]
     pub fn accept_body(&mut self, wall: Timestamp, now: Duration) -> Vec<EndpointAction> {
         self.receive(&[], wall, now)
@@ -343,11 +347,14 @@ impl EndpointConnection {
         }
     }
 
+    /// Handles one frame whose last byte arrived at `arrived` on the
+    /// monotonic clock, which times the round trip it ends. A reply is
+    /// stamped with `wall`, the wall clock when it is sent.
     fn handle(
         &mut self,
         payload: &[u8],
         wall: Timestamp,
-        now: Duration,
+        arrived: Duration,
         actions: &mut Vec<EndpointAction>,
     ) {
         let envelope = match Envelope::parse(payload) {
@@ -355,8 +362,8 @@ impl EndpointConnection {
             Err(error) => return self.close(actions, CloseReason::Envelope(error)),
         };
         match self.state {
-            State::AwaitingAck => self.handle_first(envelope, now, actions),
-            State::Established => self.handle_established(envelope, wall, now, actions),
+            State::AwaitingAck => self.handle_first(envelope, arrived, actions),
+            State::Established => self.handle_established(envelope, wall, arrived, actions),
             State::Closed => {}
         }
     }
@@ -364,7 +371,7 @@ impl EndpointConnection {
     fn handle_first(
         &mut self,
         envelope: Envelope,
-        now: Duration,
+        arrived: Duration,
         actions: &mut Vec<EndpointAction>,
     ) {
         match envelope.t() {
@@ -374,12 +381,12 @@ impl EndpointConnection {
                 match verified {
                     Ok(handshake) => {
                         self.state = State::Established;
-                        self.liveness.handshake_done(now);
+                        self.liveness.handshake_done(arrived);
                         let (hello_wall, hello_mono) = self.hello_sent;
                         let measurement = ClockMeasurement::from_round_trip(
                             hello_wall,
                             hello_mono,
-                            now,
+                            arrived,
                             handshake.server_time,
                         );
                         actions.push(EndpointAction::Handshake(handshake));
@@ -441,7 +448,7 @@ impl EndpointConnection {
         &mut self,
         envelope: Envelope,
         wall: Timestamp,
-        now: Duration,
+        arrived: Duration,
         actions: &mut Vec<EndpointAction>,
     ) {
         let t = envelope.t();
@@ -469,7 +476,7 @@ impl EndpointConnection {
                 self.send_or_close(actions, pong);
             }
             Some(BuiltIn::Pong) => match decode_builtin::<Pong>(&envelope) {
-                Ok(pong) => self.match_pong(&pong, now, actions),
+                Ok(pong) => self.match_pong(&pong, arrived, actions),
                 Err(reason) => self.close(actions, reason),
             },
             Some(BuiltIn::Unsupported) => match decode_builtin::<Unsupported>(&envelope) {
@@ -485,7 +492,7 @@ impl EndpointConnection {
 
     /// Measures the clock offset from a `pong` answering the latest `ping`;
     /// a `pong` answering any other is ignored.
-    fn match_pong(&mut self, pong: &Pong, now: Duration, actions: &mut Vec<EndpointAction>) {
+    fn match_pong(&mut self, pong: &Pong, arrived: Duration, actions: &mut Vec<EndpointAction>) {
         let Some((sent_wall, sent_mono)) = self.pending_ping else {
             return;
         };
@@ -494,7 +501,7 @@ impl EndpointConnection {
         }
         self.pending_ping = None;
         if let Some(measurement) =
-            ClockMeasurement::from_round_trip(sent_wall, sent_mono, now, pong.sent_at)
+            ClockMeasurement::from_round_trip(sent_wall, sent_mono, arrived, pong.sent_at)
         {
             actions.push(EndpointAction::ClockMeasured(measurement));
         }

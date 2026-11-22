@@ -9,7 +9,7 @@ use jiff::Timestamp;
 use uuid::Uuid;
 
 use super::envelope::Envelope;
-use super::frame::{Frame, FrameDecoder};
+use super::frame::{Frame, TimedDecoder};
 use super::liveness::{Due, Liveness};
 use super::message::{
     AcceptedKind, BuiltIn, Hello, HelloAck, Message, Ping, Pong, Unsupported, VersionRange,
@@ -190,7 +190,7 @@ pub struct ServerConnection {
     versions: VersionRange,
     known_kinds: BTreeSet<String>,
     standing: Option<StandingCheck>,
-    decoder: FrameDecoder,
+    decoder: TimedDecoder,
     state: State,
     body_pending: bool,
     liveness: Liveness,
@@ -206,7 +206,7 @@ impl ServerConnection {
             versions: config.versions,
             known_kinds: config.known_kinds,
             standing: config.standing,
-            decoder: FrameDecoder::new(config.receive_limit),
+            decoder: TimedDecoder::new(config.receive_limit),
             body_pending: false,
             state: State::AwaitingHello,
             liveness: Liveness::new(now),
@@ -250,20 +250,23 @@ impl ServerConnection {
     ///
     /// Called while a delivered body is pending, it takes that body as
     /// decoded first. `wall` is the wall clock now, put in a `hello_ack` or
-    /// `pong`, and `now` the monotonic clock now.
+    /// `pong`, and `now` the monotonic clock now, the time `bytes` arrived.
+    /// A frame counts as received, for the idle timeout, when its last byte
+    /// arrived, not when it is handled: one held back behind a pending body
+    /// keeps the time of the call that brought it in.
     #[must_use]
     pub fn receive(&mut self, bytes: &[u8], wall: Timestamp, now: Duration) -> Vec<ServerAction> {
         let mut actions = Vec::new();
         if self.is_closed() {
             return actions;
         }
+        self.decoder.push(bytes, now, self.body_pending);
         self.body_pending = false;
-        self.decoder.push(bytes);
         while !self.is_closed() && !self.body_pending {
-            match self.decoder.next_frame() {
+            match self.decoder.next_frame(now) {
                 Ok(None) => break,
-                Ok(Some(payload)) => {
-                    self.liveness.received(now);
+                Ok(Some((payload, arrived))) => {
+                    self.liveness.received(arrived);
                     self.handle(&payload, wall, now, &mut actions);
                 }
                 Err(error) => self.close(&mut actions, CloseReason::FrameTooLarge(error)),
@@ -284,7 +287,8 @@ impl ServerConnection {
     /// handles the frames received after it.
     ///
     /// Equivalent to calling [`ServerConnection::receive`] with no bytes;
-    /// `wall` and `now` are as there.
+    /// `wall` and `now` are as there. The frames it handles keep the times
+    /// they arrived at, however long the verdict took.
     #[must_use]
     pub fn accept_body(&mut self, wall: Timestamp, now: Duration) -> Vec<ServerAction> {
         self.receive(&[], wall, now)
@@ -352,6 +356,8 @@ impl ServerConnection {
         }
     }
 
+    /// Handles one frame, at `wall` on the wall clock and `now` on the
+    /// monotonic clock: the time a reply is sent.
     fn handle(
         &mut self,
         payload: &[u8],
