@@ -545,9 +545,26 @@ Where the crate handles key material or secrets:
 
 ## Certificate verification modules
 
-- None yet: this repository has no code. The first pull request that
-  verifies a certificate records the design decision the shared rule
-  asks for, and names its module here.
+- `src/auth/tls.rs` (`senta_protocol::auth::tls`, behind the `auth`
+  feature) is the one certificate verification module. Every
+  `ClientCertVerifier` or `ServerCertVerifier` and every certificate
+  parse that feeds an identity lives there. These decisions were made
+  when it was introduced:
+  - `EndpointClientVerifier` deliberately verifies no certificate
+    chain. An endpoint's certificate is self-signed and chains to
+    nothing; the verifier checks only that the end-entity certificate
+    parses and that its key is Ed25519. The identity is the SHA-256 of
+    the SubjectPublicKeyInfo, possession of the private key is proved
+    by the CertificateVerify that `verify_tls13_signature` checks with
+    Ed25519 alone, and what the endpoint may do is decided after the
+    handshake by the active list.
+  - The ingress server configuration turns session resumption off (no
+    session storage, no tickets, no 0-RTT). A resumed connection
+    carries no CertificateVerify, so it would prove nothing about the
+    client's key.
+  - The endpoint verifies the server with rustls' `WebPkiServerVerifier`,
+    built from the address document's trust roots and used unchanged:
+    no hand-written `ServerCertVerifier`, and nothing that weakens it.
 
 ## Validation
 

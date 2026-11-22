@@ -13,9 +13,13 @@ default = []
 auth = [
   "dep:base64",
   "dep:ed25519-dalek",
+  "dep:rcgen",
+  "dep:rustls",
+  "dep:rustls-webpki",
   "dep:serde_json",
   "dep:sha2",
   "dep:thiserror",
+  "dep:time",
 ]
 control = []
 telemetry = []
@@ -23,10 +27,36 @@ test-util = []
 
 [dependencies]
 base64 = { version = "0.23", optional = true, default-features = false, features = ["std"] }
-ed25519-dalek = { version = "3", optional = true }
+# Verifies JWS signatures, signs the endpoint's self-signed certificate
+# and encodes its key as PKCS#8.
+ed25519-dalek = { version = "3", optional = true, features = ["alloc", "pkcs8"] }
+# The timestamp every module of this crate takes.
 jiff = { version = "1", default-features = false, features = ["std"] }
+# Builds the endpoint's self-signed certificate. Its default features
+# pull in `ring`; the signing is done by `ed25519-dalek` instead.
+rcgen = { version = "0.14", optional = true, default-features = false }
+# TLS configuration and certificate verification. No crypto provider
+# feature: the caller passes the provider in.
+rustls = { version = "0.23.41", optional = true, default-features = false, features = ["std"] }
+# The certificate parser `rustls` itself uses, so the SPKI hashed is the
+# one whose key verified the handshake signature.
+rustls-webpki = { version = "0.103.14", optional = true, default-features = false, features = ["std"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", optional = true }
+# SHA-256 of JWS payloads and of the SubjectPublicKeyInfo.
 sha2 = { version = "0.11", optional = true }
+# Typed errors a caller matches on.
 thiserror = { version = "2", optional = true }
+# The validity time type `rcgen` takes.
+time = { version = "0.3", optional = true, default-features = false }
 uuid = "1"
+
+[dev-dependencies]
+# Ed25519 key pairs the tests sign with.
+ed25519-dalek = { version = "3", features = ["alloc", "pkcs8"] }
+# Certificates for the test CAs, servers and non-Ed25519 clients.
+rcgen = { version = "0.14", features = ["aws_lc_rs", "pem"] }
+# The crypto provider the tests pass in, and TLS 1.2 peers to reject.
+rustls = { version = "0.23.41", features = ["aws_lc_rs", "tls12"] }
+# Reads the generated certificate back independently.
+x509-parser = "0.18"
