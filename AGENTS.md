@@ -551,13 +551,61 @@ Where the crate handles key material or secrets:
 
 ## Validation
 
-- CI runs two jobs. `Markdown` runs `markdownlint-cli2` with no glob
+- CI runs these jobs. `Markdown` runs `markdownlint-cli2` with no glob
   of its own, so the root `.markdownlint-cli2.yaml` alone decides which
   files are linted, then the shared instruction-block drift check,
   which fails when the generated regions of this file stop matching the
-  release `.agent-instructions.toml` pins. `CI Gate` fails unless every
-  other job passed or was skipped. Run `markdownlint-cli2`, with no
-  arguments, locally before pushing a change to a Markdown file.
-- There is no Rust code yet, so there are no `cargo fmt` or
-  `cargo clippy` invocations. The pull request that adds the first crate
-  adds its CI jobs and names their exact invocations here.
+  release `.agent-instructions.toml` pins. `Rust format`, `Rust (...)`
+  (one job per feature configuration) and `Rust doc` run the Rust
+  commands below. `CI Gate` fails unless every other job passed or was
+  skipped. Run `markdownlint-cli2`, with no arguments, locally before
+  pushing a change to a Markdown file.
+- `Rust format` checks formatting:
+
+  ```sh
+  cargo fmt -- --check --config group_imports=StdExternalCrate
+  ```
+
+- The features `auth`, `control`, `telemetry` and `test-util` exclude
+  none of one another, so the crate is checked in all sixteen feature
+  configurations: every subset of the four. For each subset, `<config>`
+  below is `--no-default-features --features <subset>`, the subset's
+  features joined with commas, or `--no-default-features` alone for the
+  empty subset. The subsets are: none; `auth`; `control`; `telemetry`;
+  `test-util`; `auth,control`; `auth,telemetry`; `auth,test-util`;
+  `control,telemetry`; `control,test-util`; `telemetry,test-util`;
+  `auth,control,telemetry`; `auth,control,test-util`;
+  `auth,telemetry,test-util`; `control,telemetry,test-util`; and
+  `auth,control,telemetry,test-util`. `Rust (...)` runs, for each:
+
+  ```sh
+  cargo build <config>
+  cargo clippy --all-targets <config> -- -D warnings
+  cargo test <config>
+  ```
+
+  `cargo build` builds the library alone, without dev-dependencies, as
+  a consumer does. To run all sixteen locally, in bash or zsh:
+
+  ```sh
+  (
+    set -e
+    for f in "" auth control telemetry test-util \
+        auth,control auth,telemetry auth,test-util \
+        control,telemetry control,test-util telemetry,test-util \
+        auth,control,telemetry auth,control,test-util \
+        auth,telemetry,test-util control,telemetry,test-util \
+        auth,control,telemetry,test-util; do
+      cargo build --no-default-features ${f:+--features} $f
+      cargo clippy --all-targets --no-default-features \
+        ${f:+--features} $f -- -D warnings
+      cargo test --no-default-features ${f:+--features} $f
+    done
+  )
+  ```
+
+- `Rust doc` builds the documentation:
+
+  ```sh
+  RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --all-features
+  ```

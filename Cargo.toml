@@ -1,0 +1,16 @@
+[package]
+name = "senta-protocol"
+version = "0.1.0"
+edition = "2024"
+description = "Protocol, record formats and trust contracts shared by Clumit Endpoint, REview and the event store"
+license = "Apache-2.0"
+repository = "https://github.com/aicers/senta-protocol"
+
+# No feature is on by default: each consumer turns on only the parts it
+# uses. Any combination of the four is supported.
+[features]
+default = []
+auth = []
+control = []
+telemetry = []
+test-util = []
