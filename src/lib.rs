@@ -11,11 +11,16 @@
 //!   deterministic Ed25519 test keys and a JWS signer, for tests that build
 //!   signed documents. The crate signs nothing elsewhere. Without `auth` it
 //!   adds nothing.
+//!
+//! The `results` module is public whatever the features: it holds the
+//! result enums that the trust state machines produce and the control
+//! channel carries.
 
 #[cfg(feature = "auth")]
 pub mod auth;
 #[cfg(feature = "control")]
 pub mod control;
+pub mod results;
 #[cfg(feature = "telemetry")]
 pub mod telemetry;
 
