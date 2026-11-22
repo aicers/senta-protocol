@@ -158,6 +158,7 @@ mod tests {
     use serde::Deserialize;
 
     use super::*;
+    use crate::connection::cbor::DecodeErrorKind;
 
     #[test]
     fn encode_then_parse_round_trips() {
@@ -231,6 +232,22 @@ mod tests {
         let envelope = Envelope::parse(&payload).unwrap();
         assert_eq!(envelope.t(), "ping");
         assert!(envelope.body().decode::<Wanted>().is_err());
+    }
+
+    #[test]
+    fn duplicate_body_keys_fail_at_body_decoding_not_parsing() {
+        #[derive(Debug, Deserialize)]
+        struct Body {}
+
+        // A body of {null: 0, undefined: 1}: the envelope parses, and the
+        // body fails only when it is decoded.
+        let payload = encode("ping", &[0xa2, 0xf6, 0x00, 0xf7, 0x01]).unwrap();
+        let envelope = Envelope::parse(&payload).unwrap();
+        assert_eq!(envelope.t(), "ping");
+        assert_eq!(
+            envelope.body().decode::<Body>().unwrap_err().kind(),
+            DecodeErrorKind::DuplicateKey
+        );
     }
 
     #[test]

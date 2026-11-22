@@ -24,6 +24,9 @@ const MAJOR_SIMPLE: u8 = 7;
 const TAG_BIGNUM_POSITIVE: u64 = 2;
 const TAG_BIGNUM_NEGATIVE: u64 = 3;
 
+const SIMPLE_NULL: u8 = 22;
+const SIMPLE_UNDEFINED: u8 = 23;
+
 const BREAK: u8 = 0xff;
 const FLOAT64: u8 = 0xfb;
 
@@ -402,9 +405,12 @@ fn patch_length(out: &mut [u8], slot: usize, value: usize) -> Result<(), ScanErr
 /// Byte and text strings compare by content, whether written at a definite
 /// length or in chunks. Floats of any width compare by the bits of the
 /// `f64` they widen to. Simple values compare by number, so `false`,
-/// `true` and `null` compare by value. Arrays and maps compare element by
-/// element in order, and other tags by number and content. An integer
-/// never equals a float, nor a text string a byte string.
+/// `true` and `null` compare by value, except that `undefined` is the same
+/// key as `null`: `crate::results` reads both as one key, and the same
+/// bytes must meet the same verdict there and here. Arrays and maps
+/// compare element by element in order, and other tags by number and
+/// content. An integer never equals a float, nor a text string a byte
+/// string.
 ///
 /// Every number in the canonical form is written at its shortest, and
 /// every length and count at a fixed eight bytes, so the form is
@@ -450,6 +456,11 @@ fn check_value(
         }
         Head::Simple(value) => {
             if let Some(out) = canonical {
+                let value = if value == SIMPLE_UNDEFINED {
+                    SIMPLE_NULL
+                } else {
+                    value
+                };
                 put_head(out, MAJOR_SIMPLE, u64::from(value));
             }
             Ok(())
@@ -749,6 +760,21 @@ mod tests {
             (&[0xa1, 0x01, 0x02], &[0xbf, 0x01, 0x02, 0xff]),
             // null and null.
             (&[0xf6], &[0xf6]),
+            // null and undefined, in either order.
+            (&[0xf6], &[0xf7]),
+            (&[0xf7], &[0xf6]),
+            // undefined and undefined.
+            (&[0xf7], &[0xf7]),
+            // Arrays differing only in null and undefined.
+            (&[0x82, 0x01, 0xf6], &[0x82, 0x01, 0xf7]),
+            (&[0x9f, 0xf7, 0xff], &[0x81, 0xf6]),
+            // Maps differing only in null and undefined, as a key and as a
+            // value.
+            (&[0xa1, 0xf6, 0x01], &[0xa1, 0xf7, 0x01]),
+            (&[0xa1, 0x01, 0xf7], &[0xa1, 0x01, 0xf6]),
+            // Tags of one number over null and over undefined.
+            (&[0xc6, 0xf6], &[0xc6, 0xf7]),
+            (&[0xc6, 0x81, 0xf7], &[0xc6, 0x81, 0xf6]),
         ];
         for (a, b) in same {
             let mut map = vec![0xa2];
@@ -770,9 +796,17 @@ mod tests {
             (&[0x61, b'a'], &[0x41, b'a']),
             // 0.0 and −0.0.
             (&[0xf9, 0x00, 0x00], &[0xf9, 0x80, 0x00]),
-            // false and true; null and undefined.
+            // false and true.
             (&[0xf4], &[0xf5]),
-            (&[0xf6], &[0xf7]),
+            // null or undefined, and false, simple value 0, or 0.
+            (&[0xf6], &[0xf4]),
+            (&[0xf7], &[0xf4]),
+            (&[0xf6], &[0xe0]),
+            (&[0xf7], &[0xe0]),
+            (&[0xf6], &[0x00]),
+            (&[0xf7], &[0x00]),
+            // Tags of different numbers over null and over undefined.
+            (&[0xc6, 0xf6], &[0xc7, 0xf7]),
             // 1 and −1.
             (&[0x01], &[0x20]),
             // {1: 2, 3: 4} and {3: 4, 1: 2}.
@@ -795,6 +829,40 @@ mod tests {
             map.push(0x00);
             assert_eq!(body(&map), Ok(()), "{a:02x?} {b:02x?}");
         }
+    }
+
+    #[test]
+    fn null_and_undefined_are_one_key_at_any_depth() {
+        // {null: 0, undefined: 1} and {undefined: 0, null: 1}.
+        assert_eq!(
+            body(&[0xa2, 0xf6, 0x00, 0xf7, 0x01]),
+            Err(ScanError::DuplicateKey)
+        );
+        assert_eq!(
+            body(&[0xa2, 0xf7, 0x00, 0xf6, 0x01]),
+            Err(ScanError::DuplicateKey)
+        );
+        // [{"x": {null: 0, undefined: 1}}]
+        assert_eq!(
+            body(&[0x81, 0xa1, 0x61, b'x', 0xa2, 0xf6, 0x00, 0xf7, 0x01]),
+            Err(ScanError::DuplicateKey)
+        );
+        // Inside a tag, and inside a map used as a key.
+        assert_eq!(
+            body(&[0xc6, 0xa2, 0xf7, 0x00, 0xf6, 0x01]),
+            Err(ScanError::DuplicateKey)
+        );
+        assert_eq!(
+            body(&[0xa1, 0xa2, 0xf6, 0x00, 0xf7, 0x01, 0x00]),
+            Err(ScanError::DuplicateKey)
+        );
+        // Either one alone, beside other keys, passes.
+        assert_eq!(body(&[0xa2, 0xf6, 0x00, 0x01, 0x01]), Ok(()));
+        assert_eq!(body(&[0xa2, 0xf7, 0x00, 0x01, 0x01]), Ok(()));
+        assert_eq!(body(&[0xa1, 0xf6, 0xf7]), Ok(()));
+        assert_eq!(body(&[0xa1, 0xf7, 0xf6]), Ok(()));
+        // As values, null and undefined are never keys.
+        assert_eq!(body(&[0xa2, 0x00, 0xf6, 0x01, 0xf7]), Ok(()));
     }
 
     #[test]

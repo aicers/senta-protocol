@@ -164,8 +164,10 @@ impl std::error::Error for EncodeError {}
 /// The bytes are scanned before anything is decoded: they must be exactly
 /// one well-formed CBOR value, so no length declared in them can outgrow
 /// the bytes themselves, and no map in them, at any depth, may hold the
-/// same key twice. The check is not quadratic in the number of keys. Then
-/// the value is decoded, ignoring map keys `T` does not name.
+/// same key twice. Keys compare as values, not encodings, and `null` and
+/// `undefined` are the same key, as they are to [`crate::results`]. The
+/// check is not quadratic in the number of keys. Then the value is
+/// decoded, ignoring map keys `T` does not name.
 ///
 /// Each value decodes only from the CBOR type its rule names, with no
 /// stand-in: a sequence only from an array, never a byte string; a byte
@@ -743,6 +745,77 @@ mod tests {
             from_slice::<Shapes>(&bytes).unwrap_err().kind(),
             DecodeErrorKind::DuplicateKey
         );
+    }
+
+    #[test]
+    fn null_and_undefined_keys_are_duplicates_in_bodies_and_results() {
+        use crate::results::DocumentResult;
+
+        #[derive(Debug, Deserialize)]
+        struct Body {}
+
+        // {null: 0, undefined: 1} in both orders, and each key alone.
+        let mixed: [&[u8]; 2] = [
+            &[0xa2, 0xf6, 0x00, 0xf7, 0x01],
+            &[0xa2, 0xf7, 0x00, 0xf6, 0x01],
+        ];
+        let alone: [&[u8]; 2] = [
+            &[0xa2, 0xf6, 0x00, 0x01, 0x01],
+            &[0xa2, 0xf7, 0x00, 0x01, 0x01],
+        ];
+
+        // {key: content}
+        let under = |key: &str, content: &[u8]| {
+            let mut bytes = vec![0xa1];
+            text(&mut bytes, key);
+            bytes.extend_from_slice(content);
+            bytes
+        };
+        // In a field the common body does not know, and so ignores.
+        let in_body = |content: &[u8]| under("added_later", content);
+        // In the ignored content of a result variant this crate does not
+        // know.
+        let in_result = |content: &[u8]| under("future", content);
+
+        for content in mixed {
+            assert_eq!(
+                from_slice::<Body>(&in_body(content)).unwrap_err().kind(),
+                DecodeErrorKind::DuplicateKey,
+                "{content:02x?}"
+            );
+            let bytes = in_result(content);
+            assert_eq!(
+                from_slice::<DocumentResult>(&bytes).unwrap_err().kind(),
+                DecodeErrorKind::DuplicateKey,
+                "{content:02x?}"
+            );
+            // Decoded straight from CBOR, the result enum's own check
+            // agrees.
+            let error =
+                ciborium::de::from_reader::<DocumentResult, _>(bytes.as_slice()).unwrap_err();
+            assert!(
+                error.to_string().contains("duplicate map key"),
+                "{content:02x?}: {error}"
+            );
+        }
+        for content in alone {
+            assert!(
+                from_slice::<Body>(&in_body(content)).is_ok(),
+                "{content:02x?}"
+            );
+            let bytes = in_result(content);
+            let future = DocumentResult::Other("future".to_owned());
+            assert_eq!(
+                from_slice::<DocumentResult>(&bytes).unwrap(),
+                future,
+                "{content:02x?}"
+            );
+            assert_eq!(
+                ciborium::de::from_reader::<DocumentResult, _>(bytes.as_slice()).unwrap(),
+                future,
+                "{content:02x?}"
+            );
+        }
     }
 
     fn invalid<T: serde::de::DeserializeOwned + std::fmt::Debug>(bytes: &[u8]) {
