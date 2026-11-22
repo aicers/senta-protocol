@@ -9,8 +9,12 @@
 //! - `telemetry` turns on the `telemetry` module.
 //! - `test-util`, together with `auth`, turns on `auth::jws::test_util`:
 //!   deterministic Ed25519 test keys and a JWS signer, for tests that build
-//!   signed documents. The crate signs nothing elsewhere. Without `auth` it
-//!   adds nothing.
+//!   signed documents. Without `auth` it adds nothing.
+//!
+//! Outside that test signer, which needs both `auth` and `test-util`, the
+//! crate makes no signed documents. The one thing it signs under `auth`
+//! alone is an endpoint's own certificate, which
+//! `auth::tls::endpoint_certificate` self-signs with the endpoint's key.
 //!
 //! Whatever the features, the `connection` module is always public: the
 //! framing, envelope, CBOR rules, version negotiation, liveness and clock
