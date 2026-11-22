@@ -7,9 +7,13 @@ part a consumer needs: `auth`, `control`, `telemetry` and `test-util`.
 
 ## Status
 
-Early concept. The crate skeleton is in place: the `auth`, `control`
-and `telemetry` features each turn on a module of their own, and no
-protocol is implemented in them yet.
+Early concept. The `auth`, `control` and `telemetry` features each turn
+on a module of their own. `auth` holds the JWS verifier for signed
+documents, with the kid grammar, the `typ` values and the key kinds
+allowed to sign each, and the strict JSON parsing their contents go
+through; `test-util` adds, with `auth`, deterministic test keys and a
+signer for building signed documents in tests. No other protocol is
+implemented yet.
 
 ## License
 
