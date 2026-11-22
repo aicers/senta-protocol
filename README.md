@@ -12,8 +12,11 @@ on a module of their own. `auth` holds the JWS verifier for signed
 documents, with the kid grammar, the `typ` values and the key kinds
 allowed to sign each, and the strict JSON parsing their contents go
 through; `test-util` adds, with `auth`, deterministic test keys and a
-signer for building signed documents in tests. No other protocol is
-implemented yet.
+signer for building signed documents in tests. The `connection` module,
+public whatever the features, holds what control and telemetry
+connections share: framing, the envelope, the CBOR rules, version
+negotiation, liveness, reconnection backoff and clock correction. No
+other protocol is implemented yet.
 
 ## License
 

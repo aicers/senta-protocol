@@ -12,12 +12,17 @@
 //!   signed documents. The crate signs nothing elsewhere. Without `auth` it
 //!   adds nothing.
 //!
+//! Whatever the features, the `connection` module is always public: the
+//! framing, envelope, CBOR rules, version negotiation, liveness and clock
+//! correction that control and telemetry connections share.
+//!
 //! The `results` module is public whatever the features: it holds the
 //! result enums that the trust state machines produce and the control
 //! channel carries.
 
 #[cfg(feature = "auth")]
 pub mod auth;
+pub mod connection;
 #[cfg(feature = "control")]
 pub mod control;
 pub mod results;
@@ -25,9 +30,15 @@ pub mod results;
 pub mod telemetry;
 
 /// Doctests asserting that each feature-gated module exists exactly when its
-/// feature is on. A module whose feature is off must not resolve.
+/// feature is on, and `connection` always. A module whose feature is off
+/// must not resolve.
 #[cfg(doctest)]
 mod feature_gates {
+    #[doc = "```"]
+    #[doc = "use senta_protocol::connection;"]
+    #[doc = "```"]
+    struct Connection;
+
     #[cfg_attr(feature = "auth", doc = "```")]
     #[cfg_attr(not(feature = "auth"), doc = "```compile_fail,E0432")]
     #[doc = "use senta_protocol::auth;"]
