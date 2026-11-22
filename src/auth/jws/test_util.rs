@@ -1,8 +1,12 @@
 //! Signing helpers for tests that build JWS documents.
 //!
-//! The crate signs nothing outside this module, which exists only with the
-//! `auth` and `test-util` features both on. Keys come from a fixed seed, so
-//! the same seed always gives the same key; there is no random key.
+//! This module exists only with the `auth` and `test-util` features both on,
+//! and the crate makes no signed documents outside it. The one thing the
+//! crate signs elsewhere is an endpoint's own certificate, which
+//! [`endpoint_certificate`](crate::auth::tls::endpoint_certificate)
+//! self-signs with the endpoint's key under `auth` alone. Keys come from a
+//! fixed seed, so the same seed always gives the same key; there is no random
+//! key.
 
 use std::fmt;
 

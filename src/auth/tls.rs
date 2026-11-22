@@ -599,8 +599,12 @@ pub enum ClientConfigError {
 ///
 /// Each element of `trust_roots` is PEM holding one or more `CERTIFICATE`
 /// blocks, every one of which becomes a root; during a rotation the old and
-/// new roots arrive together. Text outside the blocks is ignored. The list is
-/// taken whole or not at all: a single bad element or block fails it.
+/// new roots arrive together. Explanatory text outside the blocks is ignored,
+/// but a boundary line outside them is not: an `-----END` line with no open
+/// block, or a `-----BEGIN` line that is not `-----BEGIN <label>-----`, makes
+/// the element malformed and fails the whole list with
+/// [`ClientConfigError::MalformedPem`]. The list is taken whole or not at
+/// all: a single bad element or block fails it.
 ///
 /// # Errors
 ///
