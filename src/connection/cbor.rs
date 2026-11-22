@@ -175,11 +175,18 @@ impl std::error::Error for EncodeError {}
 /// passed over, except the bignums (tags 2 and 3), which read as the
 /// integers they hold.
 ///
+/// A type that reads CBOR tags through ciborium's tag protocol, an enum
+/// named `@@TAG@@` as [`crate::results`] does, reads them here as it does
+/// from ciborium, and through `deserialize_any` `undefined` reaches it as
+/// none, as from ciborium. A typed read still refuses `undefined`, so it
+/// never stands in for null in an optional field.
+///
 /// # Errors
 ///
 /// Returns an error when the bytes are not one well-formed CBOR value, nest
 /// arrays and maps deeper than 256 levels, hold a duplicate map key, or do
-/// not decode into `T`.
+/// not decode into `T`, which includes a type reading more than 256 nested
+/// tags through ciborium's tag protocol.
 pub fn from_slice<T: DeserializeOwned>(bytes: &[u8]) -> Result<T, DecodeError> {
     scan::check_body(bytes)?;
     de::from_slice(bytes).map_err(|error| DecodeError {
@@ -877,6 +884,115 @@ mod tests {
         assert_eq!(
             from_slice::<Shapes>(&[]).unwrap_err().kind(),
             DecodeErrorKind::Malformed
+        );
+    }
+
+    /// Decodes `bytes` as `T` both here and with ciborium, which the result
+    /// enums were written against, and asserts the two agree.
+    fn same_as_ciborium<T>(bytes: &[u8]) -> Option<T>
+    where
+        T: serde::de::DeserializeOwned + PartialEq + std::fmt::Debug,
+    {
+        let ours = from_slice::<T>(bytes).ok();
+        let theirs = ciborium::de::from_reader::<T, _>(bytes).ok();
+        assert_eq!(ours, theirs, "bytes {bytes:02x?}");
+        ours
+    }
+
+    #[test]
+    fn result_enums_decode_as_they_do_from_ciborium() {
+        use crate::results::{CommandResultKind, DocumentResult};
+
+        // A known tag without content, sent as a map: its content is
+        // discarded.
+        let mut bytes = vec![0xa1];
+        text(&mut bytes, "applied");
+        bytes.push(0xf6);
+        assert_eq!(
+            same_as_ciborium::<DocumentResult>(&bytes),
+            Some(DocumentResult::Applied)
+        );
+
+        // A tag this crate does not know, with content of several shapes.
+        let contents: [&[u8]; 6] = [
+            &[0xf6],
+            &[0xf7],
+            &[0xc6, 0x01],
+            &[0xc1, 0xc6, 0x82, 0x01, 0xf7],
+            &[
+                0xc2, 0x51, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+            ],
+            &[0xa2, 0xc6, 0x01, 0x00, 0x01, 0x00],
+        ];
+        for content in contents {
+            let mut bytes = vec![0xa1];
+            text(&mut bytes, "future");
+            bytes.extend_from_slice(content);
+            assert_eq!(
+                same_as_ciborium::<DocumentResult>(&bytes),
+                Some(DocumentResult::Other("future".to_owned()))
+            );
+        }
+
+        // A field this crate does not know, nested inside a result.
+        let mut fields = vec![0xa3];
+        text(&mut fields, "have_epoch");
+        fields.push(0x03);
+        text(&mut fields, "have_version");
+        fields.push(0x07);
+        text(&mut fields, "x");
+        fields.push(0x00);
+        let gap = DocumentResult::KeysetGap {
+            have_epoch: 3,
+            have_version: 7,
+        };
+        let mut bytes = vec![0xa1];
+        text(&mut bytes, "keyset_gap");
+        bytes.extend_from_slice(&fields);
+        assert_eq!(
+            same_as_ciborium::<DocumentResult>(&bytes),
+            Some(gap.clone())
+        );
+        let mut bytes = vec![0xa1];
+        text(&mut bytes, "rejected");
+        bytes.push(0xa1);
+        text(&mut bytes, "keyset_gap");
+        bytes.extend_from_slice(&fields);
+        assert_eq!(
+            same_as_ciborium::<CommandResultKind>(&bytes),
+            Some(CommandResultKind::Rejected(gap))
+        );
+
+        // Keys that are the same integer, once as a bignum, inside discarded
+        // content.
+        let mut bytes = vec![0xa1];
+        text(&mut bytes, "future");
+        bytes.extend_from_slice(&[0xa2, 0xc2, 0x42, 0x00, 0x01, 0x00, 0x01, 0x00]);
+        assert!(same_as_ciborium::<DocumentResult>(&bytes).is_none());
+    }
+
+    #[test]
+    fn tags_read_by_ciborium_protocol_nest_boundedly() {
+        use crate::results::DocumentResult;
+
+        let nested = |tags: usize| {
+            let mut bytes = vec![0xa1];
+            text(&mut bytes, "future");
+            bytes.extend(std::iter::repeat_n(0xc6, tags));
+            bytes.push(0x00);
+            bytes
+        };
+        assert_eq!(
+            from_slice::<DocumentResult>(&nested(super::scan::MAX_DEPTH)).unwrap(),
+            DocumentResult::Other("future".to_owned())
+        );
+        // Far more tags than the decoder follows fail without exhausting
+        // the stack.
+        assert_eq!(
+            from_slice::<DocumentResult>(&nested(1 << 20))
+                .unwrap_err()
+                .kind(),
+            DecodeErrorKind::Invalid
         );
     }
 }

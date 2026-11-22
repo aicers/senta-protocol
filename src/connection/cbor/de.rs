@@ -9,6 +9,16 @@
 //! at a definite length or in chunks. Tags other than the bignums 2 and 3
 //! are passed over, and a bignum reads as the integer it holds.
 //!
+//! It also speaks ciborium's tag protocol, so a `Deserialize` written
+//! against ciborium reads the same here: asked for an enum named
+//! [`CIBORIUM_TAG`], it yields the variant [`CIBORIUM_TAGGED`], a tuple of
+//! the tag number and the tagged value, when the next item is tagged, and
+//! the variant [`CIBORIUM_UNTAGGED`], a newtype of the value, otherwise.
+//! [`crate::results`] reads every value it discards or compares as a key
+//! that way. For the same reason `undefined` reaches a visitor through
+//! `deserialize_any` as none, as it does from ciborium; a typed read still
+//! refuses it, so it never stands in for null in an optional field.
+//!
 //! The scan before it has established that the bytes are one well-formed
 //! item, nested no deeper than [`MAX_DEPTH`](super::scan::MAX_DEPTH), so
 //! every declared length here fits the bytes that remain and the recursion
@@ -16,15 +26,26 @@
 
 use std::fmt;
 
+use serde::de::value::{BorrowedStrDeserializer, U64Deserializer};
 use serde::de::{self, DeserializeSeed, Unexpected, Visitor};
 
-use super::scan::{Head, Reader, ScanError, skip_value};
+use super::scan::{Head, MAX_DEPTH, Reader, ScanError, skip_value};
 
 const TAG_BIGNUM_POSITIVE: u64 = 2;
 const TAG_BIGNUM_NEGATIVE: u64 = 3;
 const SIMPLE_FALSE: u8 = 20;
 const SIMPLE_TRUE: u8 = 21;
 const SIMPLE_NULL: u8 = 22;
+const SIMPLE_UNDEFINED: u8 = 23;
+
+/// The enum name by which a `Deserialize` asks ciborium for a CBOR tag.
+const CIBORIUM_TAG: &str = "@@TAG@@";
+/// The variant of [`CIBORIUM_TAG`] for a tagged item: a tuple of the tag
+/// number and the tagged value.
+const CIBORIUM_TAGGED: &str = "@@TAGGED@@";
+/// The variant of [`CIBORIUM_TAG`] for an item without a tag: a newtype of
+/// the value.
+const CIBORIUM_UNTAGGED: &str = "@@UNTAGGED@@";
 
 /// An error decoding a scanned body into a type.
 #[derive(Debug)]
@@ -55,6 +76,7 @@ impl From<ScanError> for Error {
 pub(super) fn from_slice<'de, T: de::Deserialize<'de>>(bytes: &'de [u8]) -> Result<T, Error> {
     let mut deserializer = Deserializer {
         reader: Reader::new(bytes),
+        tags: 0,
     };
     T::deserialize(&mut deserializer)
 }
@@ -74,7 +96,8 @@ enum Token {
     Float(f64),
     Bool(bool),
     Null,
-    /// Any other simple value, `undefined` among them.
+    Undefined,
+    /// Any other simple value.
     Simple,
 }
 
@@ -101,6 +124,7 @@ impl Token {
             Self::Float(value) => Unexpected::Float(value),
             Self::Bool(value) => Unexpected::Bool(value),
             Self::Null => Unexpected::Unit,
+            Self::Undefined => Unexpected::Other("undefined"),
             Self::Simple => Unexpected::Other("simple value"),
         }
     }
@@ -115,6 +139,11 @@ enum Content<'de> {
 
 struct Deserializer<'de> {
     reader: Reader<'de>,
+    /// How many tagged values read through [`CIBORIUM_TAG`] enclose the
+    /// current position. The scan bounds the nesting of arrays and maps but
+    /// passes over tags, which here each cost a level of recursion, so this
+    /// count is bounded separately.
+    tags: usize,
 }
 
 impl<'de> Deserializer<'de> {
@@ -148,6 +177,7 @@ impl<'de> Deserializer<'de> {
                 Head::Simple(SIMPLE_FALSE) => Token::Bool(false),
                 Head::Simple(SIMPLE_TRUE) => Token::Bool(true),
                 Head::Simple(SIMPLE_NULL) => Token::Null,
+                Head::Simple(SIMPLE_UNDEFINED) => Token::Undefined,
                 Head::Simple(_) => Token::Simple,
             };
             return Ok(token);
@@ -158,6 +188,7 @@ impl<'de> Deserializer<'de> {
     fn peek(&self) -> Result<Token, Error> {
         Deserializer {
             reader: self.reader.clone(),
+            tags: self.tags,
         }
         .token()
     }
@@ -260,8 +291,34 @@ impl<'de> Deserializer<'de> {
             Token::Float(value) => visitor.visit_f64(value),
             Token::Bool(value) => visitor.visit_bool(value),
             Token::Null => visitor.visit_unit(),
+            Token::Undefined => visitor.visit_none(),
             Token::Simple => Err(de::Error::invalid_type(token.unexpected(), &visitor)),
         }
+    }
+
+    /// Reads the next item by ciborium's tag protocol, without passing over
+    /// its tag.
+    fn tag_protocol<V: Visitor<'de>>(&mut self, visitor: V) -> Result<V::Value, Error> {
+        let mut probe = self.reader.clone();
+        let Head::Tag(tag) = probe.head()? else {
+            return visitor.visit_enum(TagAccess {
+                de: self,
+                tag: None,
+            });
+        };
+        if self.tags >= MAX_DEPTH {
+            return Err(de::Error::custom(
+                "tags nest deeper than the decoder follows",
+            ));
+        }
+        self.reader = probe;
+        self.tags += 1;
+        let value = visitor.visit_enum(TagAccess {
+            de: &mut *self,
+            tag: Some(tag),
+        });
+        self.tags -= 1;
+        value
     }
 
     fn integer<V: Visitor<'de>>(&mut self, visitor: V) -> Result<V::Value, Error> {
@@ -488,10 +545,13 @@ impl<'de> de::Deserializer<'de> for &mut Deserializer<'de> {
 
     fn deserialize_enum<V: Visitor<'de>>(
         self,
-        _name: &'static str,
+        name: &'static str,
         _variants: &'static [&'static str],
         visitor: V,
     ) -> Result<V::Value, Error> {
+        if name == CIBORIUM_TAG {
+            return self.tag_protocol(visitor);
+        }
         match self.peek()? {
             // A variant without a value: its tag alone, read as the
             // variant's name.
@@ -691,5 +751,91 @@ impl<'de> de::VariantAccess<'de> for Variant<'_, 'de> {
         } else {
             Err(de::Error::invalid_type(Unexpected::UnitVariant, &visitor))
         }
+    }
+}
+
+/// An item read by ciborium's tag protocol: [`CIBORIUM_TAGGED`] with its
+/// tag number when `tag` is set, [`CIBORIUM_UNTAGGED`] otherwise.
+struct TagAccess<'a, 'de> {
+    de: &'a mut Deserializer<'de>,
+    tag: Option<u64>,
+}
+
+impl<'a, 'de> de::EnumAccess<'de> for TagAccess<'a, 'de> {
+    type Error = Error;
+    type Variant = Self;
+
+    fn variant_seed<V: DeserializeSeed<'de>>(self, seed: V) -> Result<(V::Value, Self), Error> {
+        let name = if self.tag.is_some() {
+            CIBORIUM_TAGGED
+        } else {
+            CIBORIUM_UNTAGGED
+        };
+        let variant = seed.deserialize(BorrowedStrDeserializer::<Error>::new(name))?;
+        Ok((variant, self))
+    }
+}
+
+impl<'de> de::VariantAccess<'de> for TagAccess<'_, 'de> {
+    type Error = Error;
+
+    fn unit_variant(self) -> Result<(), Error> {
+        Err(de::Error::custom("expected tag"))
+    }
+
+    fn newtype_variant_seed<T: DeserializeSeed<'de>>(self, seed: T) -> Result<T::Value, Error> {
+        seed.deserialize(&mut *self.de)
+    }
+
+    fn tuple_variant<V: Visitor<'de>>(self, _len: usize, visitor: V) -> Result<V::Value, Error> {
+        match self.tag {
+            Some(tag) => visitor.visit_seq(TagAndValue {
+                de: self.de,
+                tag: Some(tag),
+                value_read: false,
+            }),
+            None => Err(de::Error::custom("expected tag")),
+        }
+    }
+
+    fn struct_variant<V: Visitor<'de>>(
+        self,
+        _fields: &'static [&'static str],
+        _visitor: V,
+    ) -> Result<V::Value, Error> {
+        Err(de::Error::custom("expected tag"))
+    }
+}
+
+/// A tagged item as the two elements of [`CIBORIUM_TAGGED`]: its tag
+/// number, then its value.
+struct TagAndValue<'a, 'de> {
+    de: &'a mut Deserializer<'de>,
+    /// The tag number, until it has been read.
+    tag: Option<u64>,
+    value_read: bool,
+}
+
+impl<'de> de::SeqAccess<'de> for TagAndValue<'_, 'de> {
+    type Error = Error;
+
+    fn next_element_seed<T: DeserializeSeed<'de>>(
+        &mut self,
+        seed: T,
+    ) -> Result<Option<T::Value>, Error> {
+        if let Some(tag) = self.tag.take() {
+            return seed
+                .deserialize(U64Deserializer::<Error>::new(tag))
+                .map(Some);
+        }
+        if self.value_read {
+            return Ok(None);
+        }
+        self.value_read = true;
+        seed.deserialize(&mut *self.de).map(Some)
+    }
+
+    fn size_hint(&self) -> Option<usize> {
+        Some(usize::from(self.tag.is_some()) + usize::from(!self.value_read))
     }
 }
