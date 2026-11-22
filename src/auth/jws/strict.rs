@@ -29,13 +29,18 @@
 //! (a `String`, a UUID, a [`super::Kid`], an enum of unit variants), not
 //! from a number.
 //!
-//! Content types must not use `#[serde(flatten)]`, `#[serde(alias)]`, nor
-//! an internally tagged (`#[serde(tag = "...")]`), adjacently tagged
-//! (`#[serde(tag = "...", content = "...")]`) or `#[serde(untagged)]`
-//! enum. Serde buffers the content of those before handing it to the
-//! target type, out of reach of the field rules here: an unknown field or
-//! an explicit `null` inside one would pass. An externally tagged enum,
-//! serde's default, is held to every rule.
+//! A field's `#[serde(alias)]` names are further names it is read under,
+//! held to the same snake_case rule. Content types must not use
+//! `#[serde(flatten)]`, an internally tagged (`#[serde(tag = "...")]`),
+//! adjacently tagged (`#[serde(tag = "...", content = "...")]`) or
+//! `#[serde(untagged)]` enum, nor a field type that takes any JSON, such as
+//! `serde_json::Value` or `serde::de::IgnoredAny`. Serde reads those
+//! without a schema, buffering the content before handing it to the target
+//! type out of reach of the field rules here, so a value it would read that
+//! way is rejected as a [`SchemaError`] rather than let through unchecked:
+//! a flattened field fails on any key it would receive, and the others on
+//! every input. An externally tagged enum, serde's default, is held to
+//! every rule.
 
 mod de;
 mod shape;

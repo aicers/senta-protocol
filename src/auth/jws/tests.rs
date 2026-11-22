@@ -209,8 +209,9 @@ fn header_rules_are_header_errors() {
     }
     // An escaped key is read unescaped: a duplicate, not an unknown member.
     for header in [
-        format!(r#"{{"alg":"EdDSA","typ":"senta-policy","kid":"{kid}","alg":"EdDSA"}}"#),
-        format!(r#"{{"alg":"EdDSA","typ":"senta-policy","kid":"{kid}","kid":"{kid}"}}"#),
+        format!(r#"{{"alg":"EdDSA","typ":"senta-policy","kid":"{kid}","al\u0067":"EdDSA"}}"#),
+        format!(r#"{{"alg":"EdDSA","typ":"senta-policy","kid":"{kid}","\u006bid":"{kid}"}}"#),
+        format!(r#"{{"alg":"EdDSA","typ":"senta-policy","\u006bid":"{kid}","kid":"{kid}"}}"#),
     ] {
         let jws = signer.sign_raw(header.as_bytes(), PAYLOAD);
         let error = verify(&jws, Typ::Policy, &source).unwrap_err();

@@ -93,6 +93,15 @@ pub(super) struct Strict<'a, D> {
 }
 
 impl<'a, D> Strict<'a, D> {
+    fn unschematic<E: de::Error>(&self) -> E {
+        self.rec.record(self.path);
+        E::custom(
+            "the content type reads this value without a schema (serde `flatten`, \
+             a tagged or untagged enum other than an externally tagged one, or a \
+             type that takes any JSON), which the strict rules cannot check",
+        )
+    }
+
     pub(super) fn new(de: D, path: &'a Path<'a>, rec: &'a Recorder) -> Self {
         Self {
             de,
@@ -139,12 +148,26 @@ impl<'de, D: Deserializer<'de>> Deserializer<'de> for Strict<'_, D> {
     type Error = D::Error;
 
     forward_deserialize! {
-        deserialize_any deserialize_bool
+        deserialize_bool
         deserialize_i8 deserialize_i16 deserialize_i32 deserialize_i64 deserialize_i128
         deserialize_u8 deserialize_u16 deserialize_u32 deserialize_u64 deserialize_u128
         deserialize_f32 deserialize_f64 deserialize_char deserialize_str deserialize_string
         deserialize_bytes deserialize_byte_buf deserialize_unit deserialize_seq deserialize_map
-        deserialize_identifier deserialize_ignored_any
+        deserialize_identifier
+    }
+
+    // Serde reads through these to buffer a value it has no schema for yet:
+    // the content of a `flatten` field, an internally or adjacently tagged
+    // or untagged enum, or a type such as `serde_json::Value` that takes any
+    // JSON. It then hands the buffer to the target type itself, past this
+    // wrapper, where an unknown field or an explicit `null` would pass. So
+    // a value read that way is refused rather than read unchecked.
+    fn deserialize_any<V: Visitor<'de>>(self, _: V) -> Result<V::Value, Self::Error> {
+        Err(self.unschematic())
+    }
+
+    fn deserialize_ignored_any<V: Visitor<'de>>(self, _: V) -> Result<V::Value, Self::Error> {
+        Err(self.unschematic())
     }
 
     fn deserialize_option<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value, Self::Error> {

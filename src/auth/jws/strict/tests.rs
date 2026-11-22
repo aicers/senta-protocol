@@ -153,7 +153,7 @@ fn rejects_duplicate_keys_at_any_depth() {
         r#"$.channels["Microsoft-Windows-Sysmon/Operational"]"#,
     );
     // An escaped key is the same key.
-    let escaped = base.replacen("{", r#"{"version":3,"#, 1);
+    let escaped = base.replacen("{", r#"{"versio\u006e":3,"#, 1);
     rejected(&escaped, "$.version");
     let escaped_map = base.replacen(
         r#""channels":{"#,
@@ -387,4 +387,129 @@ fn reads_base64url_bytes() {
     assert_eq!(Base64UrlArray::<32>::parse(&format!("{SHA}=")), None);
     let short = with(|m| m["inner"]["sha256"] = "YWI".into());
     rejected(&short, "$.inner.sha256");
+}
+
+const UNSCHEMATIC: &str = "without a schema";
+
+#[track_caller]
+fn unschematic<T: serde::de::DeserializeOwned + std::fmt::Debug>(json: &str, path: &str) {
+    let error = from_slice::<T>(json.as_bytes()).expect_err(json);
+    assert_eq!(error.path(), path, "{json}: {error}");
+    assert!(error.message().contains(UNSCHEMATIC), "{json}: {error}");
+}
+
+#[test]
+fn rejects_an_internally_tagged_enum_whatever_its_content() {
+    #[allow(dead_code)] // Only deserialization is under test.
+    #[derive(Debug, Deserialize)]
+    #[serde(tag = "kind", rename_all = "snake_case")]
+    enum Tagged {
+        Note { text: Option<String> },
+    }
+    #[allow(dead_code)] // Only deserialization is under test.
+    #[derive(Debug, Deserialize)]
+    struct Outer {
+        item: Tagged,
+    }
+
+    // Serde would let the unknown field and the explicit `null` through.
+    unschematic::<Outer>(r#"{"item":{"kind":"note","extra":1}}"#, "$.item");
+    unschematic::<Outer>(r#"{"item":{"kind":"note","text":null}}"#, "$.item");
+    unschematic::<Outer>(r#"{"item":{"kind":"note","text":"a"}}"#, "$.item");
+    unschematic::<Tagged>(r#"{"kind":"note","text":"a"}"#, "$");
+}
+
+#[test]
+fn rejects_an_untagged_enum_and_a_flattened_field() {
+    #[allow(dead_code)] // Only deserialization is under test.
+    #[derive(Debug, Deserialize)]
+    #[serde(untagged)]
+    enum Untagged {
+        Note { text: String },
+    }
+    #[allow(dead_code)] // Only deserialization is under test.
+    #[derive(Debug, Deserialize)]
+    struct WithUntagged {
+        item: Untagged,
+    }
+    unschematic::<WithUntagged>(r#"{"item":{"text":"a","extra":1}}"#, "$.item");
+    unschematic::<WithUntagged>(r#"{"item":{"text":"a"}}"#, "$.item");
+
+    #[allow(dead_code)] // Only deserialization is under test.
+    #[derive(Debug, Deserialize)]
+    struct Inner {
+        text: Option<String>,
+    }
+    #[allow(dead_code)] // Only deserialization is under test.
+    #[derive(Debug, Deserialize)]
+    struct Flattened {
+        id: u64,
+        #[serde(flatten)]
+        inner: Inner,
+    }
+    unschematic::<Flattened>(r#"{"id":1,"extra":1}"#, "$.extra");
+    unschematic::<Flattened>(r#"{"id":1,"text":null}"#, "$.text");
+    unschematic::<Flattened>(r#"{"id":1,"text":"a"}"#, "$.text");
+}
+
+#[test]
+fn rejects_an_adjacently_tagged_enum_in_either_order() {
+    #[allow(dead_code)] // Only deserialization is under test.
+    #[derive(Debug, Deserialize)]
+    #[serde(tag = "kind", content = "body", rename_all = "snake_case")]
+    enum Adjacent {
+        Note { text: Option<String> },
+    }
+
+    unschematic::<Adjacent>(r#"{"kind":"note","body":{"extra":1}}"#, "$.body");
+    unschematic::<Adjacent>(r#"{"kind":"note","body":{"text":null}}"#, "$.body");
+    unschematic::<Adjacent>(r#"{"kind":"note","body":{"text":"a"}}"#, "$.body");
+    unschematic::<Adjacent>(r#"{"body":{"text":"a"},"kind":"note"}"#, "$.body");
+}
+
+#[test]
+fn rejects_a_field_that_takes_any_json() {
+    #[allow(dead_code)] // Only deserialization is under test.
+    #[derive(Debug, Deserialize)]
+    struct AnyValue {
+        value: serde_json::Value,
+    }
+    unschematic::<AnyValue>(r#"{"value":{"a":null}}"#, "$.value");
+    unschematic::<AnyValue>(r#"{"value":1}"#, "$.value");
+
+    #[allow(dead_code)] // Only deserialization is under test.
+    #[derive(Debug, Deserialize)]
+    struct Ignored {
+        value: serde::de::IgnoredAny,
+    }
+    unschematic::<Ignored>(r#"{"value":{"a":null}}"#, "$.value");
+}
+
+#[test]
+fn holds_an_alias_to_the_field_name_rules() {
+    #[allow(dead_code)] // Only deserialization is under test.
+    #[derive(Debug, Deserialize)]
+    struct Aliased {
+        #[serde(alias = "old_name")]
+        name: String,
+    }
+    assert!(from_slice::<Aliased>(br#"{"name":"a"}"#).is_ok());
+    assert!(from_slice::<Aliased>(br#"{"old_name":"a"}"#).is_ok());
+    rejected_as::<Aliased>(r#"{"Old_name":"a"}"#, "$.Old_name");
+    rejected_as::<Aliased>(r#"{"name":"a","old_name":"b"}"#, "$");
+
+    #[allow(dead_code)] // Only deserialization is under test.
+    #[derive(Debug, Deserialize)]
+    struct CamelAlias {
+        #[serde(alias = "oldName")]
+        name: String,
+    }
+    let error = from_slice::<CamelAlias>(br#"{"name":"a"}"#).unwrap_err();
+    assert!(error.message().contains("not snake_case"), "{error}");
+}
+
+#[track_caller]
+fn rejected_as<T: serde::de::DeserializeOwned + std::fmt::Debug>(json: &str, path: &str) {
+    let error = from_slice::<T>(json.as_bytes()).expect_err(json);
+    assert_eq!(error.path(), path, "{json}: {error}");
 }
