@@ -10,7 +10,23 @@ repository = "https://github.com/aicers/senta-protocol"
 # uses. Any combination of the four is supported.
 [features]
 default = []
-auth = []
+auth = [
+  "dep:base64",
+  "dep:ed25519-dalek",
+  "dep:serde_json",
+  "dep:sha2",
+  "dep:thiserror",
+]
 control = []
 telemetry = []
 test-util = []
+
+[dependencies]
+base64 = { version = "0.23", optional = true, default-features = false, features = ["std"] }
+ed25519-dalek = { version = "3", optional = true }
+jiff = { version = "1", default-features = false, features = ["std"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", optional = true }
+sha2 = { version = "0.11", optional = true }
+thiserror = { version = "2", optional = true }
+uuid = "1"

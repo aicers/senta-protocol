@@ -7,8 +7,10 @@
 //! - `auth` turns on the `auth` module.
 //! - `control` turns on the `control` module.
 //! - `telemetry` turns on the `telemetry` module.
-//! - `test-util` is reserved for helpers that test against this crate; it
-//!   adds nothing yet.
+//! - `test-util`, together with `auth`, turns on `auth::jws::test_util`:
+//!   deterministic Ed25519 test keys and a JWS signer, for tests that build
+//!   signed documents. The crate signs nothing elsewhere. Without `auth` it
+//!   adds nothing.
 
 #[cfg(feature = "auth")]
 pub mod auth;
@@ -26,6 +28,15 @@ mod feature_gates {
     #[doc = "use senta_protocol::auth;"]
     #[doc = "```"]
     struct Auth;
+
+    #[cfg_attr(all(feature = "auth", feature = "test-util"), doc = "```")]
+    #[cfg_attr(
+        not(all(feature = "auth", feature = "test-util")),
+        doc = "```compile_fail,E0432"
+    )]
+    #[doc = "use senta_protocol::auth::jws::test_util;"]
+    #[doc = "```"]
+    struct AuthTestUtil;
 
     #[cfg_attr(feature = "control", doc = "```")]
     #[cfg_attr(not(feature = "control"), doc = "```compile_fail,E0432")]
