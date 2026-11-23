@@ -87,7 +87,8 @@ impl Default for Lease {
 #[non_exhaustive]
 pub enum ApplyError {
     /// A diff's `base_version` is not the version applied, or no full list
-    /// has been applied yet.
+    /// has been applied yet. A diff is checked for this before anything
+    /// else, so it is the refusal of any such diff, malformed or not.
     #[error("the diff applies to version {base_version}, and the list is at {current:?}")]
     VersionMismatch {
         /// The diff's `base_version`.
@@ -383,7 +384,12 @@ impl ActiveList {
     /// diff's `version` does not exceed its `base_version`, a diff names an
     /// `endpoint_id` twice among its upserts or among its upserts and
     /// removals, or a diff's `base_version` is not the version applied. A
-    /// removal of an `endpoint_id` not on the list is ignored.
+    /// diff whose `base_version` is not the version applied, or that comes
+    /// before the first full list, is refused with
+    /// [`ApplyError::VersionMismatch`], carrying the version applied,
+    /// whatever else is wrong with it; any other refusal of a diff is of
+    /// one based on the version applied. A removal of an `endpoint_id` not
+    /// on the list is ignored.
     ///
     /// The changes it returns are the open connections whose standing, or
     /// the ids of the entry their key matches, differ from before. Those
@@ -563,6 +569,19 @@ impl ActiveList {
         removals: &[Uuid],
         now: Duration,
     ) -> Result<Applied, ApplyError> {
+        // The version comes first, so that a pusher out of step always
+        // learns the version to resend from, however malformed its diff.
+        // Every other refusal below is of a diff based on the version
+        // applied.
+        let listed = match self.listed.as_ref() {
+            Some(listed) if listed.version == base_version => listed,
+            _ => {
+                return Err(ApplyError::VersionMismatch {
+                    base_version,
+                    current: self.version(),
+                });
+            }
+        };
         if version <= base_version {
             return Err(ApplyError::VersionNotAdvanced {
                 base_version,
@@ -591,16 +610,6 @@ impl ActiveList {
                 endpoint_id: *endpoint_id,
             });
         }
-        let current = self.version();
-        let listed = match self.listed.as_ref() {
-            Some(listed) if listed.version == base_version => listed,
-            _ => {
-                return Err(ApplyError::VersionMismatch {
-                    base_version,
-                    current,
-                });
-            }
-        };
         // An entry that keeps its key would collide with an upsert taking
         // that key; one removed or upserted gives its old key up.
         for (spki, endpoint_id) in &new_spkis {

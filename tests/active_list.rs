@@ -461,6 +461,61 @@ fn a_diff_needs_the_version_applied() {
 }
 
 #[test]
+fn a_diff_out_of_step_reports_the_version_however_malformed() {
+    let other = || entry(1, suspended(SuspendReason::Other("quarantine".to_owned())));
+    let malformed = |base| {
+        [
+            diff(base, base, vec![active(3)], &[]),
+            diff(base, base.saturating_sub(1), vec![active(3)], &[]),
+            diff(base, 9, vec![other()], &[]),
+            diff(base, 9, vec![active(3), active(3)], &[]),
+            diff(base, 9, vec![active(3)], &[3]),
+        ]
+    };
+
+    let mut list = ActiveList::new(Some(Lease::default()));
+    register(&mut list, 1, Duration::ZERO);
+    let before = snapshot(&list);
+    for update in malformed(0) {
+        let ListUpdate::Diff { base_version, .. } = update else {
+            unreachable!("every case is a diff");
+        };
+        let outcome = list.apply(update.clone(), MINUTE);
+        assert_eq!(outcome.expired, None, "{update:?}");
+        assert_eq!(
+            outcome.result,
+            Err(ApplyError::VersionMismatch {
+                base_version,
+                current: None
+            }),
+            "{update:?}"
+        );
+        assert_eq!(snapshot(&list), before, "{update:?}");
+    }
+
+    list.apply(full(5, vec![active(1), active(2)]), MINUTE)
+        .result
+        .unwrap();
+    let before = snapshot(&list);
+    for update in malformed(4).into_iter().chain(malformed(7)) {
+        let ListUpdate::Diff { base_version, .. } = update else {
+            unreachable!("every case is a diff");
+        };
+        let outcome = list.apply(update.clone(), at(2));
+        assert_eq!(outcome.expired, None, "{update:?}");
+        assert_eq!(
+            outcome.result,
+            Err(ApplyError::VersionMismatch {
+                base_version,
+                current: Some(5)
+            }),
+            "{update:?}"
+        );
+        assert_eq!(snapshot(&list), before, "{update:?}");
+    }
+}
+
+#[test]
 fn a_full_list_applies_whatever_its_version() {
     let mut list = leased(vec![active(1)]);
     list.apply(full(10, vec![active(1)]), MINUTE)
