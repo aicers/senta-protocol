@@ -939,6 +939,79 @@ fn copies_returned_to_a_full_collection_buffer_and_deleted_there_are_lost_on_res
 }
 
 #[test]
+fn collected_records_moved_on_reset_make_room_for_returned_copies_before_the_limit() {
+    /// Kinds 1 and 3.
+    const K13: &[(u16, u16, u16)] = &[(1, 1, 1), (3, 1, 1)];
+    let mut h = H::new(SenderConfig::new(2, 1 << 40));
+    h.entries(&[E1]);
+    h.stream.register(EP).unwrap();
+    h.establish(E1, K12);
+    let old = h.flow().stream;
+    h.collect(record(2, 1));
+    h.collect(record(1, 2));
+    h.ack(old, 2);
+    h.close();
+    h.collect(record(3, 10));
+    h.collect(record(3, 11));
+    assert_eq!(h.stream.status().collected_records, 2);
+    h.connect();
+    h.hello(E1, K1);
+    assert_eq!(h.stream.status().collected_records, 2);
+    // No input lets the reset's call move a record already collected: the
+    // hello_ack just before moves it under the old stream with the same
+    // list. So the list the reset moves with is put in place here, after
+    // the hello_ack's move and before the resume_info.
+    h.stream
+        .core
+        .state
+        .meta
+        .accepted
+        .iter_mut()
+        .find(|kinds| kinds.entry == E1)
+        .unwrap()
+        .kinds = kinds(K13);
+    let actions = h.resume(old, 0, None);
+    // Copy 2 was renumbered 1 and copy 1 went back to the full buffer,
+    // oldest there. Records 10 and 11 moved out first, so the limit
+    // deleted nothing: copy 1 is not lost.
+    assert_eq!(kinds_sent(&actions), ["close_stream", "open_stream"]);
+    assert!(lost_ranges(&actions).is_empty());
+    let status = h.stream.status();
+    assert_eq!((status.collected_records, status.unsupported), (1, 0));
+    let collected: Vec<u64> = h
+        .stream
+        .core
+        .state
+        .collect
+        .map()
+        .values()
+        .map(|collected| {
+            let record = Record::from_bytes(&collected.bytes).unwrap();
+            record.body.decode::<Body>().unwrap().n
+        })
+        .collect();
+    assert_eq!(collected, [1]);
+    let new = open_of(&actions).unwrap();
+    let records = sent(&h.resume(new, 0, None));
+    assert_eq!(
+        (seqs(&records), ns(&records)),
+        (vec![1, 2, 3], vec![2, 10, 11])
+    );
+    assert!(records.iter().all(|record| record.stream == new));
+    h.check_invariants();
+
+    // The list widens: the copy kept in the buffer is sent next.
+    h.close();
+    h.connect();
+    h.hello(E1, &[(1, 1, 1), (2, 1, 1), (3, 1, 1)]);
+    let records = sent(&h.resume(new, 0, None));
+    assert_eq!(
+        (seqs(&records), ns(&records)),
+        (vec![1, 2, 3, 4], vec![2, 10, 11, 1])
+    );
+}
+
+#[test]
 fn a_returned_copy_kept_by_the_collection_buffer_is_not_lost_on_reset() {
     let mut h = H::new(SenderConfig::new(2, 1 << 40));
     h.entries(&[E1]);
