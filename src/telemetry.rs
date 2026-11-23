@@ -63,6 +63,7 @@ pub mod ip;
 pub mod kind;
 pub mod logs;
 mod net_state;
+mod receiver;
 mod record;
 pub mod sysmon;
 
@@ -73,6 +74,11 @@ pub use self::flow::{
 };
 pub use self::net_state::{
     NetState, NetStateGap, NetStateSpan, ResolvedNetState, resolve_net_state,
+};
+pub use self::receiver::{
+    MemoryReceiverStore, MemoryReceiverStoreError, RECEIVER_CLOSED_RETENTION, ReceiverChange,
+    ReceiverConnection, ReceiverEntryState, ReceiverFlowKey, ReceiverFlowState, ReceiverLoss,
+    ReceiverLossReason, ReceiverOutput, ReceiverRecord, ReceiverStore, ReceiverStream,
 };
 pub use self::record::{
     NetStateSource, ProcessKey, Record, RecordBody, RecordEncodeError, RecordHeader, record_hash,
