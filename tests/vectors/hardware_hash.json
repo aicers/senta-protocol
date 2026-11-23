@@ -1,0 +1,103 @@
+{
+  "format_version": 1,
+  "category": "hardware_hash",
+  "keys": [],
+  "cases": [
+    {
+      "name": "linux_lowercase",
+      "description": "A Linux machine-id in lowercase digits.",
+      "input": {
+        "machine_id_kind": "linux",
+        "machine_id": "8f14e45fceea167a5a36dedd4bea2543",
+        "hw_salt": "nnBUGXmacZI8nDCUAO7hJBh5ozoYrVurWvweJoRS9zg"
+      },
+      "expected": {
+        "machine_id_hash": "iWfcMGRqpIvG9MbeTWD8lwtPRU4YGvLXKig-S6UW4UE"
+      }
+    },
+    {
+      "name": "linux_uppercase",
+      "description": "The same machine-id in uppercase digits: the same 16 bytes as linux_lowercase, so the same hash.",
+      "input": {
+        "machine_id_kind": "linux",
+        "machine_id": "8F14E45FCEEA167A5A36DEDD4BEA2543",
+        "hw_salt": "nnBUGXmacZI8nDCUAO7hJBh5ozoYrVurWvweJoRS9zg"
+      },
+      "expected": {
+        "machine_id_hash": "iWfcMGRqpIvG9MbeTWD8lwtPRU4YGvLXKig-S6UW4UE"
+      }
+    },
+    {
+      "name": "windows_lowercase",
+      "description": "A Windows MachineGuid of the same 16 bytes as linux_lowercase, so the same hash, lowercase, without braces.",
+      "input": {
+        "machine_id_kind": "windows",
+        "machine_id": "8f14e45f-ceea-167a-5a36-dedd4bea2543",
+        "hw_salt": "nnBUGXmacZI8nDCUAO7hJBh5ozoYrVurWvweJoRS9zg"
+      },
+      "expected": {
+        "machine_id_hash": "iWfcMGRqpIvG9MbeTWD8lwtPRU4YGvLXKig-S6UW4UE"
+      }
+    },
+    {
+      "name": "windows_uppercase",
+      "description": "A Windows MachineGuid of the same 16 bytes as linux_lowercase, so the same hash, uppercase, without braces.",
+      "input": {
+        "machine_id_kind": "windows",
+        "machine_id": "8F14E45F-CEEA-167A-5A36-DEDD4BEA2543",
+        "hw_salt": "nnBUGXmacZI8nDCUAO7hJBh5ozoYrVurWvweJoRS9zg"
+      },
+      "expected": {
+        "machine_id_hash": "iWfcMGRqpIvG9MbeTWD8lwtPRU4YGvLXKig-S6UW4UE"
+      }
+    },
+    {
+      "name": "windows_braces_lowercase",
+      "description": "A Windows MachineGuid of the same 16 bytes as linux_lowercase, so the same hash, lowercase, in braces.",
+      "input": {
+        "machine_id_kind": "windows",
+        "machine_id": "{8f14e45f-ceea-167a-5a36-dedd4bea2543}",
+        "hw_salt": "nnBUGXmacZI8nDCUAO7hJBh5ozoYrVurWvweJoRS9zg"
+      },
+      "expected": {
+        "machine_id_hash": "iWfcMGRqpIvG9MbeTWD8lwtPRU4YGvLXKig-S6UW4UE"
+      }
+    },
+    {
+      "name": "windows_braces_uppercase",
+      "description": "A Windows MachineGuid of the same 16 bytes as linux_lowercase, so the same hash, uppercase, in braces.",
+      "input": {
+        "machine_id_kind": "windows",
+        "machine_id": "{8F14E45F-CEEA-167A-5A36-DEDD4BEA2543}",
+        "hw_salt": "nnBUGXmacZI8nDCUAO7hJBh5ozoYrVurWvweJoRS9zg"
+      },
+      "expected": {
+        "machine_id_hash": "iWfcMGRqpIvG9MbeTWD8lwtPRU4YGvLXKig-S6UW4UE"
+      }
+    },
+    {
+      "name": "linux_other_machine_other_salt",
+      "description": "Another machine-id with another hw_salt.",
+      "input": {
+        "machine_id_kind": "linux",
+        "machine_id": "0123456789abcdeffedcba9876543210",
+        "hw_salt": "0RxnUVN6J8-jWLtOql9f8Y-dWMyS6z5ZMrmJXpDfpXg"
+      },
+      "expected": {
+        "machine_id_hash": "NeMLsMnktlyv3aaSv5DUjlBloWjkKUK60bwnQSjojP4"
+      }
+    },
+    {
+      "name": "windows_other_machine_other_salt",
+      "description": "The MachineGuid of the same bytes as linux_other_machine_other_salt, with the same hw_salt.",
+      "input": {
+        "machine_id_kind": "windows",
+        "machine_id": "01234567-89ab-cdef-fedc-ba9876543210",
+        "hw_salt": "0RxnUVN6J8-jWLtOql9f8Y-dWMyS6z5ZMrmJXpDfpXg"
+      },
+      "expected": {
+        "machine_id_hash": "NeMLsMnktlyv3aaSv5DUjlBloWjkKUK60bwnQSjojP4"
+      }
+    }
+  ]
+}
