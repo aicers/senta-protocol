@@ -489,6 +489,22 @@ fn a_valid_install_config_passes() {
 }
 
 #[test]
+fn the_debug_output_of_a_verified_install_hides_the_enrollment_token() {
+    let token = enroll(NAME_A, 1);
+    let install = check(&Config::new().jws()).unwrap();
+    assert_eq!(install.enroll_token(), token);
+
+    let debug = format!("{install:?}");
+    assert!(debug.contains("EnrollToken(<redacted>)"), "{debug}");
+    assert!(!debug.contains(&token), "{debug}");
+    for part in token.split('.') {
+        assert!(!debug.contains(part), "{debug}");
+    }
+    let alternate = format!("{install:#?}");
+    assert!(!alternate.contains(&token), "{alternate}");
+}
+
+#[test]
 fn a_keyset_after_rotations_passes() {
     let ks = Ks::rotation(EPOCH, NAME_A, 3);
     let install = check(&Config::with_keyset(&ks).jws()).unwrap();

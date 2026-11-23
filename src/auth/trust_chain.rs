@@ -438,6 +438,19 @@ impl std::error::Error for TrustChainError {
 
 // --- success ------------------------------------------------------------------
 
+/// The enrollment token as the install configuration carried it.
+///
+/// The token is a bearer credential for enrollment, so its `Debug` prints
+/// `<redacted>` and a derived `Debug` on [`VerifiedInstall`] cannot leak it.
+#[derive(Clone)]
+struct EnrollToken(JwsText);
+
+impl fmt::Debug for EnrollToken {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str("EnrollToken(<redacted>)")
+    }
+}
+
 /// An install configuration whose whole trust chain verified, with what the
 /// endpoint starts from.
 ///
@@ -451,7 +464,7 @@ pub struct VerifiedInstall {
     customer_key_name: CustomerKeyName,
     hw_salt: Hash32,
     vdi_mode: bool,
-    enroll_token: JwsText,
+    enroll_token: EnrollToken,
     enroll: EnrollContent,
     addresses: VerifiedDocument<AddressesContent>,
 }
@@ -503,9 +516,13 @@ impl VerifiedInstall {
 
     /// Returns the enrollment token, the `senta-enroll` JWS exactly as the
     /// install configuration carried it.
+    ///
+    /// The token is a bearer credential for enrollment: keep it out of
+    /// logs. The `Debug` output of [`VerifiedInstall`] shows it only as
+    /// `<redacted>`.
     #[must_use]
     pub fn enroll_token(&self) -> &str {
-        self.enroll_token.as_str()
+        self.enroll_token.0.as_str()
     }
 
     /// Returns the enrollment token's verified `token_id`.
@@ -704,7 +721,7 @@ pub fn verify(
         customer_key_name: config.customer_key_name,
         hw_salt: config.hw_salt,
         vdi_mode: config.vdi_mode,
-        enroll_token: config.enroll_token,
+        enroll_token: EnrollToken(config.enroll_token),
         enroll,
         addresses,
     })
