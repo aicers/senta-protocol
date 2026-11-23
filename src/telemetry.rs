@@ -63,6 +63,7 @@ pub mod ip;
 pub mod kind;
 mod net_state;
 mod record;
+pub mod sysmon;
 
 pub use self::flow::{
     Ack, CloseStream, DroppedRange, ErrorMessage, LastStored, LostOnReset, MAX_BATCH_LEN,
