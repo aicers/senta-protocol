@@ -11,7 +11,11 @@ Early concept. The `auth`, `control` and `telemetry` features each turn
 on a module of their own. `auth` holds the JWS verifier for signed
 documents, with the kid grammar, the `typ` values and the key kinds
 allowed to sign each, and the strict JSON parsing their contents go
-through; `test-util` adds, with `auth`, deterministic test keys and a
+through. It also holds the endpoint's document version state machine:
+which version of each policy, group assignment, address document and
+update it has verified and applied, how a recovery epoch starts them
+over, and how the documents of one `Documents` message are taken in
+order. `test-util` adds, with `auth`, deterministic test keys and a
 signer for building signed documents in tests. The `connection` module,
 public whatever the features, holds what control and telemetry
 connections share: framing, the envelope, the CBOR rules, version
