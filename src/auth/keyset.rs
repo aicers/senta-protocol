@@ -524,8 +524,12 @@ impl KeySource for TrustState {
 
 /// The key lookup for the next key set of the same epoch: only the current
 /// key set's `current_kid`.
-struct CurrentKidSource<'a> {
-    keyset: &'a KeysetContent,
+///
+/// The trust chain uses it too, with the content of the install
+/// configuration's key set read before its signature is verified, to check
+/// that the key set is signed by its own `current_kid`.
+pub(super) struct CurrentKidSource<'a> {
+    pub(super) keyset: &'a KeysetContent,
 }
 
 impl KeySource for CurrentKidSource<'_> {
