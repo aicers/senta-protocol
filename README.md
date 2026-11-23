@@ -15,8 +15,12 @@ through; `test-util` adds, with `auth`, deterministic test keys and a
 signer for building signed documents in tests. The `connection` module,
 public whatever the features, holds what control and telemetry
 connections share: framing, the envelope, the CBOR rules, version
-negotiation, liveness, reconnection backoff and clock correction. No
-other protocol is implemented yet.
+negotiation, liveness, reconnection backoff and clock correction. The
+`host` module, also public whatever the features, holds the operating
+system and collection mode an endpoint reports about its host.
+`telemetry` holds the record format: the host header, the open body,
+the fixed record bytes and their hash, the network state source rule
+and the record kind registry. No other protocol is implemented yet.
 
 ## License
 
