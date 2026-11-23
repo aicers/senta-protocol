@@ -617,10 +617,12 @@ fn an_unknown_drop_reason_is_recorded_as_it_is() {
         machine.receive(&mut conn, dropped_for(S1, 1, 2, reason.clone()), t0()),
         acked(S1, 2)
     );
-    assert_eq!(
-        store.losses(ENTRY)[0].reason,
-        ReceiverLossReason::Dropped(reason)
-    );
+    let reasons: Vec<ReceiverLossReason> = store
+        .losses(ENTRY)
+        .into_iter()
+        .map(|loss| loss.reason)
+        .collect();
+    assert_eq!(reasons, vec![ReceiverLossReason::Dropped(reason)]);
 }
 
 // ---------------------------------------------------------------------
@@ -1534,7 +1536,11 @@ fn check_invariants(
         if !state.is_open() {
             continue;
         }
-        let instance = instances[key];
+        let Some(instance) = instances.get(key) else {
+            return Err(TestCaseError::fail(format!(
+                "no instance tracked for {key:?}"
+            )));
+        };
         let mut pieces: Vec<(u64, u64)> = records[instance.records_from..]
             .iter()
             .filter(|r| r.endpoint_id == key.endpoint_id && r.stream == key.stream)
