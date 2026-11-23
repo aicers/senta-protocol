@@ -327,13 +327,15 @@ fn a_restored_lifetimes_first_write_taking_a_back_is_caught() {
     });
 }
 
-/// The default judge excuses what this path loses as the second known
-/// defect (`judge::reopened_closed`), so the strict one is held to it.
+/// The state gone back to gets `closed` for the stream the undone
+/// transition closed, and its new stream targets the copy it holds: the
+/// record must be stored at E1 after that, and a run where only the
+/// commits from before the undone transition remain is caught.
 #[test]
 fn a_record_an_undone_transition_bound_and_not_stored_again_is_caught() {
     let (w, p) = closed_after_an_undone_transition(true);
     let mut trace = w.finish(All);
-    if let Err(failures) = judge::judge_strict(&trace) {
+    if let Err(failures) = judge::judge(&trace) {
         panic!("the run fails before the mutation: {failures}");
     }
     let undone = trace
@@ -345,7 +347,7 @@ fn a_record_an_undone_transition_bound_and_not_stored_again_is_caught() {
     trace.commits.retain(|c| {
         !(c.ev > undone && matches!(&c.item, CommitItem::Record { mark: Some(m), .. } if *m == p))
     });
-    let failures = judge::judge_strict(&trace).expect_err("the judges miss the misbehaviour");
+    let failures = judge::judge(&trace).expect_err("the judges miss the misbehaviour");
     assert!(
         failures.contains(&format!("omission: record {p} ")),
         "{failures}"

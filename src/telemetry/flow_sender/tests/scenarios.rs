@@ -448,7 +448,7 @@ fn a_dropped_range_longer_than_the_window_goes_in_parts() {
 }
 
 #[test]
-fn a_snapshot_with_k_and_s_at_zero_resumes_over_dropped_sequence_numbers() {
+fn a_snapshot_with_k_and_s_at_zero_opens_a_new_stream_over_dropped_numbers_it_never_sent() {
     let retention = SignedDuration::from_secs(100);
     let mut h = H::new(SenderConfig::new(100, 1 << 40).with_retention(retention));
     h.entries(&[E1]);
@@ -461,15 +461,43 @@ fn a_snapshot_with_k_and_s_at_zero_resumes_over_dropped_sequence_numbers() {
     h.stream.tick(h.wall, h.now).unwrap();
     let position = h.flow();
     assert_eq!((position.acknowledged, position.sent), (0, 0));
+    h.check_invariants();
 
+    // 1 and 2 are dropped but were never sent from this state: nothing
+    // shows the entry covered them with this assignment's losses.
     h.connect();
     h.hello(E1, K1);
     let actions = h.resume(stream, 2, None);
-    assert!(actions.is_empty());
-    let position = h.flow();
-    assert_eq!(position.stream, stream);
-    assert_eq!((position.acknowledged, position.sent), (2, 2));
+    assert_eq!(kinds_sent(&actions), ["close_stream", "open_stream"]);
+    assert_eq!(
+        messages(&actions)[0],
+        TelemetryMessage::CloseStream(CloseStream { stream })
+    );
     h.check_invariants();
+    let new = open_of(&actions).unwrap();
+    assert_ne!(new, stream);
+    let actions = h.resume(new, 0, None);
+    assert_eq!(
+        dropped_seqs(&actions, &DropReason::RetentionExpired),
+        [1, 2]
+    );
+    assert!(sent(&actions).is_empty());
+    let position = h.flow();
+    assert_eq!(position.stream, new);
+    assert_eq!((position.acknowledged, position.sent), (0, 2));
+    h.check_invariants();
+}
+
+/// Every sequence number the `dropped_range`s of `actions` cover, each
+/// checked to carry `reason`.
+fn dropped_seqs(actions: &[SenderAction], reason: &DropReason) -> Vec<u64> {
+    drops(actions)
+        .into_iter()
+        .flat_map(|(from, to, why)| {
+            assert_eq!(&why, reason);
+            from..=to
+        })
+        .collect()
 }
 
 // ----- Acknowledgements -----
@@ -722,6 +750,147 @@ fn step_6_resumes_from_a_plus_one() {
     assert_eq!(again, records[1..]);
     let position = h.flow();
     assert_eq!((position.acknowledged, position.sent), (1, 3));
+}
+
+/// A sender at `E1` that sent sequence number 1 as dropped `TooLarge`,
+/// then was rolled back to a snapshot taken before it assigned 1, and
+/// assigned 1 again to another record too large to send. It is
+/// reconnected, its `open_stream` awaiting the answer.
+fn dropped_again_after_a_rollback() -> (H, Uuid) {
+    let mut h = registered();
+    h.establish(E1, K1);
+    let stream = h.flow().stream;
+    let snapshot = h.stream.store().clone();
+    let actions = h.collect(record_of_len(1, 1, MAX_RECORD_LEN + 1, stream, 1));
+    assert_eq!(drops(&actions), [(1, 1, DropReason::TooLarge)]);
+
+    let mut h = H {
+        next_id: h.next_id,
+        ..H::on(snapshot, h.stream.core.config)
+    };
+    let position = h.flow();
+    assert_eq!(
+        (position.acknowledged, position.sent, position.assigned),
+        (0, 0, 0)
+    );
+    h.collect(record_of_len(1, 2, MAX_RECORD_LEN + 1, stream, 1));
+    let position = h.flow();
+    assert_eq!((position.sent, position.assigned), (0, 1));
+    h.connect();
+    assert_eq!(open_of(&h.hello(E1, K1)), Some(stream));
+    (h, stream)
+}
+
+#[test]
+fn step_5_opens_a_new_stream_over_a_dropped_number_assigned_again_after_a_rollback() {
+    let (mut h, stream) = dropped_again_after_a_rollback();
+    let actions = h.resume(stream, 1, None);
+    assert_eq!(
+        messages(&actions),
+        [
+            TelemetryMessage::CloseStream(CloseStream { stream }),
+            TelemetryMessage::OpenStream(OpenStream {
+                stream: open_of(&actions).unwrap()
+            }),
+        ]
+    );
+    let new = open_of(&actions).unwrap();
+    assert_ne!(new, stream);
+    let actions = h.resume(new, 0, None);
+    assert_eq!(
+        messages(&actions),
+        [TelemetryMessage::DroppedRange(DroppedRange {
+            stream: new,
+            from: 1,
+            to: 1,
+            reason: DropReason::TooLarge,
+        })]
+    );
+    h.check_invariants();
+}
+
+#[test]
+fn step_5_passes_dropped_numbers_sent_from_this_state() {
+    // 1 and 2 went out as dropped, and the acknowledgement was lost.
+    let mut h = registered();
+    h.establish(E1, K1);
+    let stream = h.flow().stream;
+    h.collect(record_of_len(1, 1, MAX_RECORD_LEN + 1, stream, 1));
+    h.collect(record_of_len(1, 2, MAX_RECORD_LEN + 1, stream, 2));
+    assert_eq!(h.flow().sent, 2);
+    reconnect(&mut h);
+    assert!(h.resume(stream, 2, None).is_empty());
+    let position = h.flow();
+    assert_eq!(position.stream, stream);
+    assert_eq!((position.acknowledged, position.sent), (2, 2));
+    assert_eq!(seqs(&sent(&h.collect(record(1, 3)))), [3]);
+    h.check_invariants();
+}
+
+#[test]
+fn step_5_boundary_a_dropped_number_one_past_s() {
+    // 1 went out as dropped; 2 was dropped too, assigned while
+    // disconnected and never sent: S is 1.
+    let setup = || {
+        let mut h = registered();
+        h.establish(E1, K1);
+        let stream = h.flow().stream;
+        h.collect(record_of_len(1, 1, MAX_RECORD_LEN + 1, stream, 1));
+        h.close();
+        h.collect(record_of_len(1, 2, MAX_RECORD_LEN + 1, stream, 2));
+        let position = h.flow();
+        assert_eq!((position.sent, position.assigned), (1, 2));
+        h.connect();
+        h.hello(E1, K1);
+        (h, stream)
+    };
+    // A = S + 1: a new stream, reporting both again.
+    let (mut h, stream) = setup();
+    let actions = h.resume(stream, 2, None);
+    assert_eq!(kinds_sent(&actions), ["close_stream", "open_stream"]);
+    let new = open_of(&actions).unwrap();
+    let actions = h.resume(new, 0, None);
+    assert_eq!(dropped_seqs(&actions, &DropReason::TooLarge), [1, 2]);
+    h.check_invariants();
+
+    // A = S: step 6, then 2 goes out on the same stream.
+    let (mut h, stream) = setup();
+    let actions = h.resume(stream, 1, None);
+    assert_eq!(drops(&actions), [(2, 2, DropReason::TooLarge)]);
+    assert_eq!(h.flow().stream, stream);
+    assert_eq!(h.flow().acknowledged, 1);
+    h.check_invariants();
+
+    // An empty interval, A = K: nothing to check, the same stream.
+    let (mut h, stream) = setup();
+    let actions = h.resume(stream, 0, None);
+    assert!(!kinds_sent(&actions).contains(&"open_stream"));
+    assert_eq!(dropped_seqs(&actions, &DropReason::TooLarge), [1, 2]);
+    assert_eq!(h.flow().stream, stream);
+    assert_eq!(h.flow().acknowledged, 0);
+}
+
+#[test]
+fn step_5_passes_sent_numbers_whose_bodies_expired() {
+    let retention = SignedDuration::from_secs(100);
+    let mut h = H::new(SenderConfig::new(100, 1 << 40).with_retention(retention));
+    h.entries(&[E1]);
+    h.stream.register(EP).unwrap();
+    h.establish(E1, K1);
+    let stream = h.flow().stream;
+    h.collect_n(1, 1..=3);
+    h.close();
+    h.wall = wall(100);
+    h.stream.tick(h.wall, h.now).unwrap();
+    assert_eq!(h.stream.status().queued_records, 0);
+    assert_eq!(h.stream.core.state.ledger.len(), 3);
+    h.connect();
+    h.hello(E1, K1);
+    assert!(h.resume(stream, 3, None).is_empty());
+    let position = h.flow();
+    assert_eq!(position.stream, stream);
+    assert_eq!((position.acknowledged, position.sent), (3, 3));
+    h.check_invariants();
 }
 
 #[test]
@@ -1281,6 +1450,239 @@ fn closed_answers_open_a_new_stream_with_only_its_open_stream() {
     );
 }
 
+/// The `closed` error answering the `open_stream` of `stream`.
+fn closed(stream: Uuid) -> TelemetryMessage {
+    TelemetryMessage::ErrorMessage(ErrorMessage {
+        stream: Some(stream),
+        error: TelemetryError::Closed,
+    })
+}
+
+/// A sender whose record 1 was stored and acknowledged at `E1`, rolled
+/// back to snapshot X holding its copy after the entry lost its state and
+/// a step 2 reset closed the first stream there. It is reconnected, the
+/// `open_stream` of the first stream awaiting the answer. Returns the
+/// sender, the first stream and the bytes record 1 was first sent as.
+fn rolled_back_over_a_closed_stream() -> (H, Uuid, Vec<u8>) {
+    let mut h = registered();
+    h.establish(E1, K1);
+    let first = h.flow().stream;
+    let records = sent(&h.collect(record(1, 1)));
+    h.ack(first, 1);
+    let snapshot = h.stream.store().clone();
+
+    reconnect(&mut h);
+    let actions = h.resume(first, 0, None);
+    assert_eq!(kinds_sent(&actions), ["close_stream", "open_stream"]);
+
+    let mut h = H {
+        next_id: h.next_id,
+        ..H::on(snapshot, h.stream.core.config)
+    };
+    assert_eq!(h.flow().stream, first);
+    assert_eq!(h.flow().acknowledged, 1);
+    h.connect();
+    assert_eq!(open_of(&h.hello(E1, K1)), Some(first));
+    (h, first, records[0].bytes.clone())
+}
+
+#[test]
+fn closed_after_a_rollback_resends_the_acknowledged_copy_on_the_new_stream() {
+    let (mut h, first, bytes) = rolled_back_over_a_closed_stream();
+    let actions = h.recv(closed(first));
+    assert_eq!(kinds_sent(&actions), ["open_stream"]);
+    let new = open_of(&actions).unwrap();
+    assert_ne!(new, first);
+    // The next connection retries with the open_stream alone.
+    let actions = reconnect(&mut h);
+    assert_eq!(kinds_sent(&actions), ["open_stream"]);
+    assert_eq!(open_of(&actions), Some(new));
+
+    let actions = h.resume(new, 0, None);
+    let records = sent(&actions);
+    assert_eq!(kinds_sent(&actions), ["record_batch"]);
+    assert_eq!((seqs(&records), ns(&records)), (vec![1], vec![1]));
+    let mut expected = Record::from_bytes(&bytes).unwrap();
+    expected.header.stream = new;
+    expected.header.seq = 1;
+    assert_eq!(records[0].bytes, expected.to_bytes().unwrap());
+    h.check_invariants();
+}
+
+#[test]
+fn closed_renumbers_copies_unacknowledged_records_and_dropped_numbers_in_order() {
+    let mut h = registered();
+    h.establish(E1, K1);
+    let old = h.flow().stream;
+    h.collect(record(1, 1));
+    h.collect(record_of_len(1, 2, MAX_RECORD_LEN + 1, old, 2));
+    h.collect(record(1, 3));
+    h.ack(old, 3);
+    h.close();
+    h.collect(record_of_len(1, 4, MAX_RECORD_LEN + 1, old, 4));
+    h.collect(record(1, 5));
+    h.connect();
+    assert_eq!(open_of(&h.hello(E1, K1)), Some(old));
+    let actions = h.recv(closed(old));
+    assert_eq!(kinds_sent(&actions), ["open_stream"]);
+    let new = open_of(&actions).unwrap();
+    h.check_invariants();
+
+    // Copies 1 and 3, dropped 4 and record 5, from 1 without a gap; 2
+    // was dropped and acknowledged, and is not carried.
+    let actions = h.resume(new, 0, None);
+    assert_eq!(
+        kinds_sent(&actions),
+        ["record_batch", "dropped_range", "record_batch"]
+    );
+    let records = sent(&actions);
+    assert_eq!(
+        (seqs(&records), ns(&records)),
+        (vec![1, 2, 4], vec![1, 3, 5])
+    );
+    assert!(records.iter().all(|record| record.stream == new));
+    assert_eq!(drops(&actions), [(3, 3, DropReason::TooLarge)]);
+    assert_eq!(h.flow().assigned, 4);
+    h.check_invariants();
+}
+
+#[test]
+fn closed_returns_copies_of_kinds_not_accepted_and_moves_them_when_the_list_widens() {
+    let mut h = registered();
+    h.establish(E1, K12);
+    let old = h.flow().stream;
+    h.collect(record(2, 1));
+    h.collect(record(1, 2));
+    h.ack(old, 2);
+    h.close();
+    h.connect();
+    assert_eq!(open_of(&h.hello(E1, K1)), Some(old));
+    let actions = h.recv(closed(old));
+    assert_eq!(kinds_sent(&actions), ["open_stream"]);
+    let new = open_of(&actions).unwrap();
+    assert_eq!(h.stream.status().collected_records, 1);
+    let records = sent(&h.resume(new, 0, None));
+    assert_eq!((seqs(&records), ns(&records)), (vec![1], vec![2]));
+
+    // The list widens: the returned copy is sent.
+    h.close();
+    h.connect();
+    h.hello(E1, K12);
+    assert_eq!(h.stream.status().collected_records, 0);
+    let records = sent(&h.resume(new, 0, None));
+    assert_eq!((seqs(&records), ns(&records)), (vec![1, 2], vec![2, 1]));
+}
+
+#[test]
+fn copies_resent_on_closed_keep_their_retention_from_the_reset() {
+    let retention = SignedDuration::from_secs(100);
+    let mut h = H::new(SenderConfig::new(100, 1 << 40).with_retention(retention));
+    h.entries(&[E1]);
+    h.stream.register(EP).unwrap();
+    h.establish(E1, K12);
+    let old = h.flow().stream;
+    h.collect(record(1, 1));
+    h.collect(record(2, 2));
+    h.wall = wall(90);
+    h.ack(old, 2);
+    h.wall = wall(95);
+    h.close();
+    h.connect();
+    assert_eq!(open_of(&h.hello(E1, K1)), Some(old));
+    let new = open_of(&h.recv(closed(old))).unwrap();
+    assert_eq!(h.stream.status().collected_records, 1);
+
+    // Past the retention from collection, neither the renumbered copy nor
+    // the one returned to the collection buffer expires.
+    h.wall = wall(101);
+    let actions = h.resume(new, 0, None);
+    assert!(drops(&actions).is_empty());
+    assert_eq!(ns(&sent(&actions)), [1]);
+    let status = h.stream.status();
+    assert_eq!((status.collected_records, status.unsupported), (1, 0));
+    assert_eq!(status.dropped_ranges, 0);
+
+    // Their retention runs from the reset at 95 s.
+    let just_before = wall(195)
+        .checked_sub(SignedDuration::from_nanos(1))
+        .unwrap();
+    h.stream.tick(just_before, h.now).unwrap();
+    let status = h.stream.status();
+    assert_eq!((status.collected_records, status.queued_records), (1, 1));
+    h.stream.tick(wall(195), h.now).unwrap();
+    let status = h.stream.status();
+    assert_eq!((status.collected_records, status.unsupported), (0, 1));
+    assert!(h.stream.core.state.queue.get(&1).is_none());
+}
+
+#[test]
+fn closed_resends_a_copy_until_the_exact_end_of_its_24_hours() {
+    let day = SignedDuration::from_hours(24);
+    let at = |nanos: i64| {
+        wall(0)
+            .checked_add(day)
+            .unwrap()
+            .checked_sub(SignedDuration::from_nanos(nanos))
+            .unwrap()
+    };
+    for (closed_at, resent) in [(at(1), true), (at(0), false)] {
+        let mut h = registered();
+        h.establish(E1, K1);
+        let old = h.flow().stream;
+        h.collect(record(1, 1));
+        h.ack(old, 1);
+        h.close();
+        h.wall = at(1);
+        h.connect();
+        assert_eq!(open_of(&h.hello(E1, K1)), Some(old));
+        assert_eq!(h.stream.status().queued_records, 1, "held at the hello_ack");
+
+        h.wall = closed_at;
+        let actions = h.recv(closed(old));
+        assert_eq!(kinds_sent(&actions), ["open_stream"]);
+        let new = open_of(&actions).unwrap();
+        let actions = reconnect(&mut h);
+        assert_eq!(kinds_sent(&actions), ["open_stream"]);
+        let actions = h.resume(new, 0, None);
+        if resent {
+            assert_eq!(kinds_sent(&actions), ["record_batch"]);
+            assert_eq!(ns(&sent(&actions)), [1]);
+        } else {
+            assert!(actions.is_empty(), "{actions:?}");
+            assert_eq!(h.flow().assigned, 0);
+        }
+        h.check_invariants();
+    }
+}
+
+#[test]
+fn copies_returned_to_a_full_collection_buffer_on_closed_are_counted_unsupported() {
+    let mut h = H::new(SenderConfig::new(2, 1 << 40));
+    h.entries(&[E1]);
+    h.stream.register(EP).unwrap();
+    h.establish(E1, K12);
+    let old = h.flow().stream;
+    h.collect(record(2, 1));
+    h.collect(record(1, 2));
+    h.ack(old, 2);
+    h.close();
+    h.collect(record(3, 10));
+    h.collect(record(3, 11));
+    assert_eq!(h.stream.status().collected_records, 2);
+    h.connect();
+    assert_eq!(open_of(&h.hello(E1, K1)), Some(old));
+    let actions = h.recv(closed(old));
+    // Copy 1 went back to the full buffer, oldest there, and was deleted:
+    // no lost_on_reset, but unsupported.
+    assert_eq!(kinds_sent(&actions), ["open_stream"]);
+    let status = h.stream.status();
+    assert_eq!((status.collected_records, status.unsupported), (2, 1));
+    let new = open_of(&actions).unwrap();
+    let actions = h.resume(new, 0, None);
+    assert_eq!(kinds_sent(&actions), ["record_batch"]);
+    assert_eq!(ns(&sent(&actions)), [2]);
+}
+
 #[test]
 fn other_errors_only_disconnect() {
     let errors = [
@@ -1804,6 +2206,29 @@ fn every_state_changing_call_is_undone_when_its_write_fails() {
         let conn = h.conn();
         h.stream.hello_ack(conn, &entry(E2, K1), NEW, h.wall, h.now)
     });
+}
+
+#[test]
+fn the_defect_inputs_are_undone_when_their_write_fails() {
+    // A dropped number assigned again after a rollback, judged at step 5.
+    let stream = dropped_again_after_a_rollback().1;
+    check_atomic(
+        || dropped_again_after_a_rollback().0,
+        |h| {
+            let conn = h.conn();
+            h.stream
+                .receive(conn, &resume_info(stream, 1, None), NEW, h.wall, h.now)
+        },
+    );
+    // A closed resending a held copy after a rollback.
+    let first = rolled_back_over_a_closed_stream().1;
+    check_atomic(
+        || rolled_back_over_a_closed_stream().0,
+        |h| {
+            let conn = h.conn();
+            h.stream.receive(conn, &closed(first), NEW, h.wall, h.now)
+        },
+    );
 }
 
 #[test]

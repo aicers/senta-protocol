@@ -814,17 +814,21 @@ impl Model {
         if a <= self.k {
             return;
         }
-        // A dropped sequence number past what this state ever sent can be
-        // acknowledged only by a loss the entry recorded for another
-        // state's assignment: its own loss is never reported.
-        let unsent: Vec<Mark> = self
+        // A dropped sequence number past what this state ever sent could
+        // be acknowledged only by a loss the entry recorded for another
+        // state's assignment, leaving its own loss never reported: step 5
+        // opens a new stream rather than let one through.
+        let unsent: Vec<u64> = self
             .dropped
             .range(self.k + 1..=a)
             .filter(|(seq, _)| **seq > self.s)
-            .map(|(seq, _)| ctx.trace.assign_of(self.assigns[seq]).mark)
+            .map(|(seq, _)| *seq)
             .collect();
-        for mark in unsent {
-            self.fate(mark, Fate::ConfirmedUnsent);
+        for seq in unsent {
+            ctx.trace.violation(format!(
+                "dropped sequence number {seq} acknowledged past S {}",
+                self.s
+            ));
         }
         for (_, q) in self.queue.range_mut(self.k + 1..=a) {
             q.acked_at = Some(wall);
@@ -866,7 +870,9 @@ impl Model {
             }
             None => k,
         };
-        if !(low + 1..=a).all(|seq| self.dropped.contains_key(&seq)) {
+        // Only dropped sequence numbers this state sent pass: past `S`,
+        // nothing shows the entry's `A` covers this assignment's loss.
+        if a > self.s || !(low + 1..=a).all(|seq| self.dropped.contains_key(&seq)) {
             return self.transition(ctx, Reset::Same, flow.entry, new_stream, wall, out);
         }
         let pre_queue = self.queue_marks();
@@ -938,9 +944,12 @@ impl Model {
         let old_stream = self.flow.map(|f| f.stream);
         let k = self.k;
         let kinds = self.accepted_of(entry).unwrap_or_default();
+        // `closed` says nothing of `A`: every copy held is resent, as if
+        // `A` were 0.
         let low = match reset {
             Reset::Lost { a } => a,
-            _ => k,
+            Reset::Closed => 0,
+            Reset::Fresh | Reset::EntryChanged | Reset::Same => k,
         };
         let carry = reset != Reset::EntryChanged;
         let targets: BTreeSet<Mark> = self.queue.range(low + 1..).map(|(_, q)| q.mark).collect();
@@ -1034,9 +1043,15 @@ impl Model {
             self.place(ctx, seq, mark, kind, schema, order, since, len);
         }
 
-        // 2. Move the collection buffer; 3. apply its limit.
+        // 2. Move the collection buffer; 3. apply its limit. Only an
+        // `A < K` transition reports the copies it deletes there as lost
+        // on reset rather than unsupported.
         self.fill(ctx);
-        let deleted_copies = self.enforce_collect_limit(&returned_copies);
+        let deleted_copies = if matches!(reset, Reset::Lost { .. }) {
+            self.enforce_collect_limit(&returned_copies)
+        } else {
+            self.enforce_collect_limit(&BTreeMap::new())
+        };
 
         // 4. The notices.
         let mut lost = Vec::new();

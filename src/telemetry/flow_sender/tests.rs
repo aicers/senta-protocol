@@ -8,8 +8,9 @@ use super::*;
 use crate::connection::{AcceptedKind, SERVER_OTHER_RECEIVE_LIMIT, cbor};
 use crate::host::{CollectionMode, OsFamily, OsInfo};
 use crate::telemetry::{
-    Ack, CloseStream, ErrorMessage, LastStored, LostOnReset, MAX_BATCH_LEN, MAX_RECORD_LEN,
-    NetStateSource, RecordBody, RecordHeader, ResumeInfo, SeqRange, record_hash,
+    Ack, CloseStream, DroppedRange, ErrorMessage, LastStored, LostOnReset, MAX_BATCH_LEN,
+    MAX_RECORD_LEN, NetStateSource, OpenStream, RecordBody, RecordHeader, ResumeInfo, SeqRange,
+    record_hash,
 };
 use crate::telemetry_codes::{DropReason, TelemetryError};
 
