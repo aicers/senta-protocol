@@ -17,11 +17,19 @@ pub struct VectorFile<C> {
     pub cases: Vec<C>,
 }
 
-/// A vector file read only as far as its category, to pick its case type.
+/// A vector file read only as far as its category, to pick its case type,
+/// and its case names.
 #[derive(Deserialize)]
 pub struct FileHeader {
     pub format_version: u32,
     pub category: Category,
+    pub cases: Vec<CaseName>,
+}
+
+/// A case read only as far as its name.
+#[derive(Deserialize)]
+pub struct CaseName {
+    pub name: String,
 }
 
 /// The category of a vector file.

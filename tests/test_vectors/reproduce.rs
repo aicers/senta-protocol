@@ -1,7 +1,7 @@
 //! Runs the vector files through the crate's public API and compares what
 //! it gives with each case's expected result and expected state.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 use jiff::Timestamp;
 use senta_protocol::auth::commands::{CommandStateMachine, CommandVerdict, MemoryCommandStore};
@@ -91,6 +91,12 @@ fn reproduce_file(name: &str, bytes: &[u8], report: &mut Report<'_>) {
             "category",
             format!("{} is not this file's", header.category.as_str()),
         );
+    }
+    let mut names = BTreeSet::new();
+    for case in &header.cases {
+        if !names.insert(case.name.as_str()) {
+            report.fail(&case.name, "the case name appears twice");
+        }
     }
     match header.category {
         Category::Jws => {

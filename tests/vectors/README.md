@@ -62,7 +62,8 @@ differs in any byte from the generator's output, when the generator
 produces a file that is not committed, and when a JSON vector file is
 committed that the generator does not produce. This README is not
 compared. They also run every case through the crate and compare its
-results with the expected ones.
+results with the expected ones, and fail when a case name repeats within
+a file.
 
 The generator writes each file as JSON indented by two spaces, with the
 members of each object in a fixed order, ending in one newline. Nothing

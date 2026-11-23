@@ -215,6 +215,16 @@ fn reproduction_catches_a_valid_case_without_signer() {
 }
 
 #[test]
+fn reproduction_catches_a_repeated_case_name() {
+    let mismatches = reproduce_changed::<model::HardwareCase>("hardware_hash.json", |file| {
+        let first = file.cases.first().unwrap().name.clone();
+        file.cases.last_mut().unwrap().name = first;
+    });
+    assert_eq!(mismatches.len(), 1, "{mismatches:?}");
+    assert!(mismatches[0].contains("appears twice"), "{mismatches:?}");
+}
+
+#[test]
 fn reproduction_catches_a_wrong_step_result() {
     let mismatches = reproduce_changed::<SequenceCase>("leak.json", |file| {
         let step = file
