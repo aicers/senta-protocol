@@ -453,6 +453,30 @@ fn body_entries_are_kept_and_written_back() {
 }
 
 #[test]
+fn body_keeps_floats_and_passes_over_tags() {
+    let mut value = record_value(&record(full_header()));
+    *field_mut(&mut value, "body") = map(vec![
+        (text("ratio"), Value::Float(0.5)),
+        (text("small"), Value::Float(-1.25e-3)),
+        (
+            text("tagged"),
+            Value::Tag(32, Box::new(text("https://example.test/"))),
+        ),
+    ]);
+    let decoded = Record::from_bytes(&encode(&value)).unwrap();
+    // A tag other than a bignum is passed over: its value stays, the tag
+    // does not.
+    assert_eq!(
+        decoded.body.decode::<Value>().unwrap(),
+        map(vec![
+            (text("ratio"), Value::Float(0.5)),
+            (text("small"), Value::Float(-1.25e-3)),
+            (text("tagged"), text("https://example.test/")),
+        ])
+    );
+}
+
+#[test]
 fn typed_body_round_trips() {
     let record = record(full_header());
     let bytes = record.to_bytes().unwrap();
