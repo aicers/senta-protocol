@@ -1307,9 +1307,19 @@ fn the_first_step_broken_decides_the_failure() {
         .set("keyset", wrong_keyset.clone())
         .signed_by(OTHER_INSTALL)
         .jws();
+    let error = check(&jws).unwrap_err();
+    assert_at(
+        &error,
+        Step::InstallConfig,
+        ChainDocument::InstallConfig,
+        &InstallConfigFailure::InstallIdMismatch,
+    );
     assert_eq!(
-        check(&jws).unwrap_err().failure(),
-        &InstallConfigFailure::InstallIdMismatch
+        error.cause(),
+        &FailureCause::InstallIdMismatch {
+            deployment_cert: InstallId::parse(OTHER_INSTALL).unwrap(),
+            install_config: InstallId::parse(INSTALL).unwrap(),
+        }
     );
 
     // The key set and the address document.
