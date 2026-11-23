@@ -62,6 +62,7 @@ pub mod ip;
 pub mod kind;
 mod net_state;
 mod record;
+pub mod sysmon;
 
 pub use self::net_state::{
     NetState, NetStateGap, NetStateSpan, ResolvedNetState, resolve_net_state,
