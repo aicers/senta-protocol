@@ -658,7 +658,7 @@ fn leak_cases(ring: &mut KeyRing) -> Vec<SequenceCase> {
         ),
     ] {
         let mut seq = Seq::new(ring);
-        seq.enroll_assign_policy();
+        let version = seq.enroll_assign_policy();
         let recovery = leak_recovery(&mut seq, variant);
         let policy = leaked_policy(&mut seq);
         let at = seq.issuer.tick();
@@ -666,7 +666,17 @@ fn leak_cases(ring: &mut KeyRing) -> Vec<SequenceCase> {
         let (assign, assign_version) = seq.assign(EPOCH + 1, &customer_kid(4));
         let (new_policy, policy_version) = seq.policy(EPOCH + 1, &customer_kid(4));
         let (command, command_seq) = seq.command(3, ENDPOINT, EPOCH + 1, &customer_kid(4));
-        seq.push(receive_keyset(
+        seq.push(receive_document(
+            policy.clone(),
+            tag("epoch_mismatch"),
+            slot_state(policy_slot(), Some(version), Some(version)),
+        ))
+        .push(receive_command(
+            forged.clone(),
+            rejected("epoch_mismatch"),
+            None,
+        ))
+        .push(receive_keyset(
             recovery,
             tag("applied"),
             StateSummary {
@@ -698,7 +708,7 @@ fn leak_cases(ring: &mut KeyRing) -> Vec<SequenceCase> {
         cases.push(seq.finish(
             name,
             &format!(
-                "After the recovery key set (2, 1), which {about}, the leaked policy and command come again; then the assignment, a policy and an ordinary command of epoch 2 are accepted."
+                "At epoch 1 the leaked policy and command are rejected for their epoch. After the recovery key set (2, 1), which {about}, they come again; then the assignment, a policy and an ordinary command of epoch 2 are accepted."
             ),
         ));
     }
