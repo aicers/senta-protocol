@@ -24,7 +24,7 @@ pub struct CatchUpBaseline {
 
 /// Why the history given to [`build_catch_up_chain`] makes no catch-up
 /// chain.
-#[derive(Debug, thiserror::Error)]
+#[derive(Clone, Debug, PartialEq, Eq, thiserror::Error)]
 #[non_exhaustive]
 pub enum CatchUpError {
     /// A key set document does not read as a `senta-keyset`.
@@ -167,9 +167,11 @@ struct RecoveryKeyGroup<'a> {
 /// `senta-recovery-key` JWS kept for the customer `customer_endpoint_id`
 /// and the install `install_id`, in any order. **No signature is
 /// verified**: the server carries the documents as the signer issued them,
-/// and every document is read before its signature is checked. The signers
-/// are checked only as far as the errors below say; any other is assumed to
-/// be right, as it is in a history the signer issued.
+/// so every document is only read, as
+/// [`inspect_keyset`](documents::inspect_keyset) and
+/// [`inspect_recovery_key`](documents::inspect_recovery_key) read it. The
+/// signers are checked only as far as the errors below say; any other is
+/// assumed to be right, as it is in a history the signer issued.
 ///
 /// Copies of the same key set (epoch, version), or of the same recovery
 /// key version, with the same content hash are one document. The copy the

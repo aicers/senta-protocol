@@ -81,6 +81,11 @@ impl EnrollOutcome {
     }
 
     /// Returns the endpoint id, or why the enrollment failed.
+    ///
+    /// # Errors
+    ///
+    /// Returns the [`EnrollFailure`] when the chain stopped, the enrollment
+    /// result did not verify, or it does not match the attempt.
     pub fn result(&self) -> Result<Uuid, &EnrollFailure> {
         self.result.as_ref().copied()
     }

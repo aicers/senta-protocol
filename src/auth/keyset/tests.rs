@@ -1118,6 +1118,47 @@ fn recovery_signed_version_one_is_required_after_the_baseline() {
 }
 
 #[test]
+fn copies_of_one_document_give_the_smallest() {
+    // Copies of (1, 2) and of recovery key 2, each of one content.
+    let v2 = Ks::rotation(1, NAME_A, 2);
+    let v2_copies = [v2.rotated(), v2.forged(&ckid(NAME_A, 1))];
+    let rk2_copies = [
+        rk_doc(2),
+        stranger().sign(
+            Typ::RecoveryKey,
+            &rkid(INSTALL, 1),
+            &recovery_payload(INSTALL, 2),
+        ),
+    ];
+    let expected = [
+        v2_copies.iter().min().unwrap().clone(),
+        rk2_copies.iter().min().unwrap().clone(),
+    ];
+    for keysets in orders(&v2_copies) {
+        for recovery_keys in orders(&rk2_copies) {
+            assert_eq!(
+                build(&keysets, &recovery_keys, baseline(1, 1, 1)).unwrap(),
+                expected
+            );
+        }
+    }
+
+    // The version 1 of a later epoch: the smallest of the copies signed by
+    // the recovery key, even when a re-signed copy is smaller still.
+    let b1 = Ks::rotation(2, NAME_B, 1);
+    let recovery_copies = [b1.recovery_signed(1), b1.forged(&rkid(INSTALL, 1))];
+    let smallest = recovery_copies.iter().min().unwrap().clone();
+    assert!(b1.resigned() < smallest);
+    let keysets = [recovery_copies.to_vec(), vec![b1.resigned()]].concat();
+    for keysets in orders(&keysets) {
+        assert_eq!(
+            build(&keysets, &[], baseline(1, 1, 1)).unwrap(),
+            std::slice::from_ref(&smallest)
+        );
+    }
+}
+
+#[test]
 fn chain_building_rejects_bad_histories() {
     let a1 = Ks::rotation(1, NAME_A, 1);
     let b1 = Ks::rotation(2, NAME_B, 1);
