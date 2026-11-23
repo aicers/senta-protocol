@@ -1120,6 +1120,9 @@ impl Model {
         self.m = 0;
         self.s = 0;
         for (seq, &(mark, len, since)) in (1..).zip(records) {
+            // A record left over is the endpoint's again, even one only a
+            // state it lost had collected.
+            self.known.insert(mark);
             let order = self.next_order;
             self.next_order += 1;
             let template = ctx.templates.get(&mark).unwrap();

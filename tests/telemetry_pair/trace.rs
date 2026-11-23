@@ -65,10 +65,14 @@ pub struct Recovery {
     pub allowed: bool,
     /// The recovery targets, before the accepted kinds filter them.
     pub targets: BTreeSet<Mark>,
-    /// The records waiting in the collection buffer. After the endpoint
-    /// went back to a snapshot, records already stored can wait there
-    /// again, so the duplicate judgment counts them with the targets of an
-    /// allowed recovery.
+    /// The records waiting in the collection buffer. The duplicate
+    /// judgment counts them with the targets of an allowed recovery, which
+    /// the issue does not (see the pull request's deviations): a record
+    /// already stored can wait there again, and then no target set holds
+    /// it. It got there by an endpoint going back to a snapshot that held
+    /// it there, or by an earlier recovery that sent it back as a refused
+    /// kind, perhaps at another entry. A record collected and not moved
+    /// since was never stored, so it never needs the allowance.
     pub waiting: BTreeSet<Mark>,
     /// The expected list, from `start`.
     pub start: u64,

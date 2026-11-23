@@ -6,11 +6,13 @@ use senta_protocol::telemetry::{RecordBatch, SeqRange, TelemetryMessage};
 
 use crate::cases::{
     a_below_k_with_no_copy, copy_deleted_by_a_full_buffer_with_a_waiting_record,
-    entry_restored_at_k, expired_between_transition_and_resume, forgotten_stream_reopened,
-    notices_failing_twice, same_stream_with_dropped_and_records,
+    entry_changed_after_a_rollback_then_resumed, entry_restored_at_k,
+    expired_between_transition_and_resume, forgotten_stream_reopened, notices_failing_twice,
+    record_recovered_after_a_rollback, same_stream_with_dropped_and_records,
+    stored_record_waiting_again_after_a_rollback,
 };
 use crate::fixture::{
-    E1,
+    E1, E2,
     Kinds::{All, Proc1Only},
 };
 use crate::judge;
@@ -230,5 +232,72 @@ fn a_number_left_out_of_the_expected_losses_is_caught() {
                 notices.lost = vec![(1, 1), (3, 3)];
             }
         }
+    });
+}
+
+/// The second commit of `mark`, copied to the event just before
+/// `before`: a commit no recovery since the one before allows.
+fn commit_again_before(trace: &mut Trace, mark: crate::fixture::Mark, before: usize) {
+    let commit = trace
+        .commits
+        .iter()
+        .find(|c| matches!(&c.item, CommitItem::Record { mark: Some(m), .. } if *m == mark))
+        .unwrap()
+        .clone();
+    let mut again = commit;
+    again.ev = before - 1;
+    again.lt = None;
+    trace.commits.push(again);
+    // Stable: the commits of one event keep their order.
+    trace.commits.sort_by_key(|c| c.ev);
+}
+
+#[test]
+fn a_record_recovered_after_a_rollback_and_not_stored_again_is_caught() {
+    let (w, p) = record_recovered_after_a_rollback();
+    caught(w.finish(All), "omission:", |trace| {
+        let last = trace
+            .recoveries
+            .iter()
+            .filter(|r| r.reset == Some(Reset::Fresh))
+            .map(|r| r.ev)
+            .max()
+            .unwrap();
+        trace.commits.retain(|c| {
+            !(c.ev > last && matches!(&c.item, CommitItem::Record { mark: Some(m), .. } if *m == p))
+        });
+    });
+}
+
+#[test]
+fn a_commit_resting_on_a_rollback_an_earlier_reconnection_used_up_is_caught() {
+    let (w, r) = entry_changed_after_a_rollback_then_resumed();
+    caught(w.finish(All), "duplicates:", |trace| {
+        let resumed = trace
+            .recoveries
+            .iter()
+            .filter(|x| x.reset.is_none() && x.entry == E2)
+            .map(|x| x.ev)
+            .min()
+            .unwrap();
+        commit_again_before(trace, r, resumed);
+    });
+}
+
+#[test]
+fn a_third_commit_of_a_record_a_rollback_put_back_to_wait_is_caught() {
+    let (w, p) = stored_record_waiting_again_after_a_rollback();
+    caught(w.finish(All), "duplicates:", |trace| {
+        let commit = trace
+            .commits
+            .iter()
+            .rev()
+            .find(|c| matches!(&c.item, CommitItem::Record { mark: Some(m), .. } if *m == p))
+            .unwrap()
+            .clone();
+        let mut again = commit;
+        again.ev = trace.events.len() - 1;
+        again.lt = None;
+        trace.commits.push(again);
     });
 }

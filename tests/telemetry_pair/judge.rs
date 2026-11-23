@@ -842,6 +842,8 @@ fn duplicates(trace: &Trace) -> Vec<String> {
                     && r.entry == entry
                     && r.ev > before
                     && r.ev < at
+                    // Waiting records too, which the issue leaves out:
+                    // see `Recovery::waiting`.
                     && (r.targets.contains(&mark) || r.waiting.contains(&mark))
             });
             if !allowed {

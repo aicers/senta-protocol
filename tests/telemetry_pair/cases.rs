@@ -12,7 +12,7 @@ use senta_protocol::telemetry_codes::{DropReason, TelemetryError};
 use uuid::Uuid;
 
 use crate::fixture::{
-    E1, ENDPOINT,
+    E1, E2, ENDPOINT,
     Kind::{Net, Proc1, Proc2},
     Kinds,
     Kinds::{All, NoNet, Proc1Only},
@@ -369,6 +369,10 @@ fn a_copy_deleted_by_a_full_buffer_alone_is_lost_on_reset_and_not_unsupported() 
     assert_eq!((r.unsupported_expected, r.unsupported_observed), (0, 0));
 }
 
+/// The copies overflow the smaller limit as they are renumbered, at step
+/// 1: at an `A < K` transition the move of step 2 never has anything to
+/// move (see `World::restart_with_queue_limit`), so the case of step 2 is
+/// the entry change below.
 #[test]
 fn a_renumbered_copy_dropped_by_the_queue_limit_is_reported_by_the_new_stream_only() {
     let mut w = world(Setup::default());
@@ -394,6 +398,188 @@ fn a_renumbered_copy_dropped_by_the_queue_limit_is_reported_by_the_new_stream_on
         _ => false,
     });
     assert!(reported);
+}
+
+/// The move of step 2 pushes the queue past its limit, a configuration
+/// fixed for the whole run, and deletes a record step 1 renumbered: a new
+/// stream's lowest number goes first, as `BufferOverflow`.
+#[test]
+fn a_record_renumbered_then_pushed_out_by_the_move_of_step_2_is_dropped_by_the_new_stream() {
+    // Marks are given out from 1, so the lengths are known up front.
+    let len = |mark, kind, seq| {
+        crate::fixture::Template::new(make_record(mark, kind, Normal)).len_at(seq)
+    };
+    let limit = len(1, Proc1, 1) + len(2, Proc1, 2) + len(3, Net, 3) - 1;
+    let mut w = world(Setup {
+        queue_limit: limit,
+        ..Setup::default()
+    });
+    run(&mut w, &[Session(NoNet), Disconnect]);
+    let r1 = w.collect(Proc1, Normal);
+    let r2 = w.collect(Proc1, Normal);
+    // Refused by E1, it waits in the collection buffer.
+    let n3 = w.collect(Net, Normal);
+    assert_eq!((r1, r2, n3), (1, 2, 3));
+    run(&mut w, &[SetEntries(List::E2), Session(All)]);
+    let trace = finish(w, All);
+    let (_, r) = recoveries(&trace, Some(Reset::EntryChanged))[0];
+    assert_eq!(r.entry, E2);
+    assert_eq!(r.targets, [r1, r2].into());
+    assert_eq!(marks(&r.list), [None, Some(r2), Some(n3)]);
+    assert!(matches!(
+        &r.list[0],
+        Item::Dropped {
+            reason: DropReason::BufferOverflow,
+            ..
+        }
+    ));
+    let reported = trace.commits.iter().any(|c| match &c.item {
+        CommitItem::Dropped {
+            key,
+            reason,
+            assigns,
+            ..
+        } => {
+            key.stream == r.stream
+                && *reason == DropReason::BufferOverflow
+                && assigns.iter().any(|a| trace.assign_of(*a).mark == r1)
+        }
+        _ => false,
+    });
+    assert!(reported);
+    assert!(record_commits(&trace, r1).is_empty());
+}
+
+/// Shared by a mutation test: a record the endpoint stored, then lost by
+/// going back to a snapshot from before it was collected, and got back
+/// from the records left over.
+pub fn record_recovered_after_a_rollback() -> (World, Mark) {
+    let mut w = world(Setup::default());
+    run(&mut w, &[Session(All), Snapshot]);
+    let p = w.collect(Proc1, Normal);
+    run(&mut w, &[Exchange, Rollback(0)]);
+    w.recover_marks(&[p]);
+    w.run(Session(All));
+    (w, p)
+}
+
+#[test]
+fn a_record_recovered_after_a_rollback_is_judged_again() {
+    let (w, p) = record_recovered_after_a_rollback();
+    let trace = finish(w, All);
+    assert!(trace.final_state.known.contains(&p));
+    assert!(!trace.final_state.erased.contains(&p));
+    let fresh = recoveries(&trace, Some(Reset::Fresh));
+    let (_, r) = fresh.last().unwrap();
+    assert!(r.allowed);
+    assert_eq!(marks(&r.list), [Some(p)]);
+    let commits = record_commits(&trace, p);
+    assert_eq!(commits.len(), 2);
+    assert!(commits[1].1 > r.ev);
+}
+
+/// Shared by a mutation test: the endpoint goes back to a snapshot, its
+/// first reconnection changes the entry, the new stream's `resume_info` is
+/// lost, and a later connection resumes there with a record to send.
+pub fn entry_changed_after_a_rollback_then_resumed() -> (World, Mark) {
+    let mut w = world(Setup::default());
+    run(&mut w, &[Session(All), Snapshot, Rollback(0)]);
+    run(
+        &mut w,
+        &[
+            SetEntries(List::E2),
+            Connect,
+            Hello(All),
+            ToEntry(1),
+            LoseReply,
+            Disconnect,
+        ],
+    );
+    let r = w.collect(Proc1, Normal);
+    w.run(Session(All));
+    (w, r)
+}
+
+#[test]
+fn only_the_first_reconnection_after_a_rollback_is_allowed_by_it() {
+    let (w, r) = entry_changed_after_a_rollback_then_resumed();
+    let trace = finish(w, All);
+    let (_, changed) = recoveries(&trace, Some(Reset::EntryChanged))[0];
+    assert!(changed.allowed);
+    // The reconnection right after the entry change: no other came between.
+    let resumed: Vec<_> = recoveries(&trace, None)
+        .into_iter()
+        .filter(|(_, x)| x.entry == E2)
+        .collect();
+    let (_, resumed) = resumed[0];
+    assert_eq!(resumed.stream, changed.stream);
+    assert!(resumed.targets.contains(&r));
+    assert!(!resumed.allowed);
+}
+
+/// Shared by a mutation test: a record waits in the collection buffer of a
+/// snapshot, is stored, and waits there again once the endpoint goes back
+/// to that snapshot.
+pub fn stored_record_waiting_again_after_a_rollback() -> (World, Mark) {
+    let mut w = world(Setup::default());
+    let p = w.collect(Proc1, Normal);
+    run(&mut w, &[Snapshot, Session(All), Rollback(0), Session(All)]);
+    (w, p)
+}
+
+#[test]
+fn a_stored_record_a_rollback_puts_back_to_wait_is_stored_once_more() {
+    let (w, p) = stored_record_waiting_again_after_a_rollback();
+    let trace = finish(w, All);
+    let fresh = recoveries(&trace, Some(Reset::Fresh));
+    assert_eq!(fresh.len(), 2);
+    let (_, again) = fresh[1];
+    assert!(again.allowed);
+    assert!(again.targets.is_empty());
+    assert_eq!(again.waiting, [p].into());
+    let commits = record_commits(&trace, p);
+    assert_eq!(commits.len(), 2);
+    assert!(commits[0].1 < again.ev && again.ev < commits[1].1);
+}
+
+/// A record stored at E2, unacknowledged again once the endpoint starts
+/// from the records left over, sent back to the collection buffer by the
+/// recovery at E1 that refuses its kind, then stored at E2 again after an
+/// entry change whose targets it is not among.
+#[test]
+fn a_record_sent_back_at_one_entry_is_stored_again_at_another_after_an_entry_change() {
+    let mut w = world(Setup {
+        list: List::E21,
+        ..Setup::default()
+    });
+    w.run(Session(NoNet));
+    let p = w.collect(Proc2, Normal);
+    w.run(Exchange);
+    w.recover_marks(&[p]);
+    run(
+        &mut w,
+        &[
+            SetEntries(List::E1),
+            Session(Kinds::NoProc2),
+            SetEntries(List::E2),
+            Session(All),
+        ],
+    );
+    let trace = finish(w, All);
+    let fresh = recoveries(&trace, Some(Reset::Fresh));
+    let (_, back) = fresh.last().unwrap();
+    assert_eq!(back.entry, E1);
+    assert!(back.allowed);
+    assert_eq!(back.returned, [p]);
+    let (_, changed) = recoveries(&trace, Some(Reset::EntryChanged))[0];
+    assert_eq!(changed.entry, E2);
+    assert!(changed.allowed);
+    assert!(!changed.targets.contains(&p));
+    assert!(changed.waiting.contains(&p));
+    let commits = record_commits(&trace, p);
+    assert_eq!(commits.len(), 2);
+    assert!(commits.iter().all(|c| c.0 == E2));
+    assert!(commits[0].1 < changed.ev && changed.ev < commits[1].1);
 }
 
 #[test]

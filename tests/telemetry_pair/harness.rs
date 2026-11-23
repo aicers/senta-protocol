@@ -358,9 +358,11 @@ impl World {
                 .get_mut(&recovery.entry)
                 .map(|i| std::mem::take(&mut i.loss_pending))
                 .unwrap_or_default();
-            recovery.allowed = recovery.reset == Some(Reset::EntryChanged)
-                || std::mem::take(&mut self.endpoint_loss_pending)
-                || entry_loss;
+            // The first reconnection after a loss of the endpoint's state
+            // is the one it allows, whatever else allows it too.
+            let endpoint_loss = std::mem::take(&mut self.endpoint_loss_pending);
+            recovery.allowed =
+                recovery.reset == Some(Reset::EntryChanged) || endpoint_loss || entry_loss;
             recovery.unsupported_expected = self.model.unsupported - model_before;
             recovery.unsupported_observed = status_after.saturating_sub(status_before);
             if let (Some(Reset::Lost { .. }), Some(old)) = (recovery.reset, recovery.old_stream) {
@@ -1217,7 +1219,9 @@ impl World {
     /// every collected record its list accepts, under the limit, before
     /// the `resume_info` that starts the transition; renumbering only
     /// shortens a copy's sequence number; so the move of step 2 has
-    /// nothing left to push past the limit.
+    /// nothing left to push past the limit. A smaller limit does not
+    /// change that either, since the `hello_ack` moves under it too: what
+    /// it makes is a renumbering that overflows at step 1.
     pub fn restart_with_queue_limit(&mut self, queue_limit: u64) {
         self.config.queue_limit = queue_limit;
         self.setup.queue_limit = queue_limit;
