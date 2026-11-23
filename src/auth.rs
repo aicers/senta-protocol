@@ -1,5 +1,6 @@
 //! Authentication and trust contracts.
 
+pub mod commands;
 pub mod documents;
 pub mod jws;
 pub mod keyset;
