@@ -301,3 +301,27 @@ fn a_third_commit_of_a_record_a_rollback_put_back_to_wait_is_caught() {
         trace.commits.push(again);
     });
 }
+
+#[test]
+fn a_restored_lifetimes_first_write_taking_a_back_is_caught() {
+    let (mut w, _) = entry_restored_at_k();
+    w.run(Session(All));
+    caught(w.finish(All), "monotonic:", |trace| {
+        let (lt, start) = trace
+            .starts
+            .iter()
+            .find(|(_, a)| **a > 0)
+            .map(|(lt, a)| (*lt, *a))
+            .unwrap();
+        let first = trace
+            .commits
+            .iter_mut()
+            .find(|c| c.lt == Some(lt) && matches!(c.item, CommitItem::Flow { .. }))
+            .unwrap();
+        let CommitItem::Flow { state, .. } = &mut first.item else {
+            unreachable!()
+        };
+        assert!(state.a >= start);
+        state.a = 0;
+    });
+}

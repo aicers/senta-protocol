@@ -387,10 +387,11 @@ fn acks(trace: &Trace) -> Vec<String> {
     failures
 }
 
-/// `A` never goes back within a lifetime.
+/// `A` never goes back within a lifetime, from the `A` a restored one
+/// starts at on.
 fn monotonic(trace: &Trace) -> Vec<String> {
     let mut failures = Vec::new();
-    let mut last: BTreeMap<Lt, u64> = BTreeMap::new();
+    let mut last: BTreeMap<Lt, u64> = trace.starts.clone();
     for commit in &trace.commits {
         if let (Some(lt), CommitItem::Flow { key, state }) = (commit.lt, &commit.item) {
             if let Some(previous) = last.get(&lt)

@@ -1191,6 +1191,12 @@ impl World {
                 coverage: BTreeMap::new(),
             },
         };
+        let starts: BTreeMap<ReceiverFlowKey, u64> = snapshot
+            .contents
+            .flows
+            .iter()
+            .map(|(key, state)| (*key, state.a))
+            .collect();
         ingress.store.set_contents(snapshot.contents);
         ingress.store.take_log();
         ingress.open = snapshot.open;
@@ -1199,6 +1205,9 @@ impl World {
             self.next_lt += 1;
             ingress.lifetimes.insert(key, self.next_lt);
             ingress.coverage.insert(self.next_lt, coverage);
+            if let Some(a) = starts.get(&key) {
+                self.trace.starts.insert(self.next_lt, *a);
+            }
         }
         ingress.machine = ReceiverStream::restore(entry, ingress.store.clone()).unwrap();
         ingress.loss_pending = true;

@@ -287,6 +287,9 @@ pub struct Trace {
     pub events: Vec<Ev>,
     pub recoveries: Vec<Recovery>,
     pub commits: Vec<Commit>,
+    /// The `A` of the snapshot each lifetime restored from one starts at:
+    /// its first write is held against it as against any other.
+    pub starts: BTreeMap<Lt, u64>,
     pub assigns: Vec<Assign>,
     /// Every record collected.
     pub marks: BTreeSet<Mark>,
