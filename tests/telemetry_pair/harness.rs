@@ -1197,6 +1197,12 @@ impl World {
             .iter()
             .map(|(key, state)| (*key, state.a))
             .collect();
+        let held = snapshot
+            .contents
+            .records
+            .iter()
+            .filter_map(|record| mark_of(&record.bytes))
+            .collect();
         ingress.store.set_contents(snapshot.contents);
         ingress.store.take_log();
         ingress.open = snapshot.open;
@@ -1211,7 +1217,7 @@ impl World {
         }
         ingress.machine = ReceiverStream::restore(entry, ingress.store.clone()).unwrap();
         ingress.loss_pending = true;
-        self.trace.push(Ev::IngressLoss);
+        self.trace.push(Ev::IngressLoss { entry, held });
         if let Some(pending) = &self.model.pending
             && self.trace.recoveries[pending.recovery].entry == entry
         {

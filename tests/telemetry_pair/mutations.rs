@@ -5,7 +5,8 @@
 use senta_protocol::telemetry::{RecordBatch, SeqRange, TelemetryMessage};
 
 use crate::cases::{
-    a_below_k_with_no_copy, copy_deleted_by_a_full_buffer_with_a_waiting_record,
+    a_below_k_with_no_copy, closed_after_an_undone_transition,
+    copy_deleted_by_a_full_buffer_with_a_waiting_record,
     entry_changed_after_a_rollback_then_resumed, entry_restored_at_k,
     expired_between_transition_and_resume, forgotten_stream_reopened, notices_failing_twice,
     record_recovered_after_a_rollback, same_stream_with_dropped_and_records,
@@ -324,4 +325,29 @@ fn a_restored_lifetimes_first_write_taking_a_back_is_caught() {
         assert!(state.a >= start);
         state.a = 0;
     });
+}
+
+/// The default judge excuses what this path loses as the second known
+/// defect (`judge::reopened_closed`), so the strict one is held to it.
+#[test]
+fn a_record_an_undone_transition_bound_and_not_stored_again_is_caught() {
+    let (w, p) = closed_after_an_undone_transition(true);
+    let mut trace = w.finish(All);
+    if let Err(failures) = judge::judge_strict(&trace) {
+        panic!("the run fails before the mutation: {failures}");
+    }
+    let undone = trace
+        .recoveries
+        .iter()
+        .find(|r| matches!(r.reset, Some(Reset::Lost { .. })))
+        .unwrap()
+        .ev;
+    trace.commits.retain(|c| {
+        !(c.ev > undone && matches!(&c.item, CommitItem::Record { mark: Some(m), .. } if *m == p))
+    });
+    let failures = judge::judge_strict(&trace).expect_err("the judges miss the misbehaviour");
+    assert!(
+        failures.contains(&format!("omission: record {p} ")),
+        "{failures}"
+    );
 }

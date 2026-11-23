@@ -26,9 +26,9 @@ use crate::judge;
 use crate::ops::{
     Entry,
     Op::{
-        Advance, Connect, Disconnect, EntryRestore, EntrySnapshot, Exchange, FailEntryWrite, Hello,
-        LoseReply, LoseState, Prune, Rollback, Session, SetEntries, Snapshot, Tick, ToEndpoint,
-        ToEntry,
+        Advance, Connect, Disconnect, EntryClear, EntryRestore, EntrySnapshot, Exchange,
+        FailEntryWrite, Hello, LoseReply, LoseState, Prune, Rollback, Session, SetEntries,
+        Snapshot, Tick, ToEndpoint, ToEntry,
     },
     Setup, Step,
 };
@@ -580,6 +580,90 @@ fn a_record_sent_back_at_one_entry_is_stored_again_at_another_after_an_entry_cha
     assert_eq!(commits.len(), 2);
     assert!(commits.iter().all(|c| c.0 == E2));
     assert!(commits[0].1 < changed.ev && changed.ev < commits[1].1);
+}
+
+/// Shared by a mutation test: a record stored and acknowledged at E1 is
+/// lost there, the `A < K` transition that follows closes the old stream,
+/// and the endpoint goes back to a snapshot that holds the record as
+/// acknowledged on that stream. With `restore` the transition stores the
+/// record again before the endpoint goes back; without, it does not. The
+/// state gone back to reopens the old stream and gets `closed`.
+pub fn closed_after_an_undone_transition(restore: bool) -> (World, Mark) {
+    let mut w = world(Setup::default());
+    w.run(Session(All));
+    let p = w.collect(Proc1, Normal);
+    run(
+        &mut w,
+        &[Exchange, Snapshot, Disconnect, EntryClear(Entry::E1)],
+    );
+    reconnect(&mut w, All);
+    // `close_stream` and `open_stream` of the new stream; with `restore`,
+    // the new stream's `resume_info` and the batch that carries the
+    // record again too.
+    w.run(ToEntry(2));
+    if restore {
+        run(&mut w, &[ToEndpoint(1), ToEntry(1)]);
+    }
+    run(&mut w, &[Rollback(0), Session(All)]);
+    (w, p)
+}
+
+/// Checks the shape both runs of `closed_after_an_undone_transition` share:
+/// the `A < K` transition that targeted the record was undone, and the
+/// state gone back to got `closed` for the stream it closed.
+fn undone_then_closed(trace: &Trace, p: Mark) -> &Recovery {
+    let (id, lost) = lost_recovery(trace);
+    assert!(lost.targets.contains(&p));
+    assert!(!trace.final_state.lineage.contains(&id));
+    let closed = recoveries(trace, Some(Reset::Closed));
+    assert_eq!(closed.len(), 1);
+    let (closed_id, c) = closed[0];
+    assert!(trace.final_state.lineage.contains(&closed_id));
+    assert_eq!((c.entry, c.old_stream), (lost.entry, lost.old_stream));
+    assert!(c.ev > lost.ev);
+    assert!(!c.targets.contains(&p));
+    lost
+}
+
+/// A transition the endpoint undid still binds the record it targeted
+/// when the state gone back to meets the stream it closed: the record,
+/// stored at E1 again by that transition, is not missing.
+#[test]
+fn a_record_stored_again_by_a_transition_later_undone_is_not_missing() {
+    let (w, p) = closed_after_an_undone_transition(true);
+    let trace = w.finish(All);
+    if let Err(failures) = judge::judge_strict(&trace) {
+        panic!("{failures}");
+    }
+    let lost = undone_then_closed(&trace, p);
+    let commits = record_commits(&trace, p);
+    assert_eq!(commits.len(), 2);
+    assert_eq!(commits[1].0, E1);
+    assert!(commits[1].1 > lost.ev);
+}
+
+/// A recovery that answered only the endpoint's own loss, undone, binds
+/// nothing: the entry still holds the record on the stream the state gone
+/// back to resumes.
+#[test]
+fn an_undone_recovery_of_a_record_the_entry_still_holds_binds_nothing() {
+    let mut w = world(Setup::default());
+    w.run(Session(All));
+    let p = w.collect(Net, Normal);
+    run(&mut w, &[Exchange, Snapshot]);
+    w.recover_marks(&[p]);
+    // E1 refuses the record now: it goes back to wait, and is not stored
+    // again before the endpoint goes back to the snapshot.
+    run(&mut w, &[Session(NoNet), Rollback(0)]);
+    let trace = w.finish(All);
+    if let Err(failures) = judge::judge_strict(&trace) {
+        panic!("{failures}");
+    }
+    let fresh = recoveries(&trace, Some(Reset::Fresh));
+    let (id, undone) = fresh.last().unwrap();
+    assert!(undone.targets.contains(&p));
+    assert!(!trace.final_state.lineage.contains(id));
+    assert_eq!(record_commits(&trace, p).len(), 1);
 }
 
 #[test]
@@ -1217,6 +1301,45 @@ fn the_defect_case_fails_only_by_the_unreported_loss() {
     assert!(failures.starts_with("1 failures"), "{failures}");
     assert!(
         failures.contains(&format!("omission: record {lost} ")),
+        "{failures}"
+    );
+}
+
+/// The second defect the pull request reports. E1 loses a record the
+/// endpoint holds as acknowledged; the `A < K` transition that follows
+/// closes the old stream at E1 and makes the record a target; the
+/// endpoint goes back to a snapshot from before it, which holds the
+/// record as acknowledged on that stream. That state reopens the stream,
+/// gets `closed`, and opens a new stream with no notice and only the
+/// records it holds as unacknowledged, as the rule for `closed` says. The
+/// record is neither stored again at E1 nor reported lost, though the
+/// endpoint still holds a copy of it, so the omission judgment's
+/// exemption for a loss of state does not cover it. The endpoint keeps
+/// to the rule; it is the rule that loses the record, so the fix is a
+/// decision on that contract. Until it is made, `judge::judge` excuses
+/// exactly this path (`judge::reopened_closed`) in the property test,
+/// and this case runs the strict judge.
+#[test]
+#[ignore = "결함: 되돌린 엔드포인트가 이미 닫힌 옛 흐름에서 Closed를 받아, 입구가 잃은 확인 사본을 다시 보내지도 손실 보고하지도 않음"]
+fn defect_an_acknowledged_record_lost_before_an_undone_transition_is_dropped_on_closed() {
+    let (w, _) = closed_after_an_undone_transition(false);
+    let trace = w.finish(All);
+    if let Err(failures) = judge::judge_strict(&trace) {
+        panic!("{failures}");
+    }
+}
+
+#[test]
+fn the_closed_defect_case_fails_only_by_the_record_it_loses() {
+    let (w, p) = closed_after_an_undone_transition(false);
+    let trace = w.finish(All);
+    undone_then_closed(&trace, p);
+    assert_eq!(record_commits(&trace, p).len(), 1);
+    judge::judge(&trace).unwrap();
+    let failures = judge::judge_strict(&trace).unwrap_err();
+    assert!(failures.starts_with("1 failures"), "{failures}");
+    assert!(
+        failures.contains(&format!("omission: record {p} ")),
         "{failures}"
     );
 }

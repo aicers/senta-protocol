@@ -217,8 +217,12 @@ pub enum Ev {
     },
     /// The endpoint lost state.
     EndpointLoss,
-    /// The entry's store was restored to an earlier point or emptied.
-    IngressLoss,
+    /// The entry's store was restored to an earlier point or emptied,
+    /// keeping the records of `held`.
+    IngressLoss {
+        entry: Uuid,
+        held: BTreeSet<Mark>,
+    },
     /// An entry forgot the closed streams it no longer remembers: the
     /// commits of this event's index.
     Pruned,

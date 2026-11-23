@@ -11,14 +11,15 @@ use crate::fixture::{Mark, Ranges};
 use crate::trace::{CommitItem, Ev, Fate, Item, Lt, RecoveryId, Reset, Trace};
 
 /// Judges a run: every judgment, every failure found. A record lost only
-/// through the known defect (`Fate::ConfirmedUnsent`) is not counted as
-/// missing here; `judge_strict` counts it.
+/// through one of the two known defects (`Fate::ConfirmedUnsent`, and
+/// `reopened_closed`) is not counted as missing here; `judge_strict`
+/// counts it.
 pub fn judge(trace: &Trace) -> Result<(), String> {
     judge_with(trace, false)
 }
 
 /// Judges a run, counting as missing a record lost through the known
-/// defect too.
+/// defects too.
 pub fn judge_strict(trace: &Trace) -> Result<(), String> {
     judge_with(trace, true)
 }
@@ -858,6 +859,28 @@ fn duplicates(trace: &Trace) -> Vec<String> {
     failures
 }
 
+/// Whether the recovery `undone`, which the endpoint undid by going back
+/// to a snapshot, closed its old stream at its entry, and the state gone
+/// back to then reopened that stream there and got `closed`: it opened
+/// another stream with none of the records it held as acknowledged, and
+/// nothing reports one of them the entry had lost. The second known
+/// defect; see
+/// `cases::defect_an_acknowledged_record_lost_before_an_undone_transition_is_dropped_on_closed`.
+fn reopened_closed(trace: &Trace, undone: RecoveryId) -> bool {
+    let r = &trace.recoveries[undone];
+    let (Some(old), Some(notices)) = (r.old_stream, &r.notices) else {
+        return false;
+    };
+    notices.close
+        && trace.recoveries.iter().enumerate().any(|(id, c)| {
+            c.reset == Some(Reset::Closed)
+                && c.entry == r.entry
+                && c.old_stream == Some(old)
+                && c.ev > r.ev
+                && trace.final_state.lineage.contains(&id)
+        })
+}
+
 /// After the drain, every record the endpoint ever held is stored, or
 /// reported lost, or still waits, or was dropped where the rules let it go.
 fn omissions(trace: &Trace, strict: bool) -> Vec<String> {
@@ -884,17 +907,40 @@ fn omissions(trace: &Trace, strict: bool) -> Vec<String> {
     for (mark, fate) in &fin.fates {
         fates.entry(*mark).or_default().push(*fate);
     }
-    // The last recovery of each record that the final state went through:
-    // one the endpoint lost with its state no longer binds it.
+    // The last recovery of each record, whether or not the final state
+    // went through it, and the last one the final state went through.
     let mut last_recovery: BTreeMap<Mark, RecoveryId> = BTreeMap::new();
+    let mut last_in_lineage: BTreeMap<Mark, RecoveryId> = BTreeMap::new();
+    let mut recoveries_of: BTreeMap<Mark, Vec<RecoveryId>> = BTreeMap::new();
     for (id, r) in trace.recoveries.iter().enumerate() {
-        if !fin.lineage.contains(&id) {
-            continue;
-        }
         for mark in &r.targets {
             last_recovery.insert(*mark, id);
+            recoveries_of.entry(*mark).or_default().push(id);
+            if fin.lineage.contains(&id) {
+                last_in_lineage.insert(*mark, id);
+            }
         }
     }
+    // The records each entry's store kept through each of its losses.
+    let losses: Vec<(usize, Uuid, &BTreeSet<Mark>)> = trace
+        .events
+        .iter()
+        .enumerate()
+        .filter_map(|(ev, e)| match e {
+            Ev::IngressLoss { entry, held } => Some((ev, *entry, held)),
+            _ => None,
+        })
+        .collect();
+    // Whether the store of `entry` still held the commit of `mark` made at
+    // event `at` when event `then` came: a commit since then, or no loss
+    // between them that left it out.
+    let held = |mark: Mark, entry: Uuid, at: usize, then: usize| {
+        at > then
+            || losses
+                .iter()
+                .filter(|(ev, e, _)| *e == entry && *ev > at && *ev < then)
+                .all(|(_, _, kept)| kept.contains(&mark))
+    };
     let dropped_by_entry_change: BTreeSet<RecoveryId> = trace
         .events
         .iter()
@@ -914,21 +960,61 @@ fn omissions(trace: &Trace, strict: bool) -> Vec<String> {
             continue;
         }
         let committed = commits.get(mark).cloned().unwrap_or_default();
-        let stored = match last_recovery.get(mark) {
-            None => !committed.is_empty(),
-            Some(id) => {
-                let r = &trace.recoveries[*id];
-                committed
-                    .iter()
-                    .any(|(entry, ev)| *entry == r.entry && *ev > r.ev)
+        let after = |id: Option<&RecoveryId>| -> Vec<(Uuid, usize)> {
+            match id {
+                None => committed.clone(),
+                Some(id) => {
+                    let r = &trace.recoveries[*id];
+                    committed
+                        .iter()
+                        .filter(|(entry, ev)| *entry == r.entry && *ev > r.ev)
+                        .copied()
+                        .collect()
+                }
             }
         };
+        let last = last_recovery.get(mark);
+        let lineage_last = last_in_lineage.get(mark);
+        let relied = after(lineage_last);
+        // A recovery the endpoint undid by going back to a snapshot, after
+        // the last the state gone back to went through, binds the record
+        // when it closed the stream that state reopened there and got
+        // `closed` for (`reopened_closed`): the record must then be stored
+        // at that entry after it, unless the commit that state relies on
+        // was still held there when the recovery came. Any other undone
+        // recovery leaves the record to the recoveries of the state gone
+        // back to, which met the entry as that recovery had not touched
+        // it.
+        let binding: Vec<RecoveryId> = recoveries_of
+            .get(mark)
+            .map(Vec::as_slice)
+            .unwrap_or_default()
+            .iter()
+            .copied()
+            .filter(|id| {
+                let r = &trace.recoveries[*id];
+                !fin.lineage.contains(id)
+                    && lineage_last.is_none_or(|l| *id > *l)
+                    && reopened_closed(trace, *id)
+                    && !relied
+                        .iter()
+                        .any(|(entry, ev)| held(*mark, *entry, *ev, r.ev))
+            })
+            .collect();
+        let met = !relied.is_empty() || !after(last).is_empty();
+        let bound_met = binding.iter().all(|id| !after(Some(id)).is_empty());
+        let stored = met && bound_met;
+        // The second known defect: what an undone recovery binds is lost,
+        // since the state gone back to holds the record as acknowledged
+        // and the stream it opens on `closed` carries none of those.
+        let closed_unsent = !strict && met && !bound_met;
         let let_go = fates.get(mark).map(Vec::as_slice).unwrap_or_default();
         let lor_abandoned = let_go.iter().any(|fate| {
             matches!(fate, Fate::LostOnResetOnly(id)
-                if last_recovery.get(mark) == Some(id) && dropped_by_entry_change.contains(id))
+                if lineage_last == Some(id) && dropped_by_entry_change.contains(id))
         });
         let fine = stored
+            || closed_unsent
             || reported.contains(mark)
             || fin.collected.contains(mark)
             || let_go.contains(&Fate::Unsupported)
