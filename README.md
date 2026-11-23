@@ -19,9 +19,9 @@ order; and the trust chain of an install configuration, from the vendor
 keys the caller passes in through the deployment certificate and the
 install signing key to the key set, the address document and the
 enrollment token, which gives the endpoint its first trust state and
-its first document version
-state. `test-util` adds, with `auth`, deterministic test keys and a
-signer for building signed documents in tests. The `connection` module,
+its first document version state. `test-util` adds, with `auth`,
+deterministic test keys and a signer for building signed documents in
+tests. The `connection` module,
 public whatever the features, holds what control and telemetry
 connections share: framing, the envelope, the CBOR rules, version
 negotiation, liveness, reconnection backoff and clock correction. The
