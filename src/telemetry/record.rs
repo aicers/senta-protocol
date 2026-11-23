@@ -11,7 +11,7 @@ use serde::{
 use sha2::{Digest, Sha256};
 use uuid::Uuid;
 
-use super::ip;
+use super::{ip, logs};
 use crate::connection::cbor::put_head;
 use crate::connection::{ClockOffset, DecodeError, EncodeError, cbor};
 use crate::host::{CollectionMode, OsFamily, OsInfo};
@@ -113,6 +113,11 @@ pub struct RecordHeader {
     /// The collection mode.
     pub collection_mode: CollectionMode,
     /// The key of the record's principal process, where the kind has one.
+    ///
+    /// A record of a log kind, [`super::kind::WINDOWS_EVENT_LOG`],
+    /// [`super::kind::JOURNALD`] or [`super::kind::AUDITD`], has none: a
+    /// sender that sets one for those kinds fails [`Record::validate`]
+    /// and [`Record::to_bytes`]. A receiver does not check it.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub process_key: Option<ProcessKey>,
 }
@@ -387,6 +392,9 @@ pub enum RecordEncodeError {
     /// `net_state_source` is [`NetStateSource::Unknown`], but the header
     /// has `ips` or a `default_route_ip`.
     UnknownNetStateWithAddresses,
+    /// The record's kind is a log kind (see [`logs::KINDS`]), but the
+    /// header has a `process_key`.
+    ProcessKeyOnLogKind,
     /// The record does not encode as CBOR.
     Encode(EncodeError),
 }
@@ -397,6 +405,9 @@ impl fmt::Display for RecordEncodeError {
             Self::UnknownNetStateWithAddresses => f.write_str(
                 "the network state source is unknown, but the header carries IP addresses",
             ),
+            Self::ProcessKeyOnLogKind => {
+                f.write_str("a record of a log kind carries a process key in its header")
+            }
             Self::Encode(error) => write!(f, "record: {error}"),
         }
     }
@@ -405,7 +416,7 @@ impl fmt::Display for RecordEncodeError {
 impl std::error::Error for RecordEncodeError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match self {
-            Self::UnknownNetStateWithAddresses => None,
+            Self::UnknownNetStateWithAddresses | Self::ProcessKeyOnLogKind => None,
             Self::Encode(error) => Some(error),
         }
     }
@@ -421,13 +432,17 @@ impl Record {
     /// Checks the rules a sender must keep when it makes a record.
     ///
     /// When `net_state_source` is [`NetStateSource::Unknown`], `ips` must be
-    /// empty and `default_route_ip` absent. Decoding does not check this:
-    /// a receiver does not refuse a record for its sender's mistake.
+    /// empty and `default_route_ip` absent. When `kind` is a log kind,
+    /// 1000, 1100 or 1101 ([`logs::KINDS`]), the header must have no
+    /// `process_key`; other kinds may have one. Decoding does not check
+    /// these: a receiver does not refuse a record for its sender's
+    /// mistake.
     ///
     /// # Errors
     ///
     /// Returns [`RecordEncodeError::UnknownNetStateWithAddresses`] when the
-    /// rule above is broken.
+    /// first rule above is broken, and
+    /// [`RecordEncodeError::ProcessKeyOnLogKind`] when the second is.
     pub fn validate(&self) -> Result<(), RecordEncodeError> {
         let header = &self.header;
         if header.net_state_source == NetStateSource::Unknown
@@ -435,11 +450,17 @@ impl Record {
         {
             return Err(RecordEncodeError::UnknownNetStateWithAddresses);
         }
+        if header.process_key.is_some() && logs::KINDS.contains(&self.kind) {
+            return Err(RecordEncodeError::ProcessKeyOnLogKind);
+        }
         Ok(())
     }
 
     /// Fixes the record's bytes: checks it with [`Record::validate`], then
     /// encodes it as CBOR.
+    ///
+    /// The checks refuse, among others, a record of a log kind (1000, 1100
+    /// or 1101) whose header carries a `process_key`.
     ///
     /// The record is a map with the keys `header`, `kind`, `schema` and
     /// `body`, in that order. The header, kind and schema are written by

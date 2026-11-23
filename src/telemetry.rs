@@ -60,6 +60,7 @@
 
 pub mod ip;
 pub mod kind;
+pub mod logs;
 mod net_state;
 mod record;
 
