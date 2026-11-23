@@ -69,6 +69,8 @@ uuid = "1"
 ciborium = "0.2"
 # Ed25519 key pairs the tests sign with.
 ed25519-dalek = { version = "3", features = ["alloc", "pkcs8"] }
+# Drives the stream state machines' property tests.
+proptest = "1"
 # Certificates for the test CAs, servers and non-Ed25519 clients.
 rcgen = { version = "0.14", features = ["aws_lc_rs", "pem"] }
 # The crypto provider the tests pass in, and TLS 1.2 peers to reject.
