@@ -397,10 +397,7 @@ impl TrustState {
             return match documents::verify_keyset(jws, &key_source) {
                 Ok(verified) => {
                     self.keyset = verified.into_content();
-                    KeysetReceipt {
-                        result: DocumentResult::Applied,
-                        epoch_change: None,
-                    }
+                    KeysetReceipt::without_epoch_change(DocumentResult::Applied)
                 }
                 Err(error) => KeysetReceipt::without_epoch_change(error.result()),
             };
