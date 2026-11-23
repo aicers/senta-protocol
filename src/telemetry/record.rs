@@ -7,7 +7,6 @@ use jiff::Timestamp;
 use serde::{
     Deserialize, Deserializer, Serialize, Serializer,
     de::{self, DeserializeOwned, MapAccess, SeqAccess, Visitor},
-    ser::{self, SerializeMap, SerializeSeq},
 };
 use sha2::{Digest, Sha256};
 use uuid::Uuid;
@@ -22,6 +21,13 @@ const OBSERVED: &str = "observed";
 const INFERRED: &str = "inferred";
 const UNKNOWN: &str = "unknown";
 
+const HEADER: &str = "header";
+const KIND: &str = "kind";
+const SCHEMA: &str = "schema";
+const BODY: &str = "body";
+
+const MAJOR_BYTES: u8 = 2;
+const MAJOR_TEXT: u8 = 3;
 const MAJOR_ARRAY: u8 = 4;
 const MAJOR_MAP: u8 = 5;
 const MAJOR_SIMPLE: u8 = 7;
@@ -41,7 +47,11 @@ const RECORD_HASH_LEN: usize = 16;
 /// [`record_hash`]. A receiver hashes the bytes it received, never a
 /// re-encoding of what it decoded, so a receiver of another version, one
 /// that ignores fields it does not know, still computes the sender's hash.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+///
+/// [`Record::to_bytes`] is the one way to encode a record. A record has no
+/// `Serialize` implementation, since a serde serializer cannot write every
+/// value a received body may hold (see [`RecordBody`]).
+#[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct Record {
     /// The host header.
     pub header: RecordHeader,
@@ -151,10 +161,12 @@ pub struct ProcessKey {
 /// kept: the record's hash is taken over the bytes received, so it does not
 /// depend on them.
 ///
-/// `undefined` is kept apart from `null`, so [`RecordBody::decode`] refuses
-/// it wherever [`cbor::from_slice`] would, an optional field included. It
-/// cannot be encoded again, though: a body holding `undefined`, which only
-/// a received record can, fails to encode.
+/// An integer is kept whatever its width, and a bignum as the integer it
+/// holds: every integer from `-2^127` up to `2^128 - 1`, the range
+/// [`cbor::from_slice`] reads.
+/// `undefined` is kept apart from `null`: [`RecordBody::decode`] refuses
+/// it wherever [`cbor::from_slice`] would, an optional field included, and
+/// [`Record::to_bytes`] writes it back as `undefined`.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct RecordBody {
     entries: Vec<(BodyValue, BodyValue)>,
@@ -199,10 +211,13 @@ impl RecordBody {
 /// `undefined` kept apart from `null`.
 ///
 /// The crate's decoder hands `null` to a visitor as a unit and `undefined`
-/// as none, which is how the two are told apart here.
+/// as none, which is how the two are told apart here. An integer is
+/// `Unsigned` when it is not negative and `Negative` otherwise, so between
+/// them they hold every integer the decoder reads.
 #[derive(Debug, Clone, PartialEq)]
 enum BodyValue {
-    Integer(i128),
+    Unsigned(u128),
+    Negative(i128),
     Bytes(Vec<u8>),
     Text(String),
     Array(Vec<BodyValue>),
@@ -215,8 +230,9 @@ enum BodyValue {
 
 /// Appends the CBOR of a map of body entries.
 ///
-/// The containers and `undefined` are written here; every other value is
-/// written by [`cbor::to_vec`].
+/// Containers, strings and `undefined` are written here, since no serde
+/// serializer writes `undefined`; numbers, booleans and `null` are written
+/// by [`cbor::to_vec`].
 fn write_map(out: &mut Vec<u8>, entries: &[(BodyValue, BodyValue)]) -> Result<(), EncodeError> {
     put_head(out, MAJOR_MAP, len_u64(entries.len()));
     for (key, value) in entries {
@@ -228,59 +244,46 @@ fn write_map(out: &mut Vec<u8>, entries: &[(BodyValue, BodyValue)]) -> Result<()
 
 /// Appends the CBOR of one body value; see [`write_map`].
 fn write_value(out: &mut Vec<u8>, value: &BodyValue) -> Result<(), EncodeError> {
-    match value {
+    let scalar = match value {
         BodyValue::Array(items) => {
             put_head(out, MAJOR_ARRAY, len_u64(items.len()));
             for item in items {
                 write_value(out, item)?;
             }
+            return Ok(());
         }
-        BodyValue::Map(entries) => write_map(out, entries)?,
-        BodyValue::Undefined => put_head(out, MAJOR_SIMPLE, u64::from(SIMPLE_UNDEFINED)),
-        BodyValue::Integer(_)
-        | BodyValue::Bytes(_)
-        | BodyValue::Text(_)
-        | BodyValue::Float(_)
-        | BodyValue::Bool(_)
-        | BodyValue::Null => out.extend_from_slice(&cbor::to_vec(value)?),
-    }
+        BodyValue::Map(entries) => return write_map(out, entries),
+        BodyValue::Undefined => {
+            put_head(out, MAJOR_SIMPLE, u64::from(SIMPLE_UNDEFINED));
+            return Ok(());
+        }
+        BodyValue::Unsigned(value) => cbor::to_vec(value)?,
+        BodyValue::Negative(value) => cbor::to_vec(value)?,
+        BodyValue::Bytes(bytes) => {
+            put_head(out, MAJOR_BYTES, len_u64(bytes.len()));
+            out.extend_from_slice(bytes);
+            return Ok(());
+        }
+        BodyValue::Text(text) => {
+            write_text(out, text);
+            return Ok(());
+        }
+        BodyValue::Float(value) => cbor::to_vec(value)?,
+        BodyValue::Bool(value) => cbor::to_vec(value)?,
+        BodyValue::Null => cbor::to_vec(&())?,
+    };
+    out.extend_from_slice(&scalar);
     Ok(())
+}
+
+/// Appends a text string at a definite length.
+fn write_text(out: &mut Vec<u8>, text: &str) {
+    put_head(out, MAJOR_TEXT, len_u64(text.len()));
+    out.extend_from_slice(text.as_bytes());
 }
 
 fn len_u64(len: usize) -> u64 {
     u64::try_from(len).expect("a length in memory fits in a u64 on every supported target")
-}
-
-impl Serialize for BodyValue {
-    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        match self {
-            Self::Integer(value) => {
-                if let Ok(value) = u64::try_from(*value) {
-                    serializer.serialize_u64(value)
-                } else if let Ok(value) = i64::try_from(*value) {
-                    serializer.serialize_i64(value)
-                } else {
-                    serializer.serialize_i128(*value)
-                }
-            }
-            Self::Bytes(bytes) => serializer.serialize_bytes(bytes),
-            Self::Text(text) => serializer.serialize_str(text),
-            Self::Array(items) => {
-                let mut seq = serializer.serialize_seq(Some(items.len()))?;
-                for item in items {
-                    seq.serialize_element(item)?;
-                }
-                seq.end()
-            }
-            Self::Map(entries) => EntriesRef(entries).serialize(serializer),
-            Self::Float(value) => serializer.serialize_f64(*value),
-            Self::Bool(value) => serializer.serialize_bool(*value),
-            Self::Null => serializer.serialize_unit(),
-            Self::Undefined => Err(ser::Error::custom(
-                "a record body holding undefined cannot be encoded",
-            )),
-        }
-    }
 }
 
 impl<'de> Deserialize<'de> for BodyValue {
@@ -303,21 +306,19 @@ impl<'de> Visitor<'de> for BodyValueVisitor {
     }
 
     fn visit_i64<E: de::Error>(self, value: i64) -> Result<BodyValue, E> {
-        Ok(BodyValue::Integer(i128::from(value)))
+        self.visit_i128(i128::from(value))
     }
 
     fn visit_i128<E: de::Error>(self, value: i128) -> Result<BodyValue, E> {
-        Ok(BodyValue::Integer(value))
+        Ok(u128::try_from(value).map_or(BodyValue::Negative(value), BodyValue::Unsigned))
     }
 
     fn visit_u64<E: de::Error>(self, value: u64) -> Result<BodyValue, E> {
-        Ok(BodyValue::Integer(i128::from(value)))
+        Ok(BodyValue::Unsigned(u128::from(value)))
     }
 
     fn visit_u128<E: de::Error>(self, value: u128) -> Result<BodyValue, E> {
-        i128::try_from(value)
-            .map(BodyValue::Integer)
-            .map_err(|_| E::custom("integer outside the range of i128"))
+        Ok(BodyValue::Unsigned(value))
     }
 
     fn visit_f64<E: de::Error>(self, value: f64) -> Result<BodyValue, E> {
@@ -366,25 +367,6 @@ impl<'de> Visitor<'de> for BodyValueVisitor {
             entries.push(entry);
         }
         Ok(BodyValue::Map(entries))
-    }
-}
-
-/// The body's entries, serialized as a map.
-struct EntriesRef<'a>(&'a [(BodyValue, BodyValue)]);
-
-impl Serialize for EntriesRef<'_> {
-    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        let mut map = serializer.serialize_map(Some(self.0.len()))?;
-        for (key, value) in self.0 {
-            map.serialize_entry(key, value)?;
-        }
-        map.end()
-    }
-}
-
-impl Serialize for RecordBody {
-    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        EntriesRef(&self.entries).serialize(serializer)
     }
 }
 
@@ -459,18 +441,30 @@ impl Record {
     /// Fixes the record's bytes: checks it with [`Record::validate`], then
     /// encodes it as CBOR.
     ///
-    /// The sender keeps these bytes, resends them unchanged, and hashes
-    /// them with [`record_hash`].
+    /// The record is a map with the keys `header`, `kind`, `schema` and
+    /// `body`, in that order. The header, kind and schema are written by
+    /// [`cbor::to_vec`]; the body's entries are written as they are kept,
+    /// `undefined` included (see [`RecordBody`]). The sender keeps these
+    /// bytes, resends them unchanged, and hashes them with [`record_hash`].
     ///
     /// # Errors
     ///
     /// Returns the error of [`Record::validate`], or
     /// [`RecordEncodeError::Encode`] when the record does not encode, which
-    /// a time outside the range of an `i64` count of nanoseconds causes, as
-    /// does a received body holding `undefined` (see [`RecordBody`]).
+    /// a time outside the range of an `i64` count of nanoseconds causes.
     pub fn to_bytes(&self) -> Result<Vec<u8>, RecordEncodeError> {
         self.validate()?;
-        Ok(cbor::to_vec(self)?)
+        let mut out = Vec::new();
+        put_head(&mut out, MAJOR_MAP, 4);
+        write_text(&mut out, HEADER);
+        out.extend_from_slice(&cbor::to_vec(&self.header)?);
+        write_text(&mut out, KIND);
+        out.extend_from_slice(&cbor::to_vec(&self.kind)?);
+        write_text(&mut out, SCHEMA);
+        out.extend_from_slice(&cbor::to_vec(&self.schema)?);
+        write_text(&mut out, BODY);
+        write_map(&mut out, &self.body.entries)?;
+        Ok(out)
     }
 
     /// Decodes a record from its bytes, by the rules of

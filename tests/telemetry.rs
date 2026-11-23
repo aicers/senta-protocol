@@ -593,16 +593,67 @@ fn body_decode_keeps_undefined_apart_from_null() {
         Ok(map(vec![(text("x"), map(vec![(text("y"), Value::Null)]))]))
     );
 
-    // A body holding null is written back; one holding undefined cannot
-    // be, rather than turning it into null.
-    let decoded = Record::from_bytes(&record_with_raw_body(null)).unwrap();
-    let again = decoded.to_bytes().unwrap();
-    assert_eq!(Record::from_bytes(&again).unwrap(), decoded);
+    // A received body is written back with null as null and undefined as
+    // undefined, at the top of the body and nested in it, and the bytes
+    // written back decode as the received ones did.
+    for body in [
+        null,
+        undefined,
+        &[0xa2, 0x61, b'x', 0x01, 0x61, b'y', 0xf7],
+        &[0xa1, 0x61, b'x', 0x82, 0xf6, 0xf7],
+        &[0xa1, 0x61, b'x', 0xa1, 0x61, b'y', 0xf7],
+    ] {
+        let received = record_with_raw_body(body);
+        let decoded = Record::from_bytes(&received).unwrap();
+        let again = decoded.to_bytes().unwrap();
+        assert_eq!(again, received, "{body:02x?}");
+        assert_eq!(Record::from_bytes(&again).unwrap(), decoded);
+    }
     let decoded = Record::from_bytes(&record_with_raw_body(undefined)).unwrap();
-    assert!(matches!(
-        decoded.to_bytes(),
-        Err(RecordEncodeError::Encode(_))
-    ));
+    let again = Record::from_bytes(&decoded.to_bytes().unwrap()).unwrap();
+    assert_eq!(
+        again
+            .body
+            .decode::<Optional>()
+            .map_err(|error| error.kind()),
+        Err(DecodeErrorKind::Invalid)
+    );
+}
+
+#[test]
+fn body_keeps_integers_of_every_width() {
+    #[derive(Debug, PartialEq, Serialize, Deserialize)]
+    struct Wide {
+        top: u128,
+        above_i128: u128,
+        bottom: i128,
+        below_i64: i128,
+    }
+
+    let wide = Wide {
+        top: u128::MAX,
+        above_i128: 1 << 127,
+        bottom: i128::MIN,
+        below_i64: i128::from(i64::MIN) - 1,
+    };
+    let mut record = record(full_header());
+    record.body = RecordBody::encode(&wide).unwrap();
+    let bytes = record.to_bytes().unwrap();
+    let decoded = Record::from_bytes(&bytes).unwrap();
+    assert_eq!(decoded, record);
+    assert_eq!(decoded.body.decode::<Wide>().unwrap(), wide);
+    assert_eq!(decoded.to_bytes().unwrap(), bytes);
+
+    // A received bignum of 2^127, written by hand, is kept as well.
+    let mut body = vec![0xa1, 0x61, b'x', 0xc2, 0x50, 0x80];
+    body.extend_from_slice(&[0; 15]);
+    let decoded = Record::from_bytes(&record_with_raw_body(&body)).unwrap();
+    #[derive(Debug, PartialEq, Deserialize)]
+    struct Big {
+        x: u128,
+    }
+    assert_eq!(decoded.body.decode::<Big>().unwrap(), Big { x: 1 << 127 });
+    assert_eq!(decoded.to_bytes().unwrap(), record_with_raw_body(&body));
 }
 
 #[test]
