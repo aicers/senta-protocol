@@ -3,17 +3,17 @@
 
 use std::{convert::Infallible, fmt, marker::PhantomData, net::IpAddr};
 
-use ciborium::Value;
 use jiff::Timestamp;
 use serde::{
     Deserialize, Deserializer, Serialize, Serializer,
-    de::{self, DeserializeOwned, MapAccess},
-    ser::SerializeMap,
+    de::{self, DeserializeOwned, MapAccess, SeqAccess, Visitor},
+    ser::{self, SerializeMap, SerializeSeq},
 };
 use sha2::{Digest, Sha256};
 use uuid::Uuid;
 
 use super::ip;
+use crate::connection::cbor::put_head;
 use crate::connection::{ClockOffset, DecodeError, EncodeError, cbor};
 use crate::host::{CollectionMode, OsFamily, OsInfo};
 use crate::results::{Class, Tagged, TaggedVisitor};
@@ -21,6 +21,11 @@ use crate::results::{Class, Tagged, TaggedVisitor};
 const OBSERVED: &str = "observed";
 const INFERRED: &str = "inferred";
 const UNKNOWN: &str = "unknown";
+
+const MAJOR_ARRAY: u8 = 4;
+const MAJOR_MAP: u8 = 5;
+const MAJOR_SIMPLE: u8 = 7;
+const SIMPLE_UNDEFINED: u8 = 23;
 
 /// The number of leading bytes of a record's SHA-256 that make its hash.
 const RECORD_HASH_LEN: usize = 16;
@@ -145,9 +150,14 @@ pub struct ProcessKey {
 /// bignums, indefinite lengths and the width a float was encoded at are not
 /// kept: the record's hash is taken over the bytes received, so it does not
 /// depend on them.
+///
+/// `undefined` is kept apart from `null`, so [`RecordBody::decode`] refuses
+/// it wherever [`cbor::from_slice`] would, an optional field included. It
+/// cannot be encoded again, though: a body holding `undefined`, which only
+/// a received record can, fails to encode.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct RecordBody {
-    entries: Vec<(Value, Value)>,
+    entries: Vec<(BodyValue, BodyValue)>,
 }
 
 impl RecordBody {
@@ -160,8 +170,8 @@ impl RecordBody {
     /// key twice at some depth.
     pub fn encode<T: Serialize + ?Sized>(value: &T) -> Result<Self, EncodeError> {
         let bytes = cbor::to_vec(value)?;
-        match cbor::from_slice::<Value>(&bytes) {
-            Ok(Value::Map(entries)) => Ok(Self { entries }),
+        match cbor::from_slice::<BodyValue>(&bytes) {
+            Ok(BodyValue::Map(entries)) => Ok(Self { entries }),
             Ok(_) => Err(EncodeError::new("a record body must serialize as a map")),
             Err(error) => Err(EncodeError::new(format!("record body: {error}"))),
         }
@@ -170,22 +180,197 @@ impl RecordBody {
     /// Decodes the body's entries into a kind's body type.
     ///
     /// The entries are read by the rules of [`cbor::from_slice`]: each
-    /// value only from the CBOR type its rule names, and a field `T` does
-    /// not name ignored.
+    /// value only from the CBOR type its rule names, `undefined` never
+    /// standing in for `null`, and a field `T` does not name ignored.
     ///
     /// # Errors
     ///
     /// Returns an error when the entries do not decode into `T`, or, which
     /// entries this body was made with never cause, do not encode again.
     pub fn decode<T: DeserializeOwned>(&self) -> Result<T, DecodeError> {
-        let bytes = cbor::to_vec(&EntriesRef(&self.entries))
+        let mut bytes = Vec::new();
+        write_map(&mut bytes, &self.entries)
             .map_err(|error| DecodeError::invalid(format!("record body: {error}")))?;
         cbor::from_slice(&bytes)
     }
 }
 
+/// One value in a record's body: CBOR's data model less tags, with
+/// `undefined` kept apart from `null`.
+///
+/// The crate's decoder hands `null` to a visitor as a unit and `undefined`
+/// as none, which is how the two are told apart here.
+#[derive(Debug, Clone, PartialEq)]
+enum BodyValue {
+    Integer(i128),
+    Bytes(Vec<u8>),
+    Text(String),
+    Array(Vec<BodyValue>),
+    Map(Vec<(BodyValue, BodyValue)>),
+    Float(f64),
+    Bool(bool),
+    Null,
+    Undefined,
+}
+
+/// Appends the CBOR of a map of body entries.
+///
+/// The containers and `undefined` are written here; every other value is
+/// written by [`cbor::to_vec`].
+fn write_map(out: &mut Vec<u8>, entries: &[(BodyValue, BodyValue)]) -> Result<(), EncodeError> {
+    put_head(out, MAJOR_MAP, len_u64(entries.len()));
+    for (key, value) in entries {
+        write_value(out, key)?;
+        write_value(out, value)?;
+    }
+    Ok(())
+}
+
+/// Appends the CBOR of one body value; see [`write_map`].
+fn write_value(out: &mut Vec<u8>, value: &BodyValue) -> Result<(), EncodeError> {
+    match value {
+        BodyValue::Array(items) => {
+            put_head(out, MAJOR_ARRAY, len_u64(items.len()));
+            for item in items {
+                write_value(out, item)?;
+            }
+        }
+        BodyValue::Map(entries) => write_map(out, entries)?,
+        BodyValue::Undefined => put_head(out, MAJOR_SIMPLE, u64::from(SIMPLE_UNDEFINED)),
+        BodyValue::Integer(_)
+        | BodyValue::Bytes(_)
+        | BodyValue::Text(_)
+        | BodyValue::Float(_)
+        | BodyValue::Bool(_)
+        | BodyValue::Null => out.extend_from_slice(&cbor::to_vec(value)?),
+    }
+    Ok(())
+}
+
+fn len_u64(len: usize) -> u64 {
+    u64::try_from(len).expect("a length in memory fits in a u64 on every supported target")
+}
+
+impl Serialize for BodyValue {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        match self {
+            Self::Integer(value) => {
+                if let Ok(value) = u64::try_from(*value) {
+                    serializer.serialize_u64(value)
+                } else if let Ok(value) = i64::try_from(*value) {
+                    serializer.serialize_i64(value)
+                } else {
+                    serializer.serialize_i128(*value)
+                }
+            }
+            Self::Bytes(bytes) => serializer.serialize_bytes(bytes),
+            Self::Text(text) => serializer.serialize_str(text),
+            Self::Array(items) => {
+                let mut seq = serializer.serialize_seq(Some(items.len()))?;
+                for item in items {
+                    seq.serialize_element(item)?;
+                }
+                seq.end()
+            }
+            Self::Map(entries) => EntriesRef(entries).serialize(serializer),
+            Self::Float(value) => serializer.serialize_f64(*value),
+            Self::Bool(value) => serializer.serialize_bool(*value),
+            Self::Null => serializer.serialize_unit(),
+            Self::Undefined => Err(ser::Error::custom(
+                "a record body holding undefined cannot be encoded",
+            )),
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for BodyValue {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        deserializer.deserialize_any(BodyValueVisitor)
+    }
+}
+
+struct BodyValueVisitor;
+
+impl<'de> Visitor<'de> for BodyValueVisitor {
+    type Value = BodyValue;
+
+    fn expecting(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str("a CBOR value")
+    }
+
+    fn visit_bool<E: de::Error>(self, value: bool) -> Result<BodyValue, E> {
+        Ok(BodyValue::Bool(value))
+    }
+
+    fn visit_i64<E: de::Error>(self, value: i64) -> Result<BodyValue, E> {
+        Ok(BodyValue::Integer(i128::from(value)))
+    }
+
+    fn visit_i128<E: de::Error>(self, value: i128) -> Result<BodyValue, E> {
+        Ok(BodyValue::Integer(value))
+    }
+
+    fn visit_u64<E: de::Error>(self, value: u64) -> Result<BodyValue, E> {
+        Ok(BodyValue::Integer(i128::from(value)))
+    }
+
+    fn visit_u128<E: de::Error>(self, value: u128) -> Result<BodyValue, E> {
+        i128::try_from(value)
+            .map(BodyValue::Integer)
+            .map_err(|_| E::custom("integer outside the range of i128"))
+    }
+
+    fn visit_f64<E: de::Error>(self, value: f64) -> Result<BodyValue, E> {
+        Ok(BodyValue::Float(value))
+    }
+
+    fn visit_str<E: de::Error>(self, value: &str) -> Result<BodyValue, E> {
+        Ok(BodyValue::Text(value.to_owned()))
+    }
+
+    fn visit_string<E: de::Error>(self, value: String) -> Result<BodyValue, E> {
+        Ok(BodyValue::Text(value))
+    }
+
+    fn visit_bytes<E: de::Error>(self, value: &[u8]) -> Result<BodyValue, E> {
+        Ok(BodyValue::Bytes(value.to_vec()))
+    }
+
+    fn visit_byte_buf<E: de::Error>(self, value: Vec<u8>) -> Result<BodyValue, E> {
+        Ok(BodyValue::Bytes(value))
+    }
+
+    fn visit_unit<E: de::Error>(self) -> Result<BodyValue, E> {
+        Ok(BodyValue::Null)
+    }
+
+    fn visit_none<E: de::Error>(self) -> Result<BodyValue, E> {
+        Ok(BodyValue::Undefined)
+    }
+
+    fn visit_some<D: Deserializer<'de>>(self, deserializer: D) -> Result<BodyValue, D::Error> {
+        BodyValue::deserialize(deserializer)
+    }
+
+    fn visit_seq<A: SeqAccess<'de>>(self, mut seq: A) -> Result<BodyValue, A::Error> {
+        let mut items = Vec::new();
+        while let Some(item) = seq.next_element()? {
+            items.push(item);
+        }
+        Ok(BodyValue::Array(items))
+    }
+
+    fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<BodyValue, A::Error> {
+        let mut entries = Vec::new();
+        while let Some(entry) = map.next_entry()? {
+            entries.push(entry);
+        }
+        Ok(BodyValue::Map(entries))
+    }
+}
+
 /// The body's entries, serialized as a map.
-struct EntriesRef<'a>(&'a [(Value, Value)]);
+struct EntriesRef<'a>(&'a [(BodyValue, BodyValue)]);
 
 impl Serialize for EntriesRef<'_> {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
@@ -205,8 +390,8 @@ impl Serialize for RecordBody {
 
 impl<'de> Deserialize<'de> for RecordBody {
     fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        match Value::deserialize(deserializer)? {
-            Value::Map(entries) => Ok(Self { entries }),
+        match BodyValue::deserialize(deserializer)? {
+            BodyValue::Map(entries) => Ok(Self { entries }),
             _ => Err(de::Error::custom("a record body must be a map")),
         }
     }
@@ -281,7 +466,8 @@ impl Record {
     ///
     /// Returns the error of [`Record::validate`], or
     /// [`RecordEncodeError::Encode`] when the record does not encode, which
-    /// a time outside the range of an `i64` count of nanoseconds causes.
+    /// a time outside the range of an `i64` count of nanoseconds causes, as
+    /// does a received body holding `undefined` (see [`RecordBody`]).
     pub fn to_bytes(&self) -> Result<Vec<u8>, RecordEncodeError> {
         self.validate()?;
         Ok(cbor::to_vec(self)?)

@@ -524,6 +524,87 @@ fn body_decode_follows_the_strict_type_rules() {
     assert_eq!(decoded.body.decode::<SampleBody>().unwrap(), sample_body());
 }
 
+/// The bytes of a record whose body is `body`, written by hand.
+fn record_with_raw_body(body: &[u8]) -> Vec<u8> {
+    let mut value = record_value(&record(full_header()));
+    remove(&mut value, "body");
+    let mut bytes = encode(&value);
+    // Three entries left; make room for the body again.
+    assert_eq!(bytes.first(), Some(&0xa3));
+    if let Some(head) = bytes.first_mut() {
+        *head = 0xa4;
+    }
+    bytes.extend_from_slice(&encode(&text("body")));
+    bytes.extend_from_slice(body);
+    bytes
+}
+
+/// Checks that a body decodes into `T` as its own bytes do through
+/// `cbor::from_slice`, and returns that outcome.
+fn decodes_as_directly<T>(body: &[u8]) -> Result<T, DecodeErrorKind>
+where
+    T: DeserializeOwned + PartialEq + Debug,
+{
+    let direct = cbor::from_slice::<T>(body).map_err(|error| error.kind());
+    let decoded = Record::from_bytes(&record_with_raw_body(body)).unwrap();
+    let via_body = decoded.body.decode::<T>().map_err(|error| error.kind());
+    assert_eq!(via_body, direct, "{body:02x?}");
+    via_body
+}
+
+#[test]
+fn body_decode_keeps_undefined_apart_from_null() {
+    #[derive(Debug, PartialEq, Deserialize)]
+    struct Optional {
+        x: Option<u32>,
+    }
+    #[derive(Debug, PartialEq, Deserialize)]
+    struct Items {
+        x: Vec<Option<u32>>,
+    }
+
+    // {"x": null} and {"x": undefined}.
+    let null: &[u8] = &[0xa1, 0x61, b'x', 0xf6];
+    let undefined: &[u8] = &[0xa1, 0x61, b'x', 0xf7];
+    assert_eq!(decodes_as_directly(null), Ok(Optional { x: None }));
+    assert_eq!(
+        decodes_as_directly::<Optional>(undefined),
+        Err(DecodeErrorKind::Invalid)
+    );
+    // {"x": 1, "y": undefined}: a field the type does not name is ignored,
+    // whatever it holds.
+    assert_eq!(
+        decodes_as_directly(&[0xa2, 0x61, b'x', 0x01, 0x61, b'y', 0xf7]),
+        Ok(Optional { x: Some(1) })
+    );
+    // {"x": [null]} and {"x": [undefined]}, nested in an array.
+    assert_eq!(
+        decodes_as_directly(&[0xa1, 0x61, b'x', 0x81, 0xf6]),
+        Ok(Items { x: vec![None] })
+    );
+    assert_eq!(
+        decodes_as_directly::<Items>(&[0xa1, 0x61, b'x', 0x81, 0xf7]),
+        Err(DecodeErrorKind::Invalid)
+    );
+    // {"x": {"y": undefined}} read as any value, which takes undefined as
+    // it takes null.
+    assert_eq!(
+        decodes_as_directly::<Value>(&[0xa1, 0x61, b'x', 0xa1, 0x61, b'y', 0xf7]),
+        Ok(map(vec![(text("x"), map(vec![(text("y"), Value::Null)]))]))
+    );
+
+    // A body holding null is written back; one holding undefined cannot
+    // be, rather than turning it into null.
+    let decoded = Record::from_bytes(&record_with_raw_body(null)).unwrap();
+    let again = decoded.to_bytes().unwrap();
+    assert_eq!(Record::from_bytes(&again).unwrap(), decoded);
+    let decoded = Record::from_bytes(&record_with_raw_body(undefined)).unwrap();
+    assert!(matches!(
+        decoded.to_bytes(),
+        Err(RecordEncodeError::Encode(_))
+    ));
+}
+
 #[test]
 fn clock_offset_is_a_field_map_and_negative_offsets_round_trip() {
     let mut header = full_header();
