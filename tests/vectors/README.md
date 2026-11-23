@@ -122,8 +122,10 @@ to the content: `{"keyset_gap": {"have_epoch": 1, "have_version": 3}}`,
 or `{"rejected": "wrong_target"}` for a `CommandResultKind` holding a
 `DocumentResult`.
 
-The other results are written as below. None of their tags is a tag of
-the three enums, nor of one another.
+The other results are written as below. None of their outer tags is a
+tag of the three enums, nor of one another. The `<why>` of a failed
+enrollment is read only inside `enroll_failed`: its `rejected` there
+holds a `DocumentResult` and is not a `CommandResultKind`.
 
 - A JWS that verified:
   `{"verified": {"payload_sha256": <bytes>}}`.
