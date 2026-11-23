@@ -58,11 +58,17 @@
 //! # Ok::<(), Box<dyn std::error::Error>>(())
 //! ```
 
+mod flow;
 pub mod ip;
 pub mod kind;
 mod net_state;
 mod record;
 
+pub use self::flow::{
+    Ack, CloseStream, DroppedRange, ErrorMessage, LastStored, LostOnReset, MAX_BATCH_LEN,
+    MAX_RECORD_LEN, OpenStream, RecordBatch, RecordBatchTooLarge, ResumeInfo, SeqRange,
+    TELEMETRY_MESSAGE_KINDS, TelemetryDecodeError, TelemetryMessage,
+};
 pub use self::net_state::{
     NetState, NetStateGap, NetStateSpan, ResolvedNetState, resolve_net_state,
 };

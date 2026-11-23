@@ -27,6 +27,11 @@
 //! The `host` module is public whatever the features too: the operating
 //! system and collection mode an endpoint reports about its host, which
 //! telemetry record headers and control messages both carry.
+//!
+//! The `telemetry_codes` module is public whatever the features as well:
+//! the telemetry errors and the reasons for dropping records that
+//! telemetry messages carry, and with which the active list refuses an
+//! endpoint.
 
 #[cfg(feature = "auth")]
 pub mod auth;
@@ -37,6 +42,7 @@ pub mod host;
 pub mod results;
 #[cfg(feature = "telemetry")]
 pub mod telemetry;
+pub mod telemetry_codes;
 
 /// Doctests asserting that each feature-gated module exists exactly when its
 /// feature is on, and `connection` and `host` always. A module whose
@@ -79,4 +85,9 @@ mod feature_gates {
     #[doc = "use senta_protocol::telemetry;"]
     #[doc = "```"]
     struct Telemetry;
+
+    #[doc = "```"]
+    #[doc = "use senta_protocol::telemetry_codes;"]
+    #[doc = "```"]
+    struct TelemetryCodes;
 }
