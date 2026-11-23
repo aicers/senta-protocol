@@ -24,7 +24,7 @@ auth = [
   "dep:time",
   "dep:url",
 ]
-control = []
+control = ["dep:hmac", "dep:sha2"]
 telemetry = ["dep:sha2"]
 test-util = []
 
@@ -34,6 +34,9 @@ ciborium = "0.2"
 # Verifies JWS signatures, signs the endpoint's self-signed certificate
 # and encodes its key as PKCS#8.
 ed25519-dalek = { version = "3", optional = true, features = ["alloc", "pkcs8"] }
+# Computes the hardware identifier hash a control message carries, an
+# HMAC-SHA256 over the `sha2` below, on the same `digest` 0.11.
+hmac = { version = "0.13", optional = true }
 # The timestamp every module of this crate takes.
 jiff = { version = "1", default-features = false, features = ["std"] }
 # Builds the endpoint's self-signed certificate. Its default features

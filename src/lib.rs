@@ -24,6 +24,10 @@
 //! result enums that the trust state machines produce and the control
 //! channel carries.
 //!
+//! The `standing` module is public whatever the features too: why an
+//! endpoint was suspended, which the control channel's suspension notice
+//! carries and the active list records.
+//!
 //! The `host` module is public whatever the features too: the operating
 //! system and collection mode an endpoint reports about its host, which
 //! telemetry record headers and control messages both carry.
@@ -40,6 +44,7 @@ pub mod connection;
 pub mod control;
 pub mod host;
 pub mod results;
+pub mod standing;
 #[cfg(feature = "telemetry")]
 pub mod telemetry;
 pub mod telemetry_codes;
@@ -58,6 +63,11 @@ mod feature_gates {
     #[doc = "use senta_protocol::host;"]
     #[doc = "```"]
     struct Host;
+
+    #[doc = "```"]
+    #[doc = "use senta_protocol::standing;"]
+    #[doc = "```"]
+    struct Standing;
 
     #[cfg_attr(feature = "auth", doc = "```")]
     #[cfg_attr(not(feature = "auth"), doc = "```compile_fail,E0432")]
