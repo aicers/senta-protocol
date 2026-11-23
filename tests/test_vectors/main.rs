@@ -181,6 +181,40 @@ fn reproduction_catches_a_wrong_jws_result() {
 }
 
 #[test]
+fn reproduction_catches_a_wrong_signer() {
+    let mismatches = reproduce_changed::<JwsCase>("jws.json", |file| {
+        let case = file
+            .cases
+            .iter_mut()
+            .find(|case| case.name == "senta-command:json_serialization")
+            .unwrap();
+        case.signed_by = Some(fixtures::install_kid(fixtures::INSTALL_ID));
+    });
+    assert_eq!(mismatches.len(), 1, "{mismatches:?}");
+    assert!(
+        mismatches[0].contains("senta-command:json_serialization"),
+        "{mismatches:?}"
+    );
+}
+
+#[test]
+fn reproduction_catches_a_valid_case_without_signer() {
+    let mismatches = reproduce_changed::<JwsCase>("jws.json", |file| {
+        let case = file
+            .cases
+            .iter_mut()
+            .find(|case| case.name == "senta-policy:valid")
+            .unwrap();
+        case.signed_by = None;
+    });
+    assert_eq!(mismatches.len(), 1, "{mismatches:?}");
+    assert!(
+        mismatches[0].contains("senta-policy:valid"),
+        "{mismatches:?}"
+    );
+}
+
+#[test]
 fn reproduction_catches_a_wrong_step_result() {
     let mismatches = reproduce_changed::<SequenceCase>("leak.json", |file| {
         let step = file

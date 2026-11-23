@@ -323,7 +323,7 @@ fn cases_of(ring: &mut KeyRing, typ: Typ, index: usize) -> Vec<JwsCase> {
         "json_serialization",
         "The valid document in the flattened JWS JSON serialization.".to_owned(),
         json_serialization(&valid),
-        None,
+        Some(kid.clone()),
         tag("schema_error"),
     ));
     let wrong = wrong_class_signer(typ);

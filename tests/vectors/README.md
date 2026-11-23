@@ -158,7 +158,9 @@ Each case verifies one JWS as a document of one `typ`.
 
 - `signed_by` (optional): the kid whose key signed the JWS. It is
   present exactly when the signature is that key's genuine signature of
-  the signing input `<header segment>.<payload segment>`.
+  the signing input `<header segment>.<payload segment>`; in the
+  `json_serialization` cases the segments are the `protected` and
+  `payload` members, and the signature is the `signature` member.
 - `input.jws`: the text handed to the verifier, as it is. It is a
   compact JWS, except in the `json_serialization` cases, where it is the
   flattened JWS JSON serialization of a valid document.
@@ -181,12 +183,14 @@ segment base64url-decoded: the exact bytes signed, never the JSON of
 
 ### Signing
 
-Every compact JWS with a `signed_by` is reproducible byte for byte: take
+Every JWS with a `signed_by` is reproducible byte for byte: take
 the header and payload bytes (`header_json` and `payload_json` as UTF-8),
 base64url-encode each, join them with `.`, sign that ASCII string with
 the Ed25519 seed of `signed_by` (Ed25519 is deterministic), and append
 `.` and the base64url signature. The headers of ordinary documents are
-`{"alg":"EdDSA","typ":<typ>,"kid":<kid>}` with no whitespace.
+`{"alg":"EdDSA","typ":<typ>,"kid":<kid>}` with no whitespace. A
+`json_serialization` case is the same three base64url strings as the
+`protected`, `payload` and `signature` members of one JSON object.
 
 ### Cases
 

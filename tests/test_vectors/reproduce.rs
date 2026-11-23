@@ -216,16 +216,26 @@ fn verify_typ<K: KeySource>(typ: Typ, jws: &str, keys: &K) -> Result<[u8; 32], D
     }
 }
 
-/// Decodes the header and payload of a JWS, compact or in the JSON
-/// serialization.
-fn jws_parts(jws: &str) -> Option<(Vec<u8>, Vec<u8>)> {
-    if jws.starts_with('{') {
-        let value: serde_json::Value = serde_json::from_str(jws).ok()?;
-        let header = b64_decode(value.get("protected")?.as_str()?)?;
-        let payload = b64_decode(value.get("payload")?.as_str()?)?;
-        return Some((header, payload));
+/// Returns the compact form of a JWS: the text itself, or the
+/// `protected`, `payload` and `signature` members of the JSON
+/// serialization joined with `.`.
+fn compact_form(jws: &str) -> Option<String> {
+    if !jws.starts_with('{') {
+        return Some(jws.to_owned());
     }
-    let mut parts = jws.split('.');
+    let value: serde_json::Value = serde_json::from_str(jws).ok()?;
+    let member = |name: &str| value.get(name).and_then(serde_json::Value::as_str);
+    Some(format!(
+        "{}.{}.{}",
+        member("protected")?,
+        member("payload")?,
+        member("signature")?
+    ))
+}
+
+/// Decodes the header and payload of a JWS in its compact form.
+fn jws_parts(compact: &str) -> Option<(Vec<u8>, Vec<u8>)> {
+    let mut parts = compact.split('.');
     let header = b64_decode(parts.next()?)?;
     let payload = b64_decode(parts.next()?)?;
     Some((header, payload))
@@ -269,7 +279,11 @@ fn run_jws(case: &JwsCase, keys: &BTreeMap<String, Key>, report: &mut Report<'_>
     };
     report.check_result(at, &case.expected, &actual);
 
-    let Some((header, payload)) = jws_parts(&input.jws) else {
+    let Some(compact) = compact_form(&input.jws) else {
+        report.fail(at, "the JWS JSON serialization lacks a member");
+        return;
+    };
+    let Some((header, payload)) = jws_parts(&compact) else {
         report.fail(at, "the header and payload do not decode");
         return;
     };
@@ -277,23 +291,23 @@ fn run_jws(case: &JwsCase, keys: &BTreeMap<String, Key>, report: &mut Report<'_>
     if input.header_json != readable(&header) || input.payload_json != readable(&payload) {
         report.fail(at, "header_json or payload_json is not the decoded segment");
     }
-    if let Some(expected_hash) = case
-        .expected
-        .get("verified")
-        .and_then(|verified| verified.get("payload_sha256"))
-        && *expected_hash != J::str(b64(&sha256(&payload)))
-    {
-        report.fail(
-            at,
-            "payload_sha256 is not the SHA-256 of the decoded payload",
-        );
+    if let Some(verified) = case.expected.get("verified") {
+        if verified.get("payload_sha256") != Some(&J::str(b64(&sha256(&payload)))) {
+            report.fail(
+                at,
+                "payload_sha256 is not the SHA-256 of the decoded payload",
+            );
+        }
+        if case.signed_by.is_none() {
+            report.fail(at, "a valid case names no signed_by");
+        }
     }
     if let Some(kid) = &case.signed_by {
         let Some(key) = keys.get(kid) else {
             report.fail(at, format!("signed_by {kid} is not in the key list"));
             return;
         };
-        if TestKey::from_seed(&key.seed).sign_raw(&header, &payload) != input.jws {
+        if TestKey::from_seed(&key.seed).sign_raw(&header, &payload) != compact {
             report.fail(
                 at,
                 format!("the signature is not {kid}'s seed signing the signing input"),
