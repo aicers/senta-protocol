@@ -59,6 +59,7 @@
 //! ```
 
 mod flow;
+mod flow_sender;
 pub mod ip;
 pub mod kind;
 pub mod logs;
@@ -71,6 +72,12 @@ pub use self::flow::{
     Ack, CloseStream, DroppedRange, ErrorMessage, LastStored, LostOnReset, MAX_BATCH_LEN,
     MAX_RECORD_LEN, OpenStream, RecordBatch, RecordBatchTooLarge, ResumeInfo, SeqRange,
     TELEMETRY_MESSAGE_KINDS, TelemetryDecodeError, TelemetryMessage,
+};
+pub use self::flow_sender::{
+    MemorySenderStore, SENDER_DEFAULT_RETENTION, SenderAction, SenderConfig, SenderConnected,
+    SenderConnection, SenderEntryStatus, SenderError, SenderPosition, SenderRecovered,
+    SenderStateChange, SenderStateEntry, SenderStateKey, SenderStatus, SenderStore,
+    SenderStoreError, SenderStream,
 };
 pub use self::net_state::{
     NetState, NetStateGap, NetStateSpan, ResolvedNetState, resolve_net_state,
