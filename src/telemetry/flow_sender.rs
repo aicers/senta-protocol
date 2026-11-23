@@ -571,13 +571,15 @@ impl<S: SenderStore> SenderStream<S> {
     /// A `resume_info` answering the awaited `open_stream` runs the
     /// reconnection judgment; an `ack` within what this connection may
     /// acknowledge raises `K`; a `closed` answering the awaited
-    /// `open_stream` opens a new stream. `new_stream` is used only if a
-    /// new stream opens. An invalid message — a `resume_info` answering
-    /// nothing, of another stream or with `last_stored` past `a`; an `ack`
-    /// of the current stream past `K` without the right to acknowledge it
-    /// or past `C`; any other error; a message only an endpoint sends —
-    /// only closes the connection. An `ack` of another stream, or not
-    /// past `K`, does nothing itself.
+    /// `open_stream` opens a new stream, which resends the unacknowledged
+    /// records and every acknowledged copy still held, since `closed`
+    /// says nothing of what the entry acknowledged. `new_stream` is used
+    /// only if a new stream opens. An invalid message — a `resume_info`
+    /// answering nothing, of another stream or with `last_stored` past
+    /// `a`; an `ack` of the current stream past `K` without the right to
+    /// acknowledge it or past `C`; any other error; a message only an
+    /// endpoint sends — only closes the connection. An `ack` of another
+    /// stream, or not past `K`, does nothing itself.
     ///
     /// # Errors
     ///

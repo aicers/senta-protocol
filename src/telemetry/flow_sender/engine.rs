@@ -53,7 +53,10 @@ enum Reset {
     Lost { a: u64 },
     /// Steps 3 to 5, or decision ②: same entry, nothing lost to report.
     Same,
-    /// The entry answered the `open_stream` with `closed`.
+    /// The entry answered the `open_stream` with `closed`. It says
+    /// nothing of `A`, and the history that made the entry close the
+    /// stream may have been one where `A < K`, so every acknowledged copy
+    /// still held is resent as well, as if `A` were 0.
     Closed,
 }
 
@@ -1066,7 +1069,11 @@ impl Core {
             }
             None => k,
         };
-        if !self.state.all_dropped(low.saturating_add(1), a) {
+        // Only dropped sequence numbers this state has sent pass: one
+        // past `S` was never sent from here, and having no hash, nothing
+        // shows that what the entry covers there is this assignment's
+        // loss rather than an undone one's.
+        if a > self.state.meta.s || !self.state.all_dropped(low.saturating_add(1), a) {
             return self.transition(Reset::Same, entry, new_stream, wall, out);
         }
         self.confirm(a, wall);
@@ -1186,7 +1193,8 @@ impl Core {
         let kinds = state.accepted(entry).map(<[_]>::to_vec).unwrap_or_default();
         let low = match reset {
             Reset::Lost { a } => a,
-            _ => k,
+            Reset::Closed => 0,
+            Reset::Fresh | Reset::EntryChanged | Reset::Same => k,
         };
 
         // 1. Renumber, in the old order: records to resend, and the dropped
@@ -1274,8 +1282,13 @@ impl Core {
 
         // 2. Move the collection buffer.
         self.fill();
-        // 3. Apply the collection buffer's limit.
-        self.enforce_collect_limit(&returned_copies);
+        // 3. Apply the collection buffer's limit. Only step 2 reports the
+        // copies it deletes as lost on reset rather than unsupported.
+        if matches!(reset, Reset::Lost { .. }) {
+            self.enforce_collect_limit(&returned_copies);
+        } else {
+            self.enforce_collect_limit(&BTreeMap::new());
+        }
 
         // 4. The notices.
         let mut notices = Vec::new();

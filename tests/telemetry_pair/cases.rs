@@ -15,7 +15,7 @@ use crate::fixture::{
     E1, E2, ENDPOINT,
     Kind::{Net, Proc1, Proc2},
     Kinds,
-    Kinds::{All, NoNet, Proc1Only},
+    Kinds::{All, NoNet, OnlyNet, Proc1Only},
     List, Mark,
     Size::{Huge, Normal},
     expected_hash, make_record, wire,
@@ -610,8 +610,10 @@ pub fn closed_after_an_undone_transition(restore: bool) -> (World, Mark) {
 
 /// Checks the shape both runs of `closed_after_an_undone_transition` share:
 /// the `A < K` transition that targeted the record was undone, and the
-/// state gone back to got `closed` for the stream it closed.
-fn undone_then_closed(trace: &Trace, p: Mark) -> &Recovery {
+/// state gone back to got `closed` for the stream it closed, and resent
+/// the record it held as acknowledged on the stream it opened then.
+/// Returns the undone transition and the one on `closed`.
+fn undone_then_closed(trace: &Trace, p: Mark) -> (&Recovery, &Recovery) {
     let (id, lost) = lost_recovery(trace);
     assert!(lost.targets.contains(&p));
     assert!(!trace.final_state.lineage.contains(&id));
@@ -621,30 +623,38 @@ fn undone_then_closed(trace: &Trace, p: Mark) -> &Recovery {
     assert!(trace.final_state.lineage.contains(&closed_id));
     assert_eq!((c.entry, c.old_stream), (lost.entry, lost.old_stream));
     assert!(c.ev > lost.ev);
-    assert!(!c.targets.contains(&p));
-    lost
+    assert!(c.targets.contains(&p));
+    assert_eq!(marks(&c.list), [Some(p)]);
+    (lost, c)
 }
 
-/// A transition the endpoint undid still binds the record it targeted
-/// when the state gone back to meets the stream it closed: the record,
-/// stored at E1 again by that transition, is not missing.
+/// A record a transition the endpoint undid stored at E1 again is stored
+/// once more by the stream the state gone back to opens on `closed` for
+/// the stream that transition closed: not missing, and duplicated only
+/// as a rollback allows.
 #[test]
 fn a_record_stored_again_by_a_transition_later_undone_is_not_missing() {
     let (w, p) = closed_after_an_undone_transition(true);
     let trace = w.finish(All);
-    if let Err(failures) = judge::judge_strict(&trace) {
+    if let Err(failures) = judge::judge(&trace) {
         panic!("{failures}");
     }
-    let lost = undone_then_closed(&trace, p);
+    let (lost, closed) = undone_then_closed(&trace, p);
+    // Stored first, again by the undone transition, and once more by the
+    // stream opened on `closed`: a duplicate bounded by the copy's hold.
     let commits = record_commits(&trace, p);
-    assert_eq!(commits.len(), 2);
+    assert_eq!(commits.len(), 3);
     assert_eq!(commits[1].0, E1);
-    assert!(commits[1].1 > lost.ev);
+    assert!(lost.ev < commits[1].1 && commits[1].1 < closed.ev);
+    assert_eq!((commits[2].0, commits[2].2), (E1, closed.stream));
+    assert!(commits[2].1 > closed.ev);
 }
 
-/// A recovery that answered only the endpoint's own loss, undone, binds
-/// nothing: the entry still holds the record on the stream the state gone
-/// back to resumes.
+/// A recovery that answered only the endpoint's own loss, undone, asks
+/// nothing of the record: the entry still holds it on the stream the
+/// state gone back to reopens. That stream was closed by the undone
+/// recovery's, so the state gets `closed` and stores its acknowledged
+/// copy again, the duplicate a rollback is allowed.
 #[test]
 fn an_undone_recovery_of_a_record_the_entry_still_holds_binds_nothing() {
     let mut w = world(Setup::default());
@@ -656,14 +666,21 @@ fn an_undone_recovery_of_a_record_the_entry_still_holds_binds_nothing() {
     // again before the endpoint goes back to the snapshot.
     run(&mut w, &[Session(NoNet), Rollback(0)]);
     let trace = w.finish(All);
-    if let Err(failures) = judge::judge_strict(&trace) {
+    if let Err(failures) = judge::judge(&trace) {
         panic!("{failures}");
     }
     let fresh = recoveries(&trace, Some(Reset::Fresh));
     let (id, undone) = fresh.last().unwrap();
     assert!(undone.targets.contains(&p));
     assert!(!trace.final_state.lineage.contains(id));
-    assert_eq!(record_commits(&trace, p).len(), 1);
+    let closed = recoveries(&trace, Some(Reset::Closed));
+    assert_eq!(closed.len(), 1);
+    let (closed_id, c) = closed[0];
+    assert!(trace.final_state.lineage.contains(&closed_id));
+    assert!(c.targets.contains(&p));
+    let commits = record_commits(&trace, p);
+    assert_eq!(commits.len(), 2);
+    assert_eq!((commits[1].0, commits[1].2), (E1, c.stream));
 }
 
 #[test]
@@ -731,20 +748,40 @@ fn records_left_without_sequence_state_are_renumbered_and_refused_ones_wait() {
 }
 
 #[test]
-fn a_loss_announced_in_a_state_rolled_back_is_still_lost_on_reset() {
+fn a_loss_announced_in_a_state_rolled_back_is_announced_again_on_a_new_stream() {
     let mut w = world(Setup::default());
     run(&mut w, &[Session(All), EntrySnapshot(Entry::E1)]);
     w.collect(Proc1, Normal);
     run(&mut w, &[Exchange, Disconnect]);
-    w.collect(Proc1, Huge);
+    let big = w.collect(Proc1, Huge);
     // The snapshot holds 2 dropped and not yet announced.
     w.run(Snapshot);
     run(&mut w, &[Session(All), Advance(Step::Day), Tick]);
+    // The entry's `A` covers 2, which the state gone back to never sent:
+    // step 5 opens a new stream, where 2 is dropped number 1. Announced
+    // there, it is left out of the losses of the `A < K` transition that
+    // follows.
     run(&mut w, &[Rollback(0), Session(All)]);
     run(&mut w, &[EntryRestore(Entry::E1, 0), Session(All)]);
     let trace = finish(w, All);
+    let same = recoveries(&trace, Some(Reset::Same));
+    assert_eq!(same.len(), 1);
+    let (same_id, same) = same[0];
+    assert!(trace.final_state.lineage.contains(&same_id));
+    let [Item::Dropped { reason, assign }] = same.list.as_slice() else {
+        panic!("{:?}", same.list);
+    };
+    assert_eq!(*reason, DropReason::TooLarge);
+    let assign = trace.assign_of(*assign);
+    assert_eq!(
+        (assign.mark, assign.stream, assign.seq),
+        (big, same.stream, 1)
+    );
     let (_, r) = lost_recovery(&trace);
-    assert_eq!(r.notices.as_ref().unwrap().lost, [(1, 2)]);
+    assert!(r.ev > same.ev);
+    assert_eq!(r.reset, Some(Reset::Lost { a: 0 }));
+    assert_eq!(r.old_stream, Some(same.stream));
+    assert!(r.notices.as_ref().unwrap().lost.is_empty());
 }
 
 #[test]
@@ -1250,24 +1287,14 @@ fn a_receiver_stores_unknown_fields_as_sent_and_hashes_those_bytes() {
     );
 }
 
-/// The defect the pull request reports: after the endpoint goes back to a
-/// snapshot, a sequence number dropped before is assigned to another
-/// record that is dropped too, and the entry's `A`, which covers the first
-/// loss, makes step 5 and 6 acknowledge the second without it ever being
-/// sent: that record is neither stored nor reported lost.
-///
-/// The sender does what the SenderStream issue's reconnection judgment
-/// says: step 5 lets dropped numbers through, step 6 clears them, and
-/// that issue's acceptance criteria name this very input (a snapshot with
-/// `K = S = 0` and dropped numbers 1 and 2, answered with `A = 2` and no
-/// `last_stored`) as one that goes on at step 6. What it breaks is the
-/// guarantee this test holds the pair to — every loss reported, by the
-/// assignment that carried it — so the fix is a decision on that
-/// contract, not on the code alone. Until it is made, `judge::judge`
-/// excuses exactly this fate (`Fate::ConfirmedUnsent`) in the property
-/// test, and this case runs the strict judge.
+/// A defect the paired property test found: after the endpoint goes back
+/// to a snapshot, a sequence number dropped before is assigned to another
+/// record that is dropped too, and the entry's `A`, which covers the
+/// first loss, let step 5 and 6 acknowledge the second without it ever
+/// being sent: that record was neither stored nor reported lost. Step 5
+/// now passes only dropped numbers no higher than `S`, so the entry's `A`
+/// past `S` opens a new stream that reports the second loss.
 #[test]
-#[ignore = "결함: 되돌린 엔드포인트가 다시 할당한 버린 순번을 보내지 않은 채 6단계로 확인해 그 레코드의 손실이 보고되지 않음"]
 fn defect_a_number_dropped_again_after_a_rollback_is_acknowledged_unreported() {
     let mut w = world(Setup {
         list: List::E1,
@@ -1279,67 +1306,137 @@ fn defect_a_number_dropped_again_after_a_rollback_is_acknowledged_unreported() {
     w.collect(Proc1, Huge);
     w.run(Session(All));
     let trace = w.finish(All);
-    if let Err(failures) = judge::judge_strict(&trace) {
+    if let Err(failures) = judge::judge(&trace) {
         panic!("{failures}");
     }
 }
 
+/// The record dropped again after the rollback is reported by the
+/// stream step 5 opens, as number 1 with its own reason.
 #[test]
-fn the_defect_case_fails_only_by_the_unreported_loss() {
+fn the_number_dropped_again_after_a_rollback_is_reported_on_a_new_stream() {
     let mut w = world(Setup {
         list: List::E1,
         ..Setup::default()
     });
     run(&mut w, &[Session(All), Snapshot]);
-    w.collect(Proc1, Huge);
+    let first = w.collect(Proc1, Huge);
     run(&mut w, &[Exchange, Rollback(0)]);
-    let lost = w.collect(Proc1, Huge);
+    let again = w.collect(Proc1, Huge);
     w.run(Session(All));
-    let trace = w.finish(All);
-    judge::judge(&trace).unwrap();
-    let failures = judge::judge_strict(&trace).unwrap_err();
-    assert!(failures.starts_with("1 failures"), "{failures}");
-    assert!(
-        failures.contains(&format!("omission: record {lost} ")),
-        "{failures}"
+    let trace = finish(w, All);
+    let same = recoveries(&trace, Some(Reset::Same));
+    assert_eq!(same.len(), 1);
+    let (_, r) = same[0];
+    assert!(r.notices.as_ref().unwrap().lost.is_empty());
+    assert!(r.notices.as_ref().unwrap().close);
+    let trace = &trace;
+    let reported: Vec<(Mark, Uuid, u64, u64, DropReason)> = trace
+        .commits
+        .iter()
+        .filter_map(|c| match &c.item {
+            CommitItem::Dropped {
+                key,
+                range,
+                reason,
+                assigns,
+            } => Some((key, range, reason, assigns)),
+            _ => None,
+        })
+        .flat_map(|(key, range, reason, assigns)| {
+            assigns.iter().map(move |a| {
+                (
+                    trace.assign_of(*a).mark,
+                    key.stream,
+                    range.from,
+                    range.to,
+                    reason.clone(),
+                )
+            })
+        })
+        .collect();
+    assert_eq!(
+        reported.iter().filter(|(mark, ..)| *mark == again).count(),
+        1,
+        "{reported:?}"
     );
+    assert!(reported.contains(&(again, r.stream, 1, 1, DropReason::TooLarge)));
+    assert!(reported.iter().any(|(mark, ..)| *mark == first));
 }
 
-/// The second defect the pull request reports. E1 loses a record the
+/// A defect the paired property test found. E1 loses a record the
 /// endpoint holds as acknowledged; the `A < K` transition that follows
 /// closes the old stream at E1 and makes the record a target; the
 /// endpoint goes back to a snapshot from before it, which holds the
-/// record as acknowledged on that stream. That state reopens the stream,
-/// gets `closed`, and opens a new stream with no notice and only the
-/// records it holds as unacknowledged, as the rule for `closed` says. The
-/// record is neither stored again at E1 nor reported lost, though the
-/// endpoint still holds a copy of it, so the omission judgment's
-/// exemption for a loss of state does not cover it. The endpoint keeps
-/// to the rule; it is the rule that loses the record, so the fix is a
-/// decision on that contract. Until it is made, `judge::judge` excuses
-/// exactly this path (`judge::reopened_closed`) in the property test,
-/// and this case runs the strict judge.
+/// record as acknowledged on that stream. That state reopens the stream
+/// and gets `closed`. Its new stream used to carry only the records it
+/// held as unacknowledged, so the record was neither stored again at E1
+/// nor reported lost. `closed` says nothing of what the entry
+/// acknowledged, so the new stream now resends every copy held too.
 #[test]
-#[ignore = "결함: 되돌린 엔드포인트가 이미 닫힌 옛 흐름에서 Closed를 받아, 입구가 잃은 확인 사본을 다시 보내지도 손실 보고하지도 않음"]
 fn defect_an_acknowledged_record_lost_before_an_undone_transition_is_dropped_on_closed() {
     let (w, _) = closed_after_an_undone_transition(false);
     let trace = w.finish(All);
-    if let Err(failures) = judge::judge_strict(&trace) {
+    if let Err(failures) = judge::judge(&trace) {
         panic!("{failures}");
     }
 }
 
+/// The record the undone transition targeted is stored again at E1 by
+/// the stream opened on `closed`, as its number 1.
 #[test]
-fn the_closed_defect_case_fails_only_by_the_record_it_loses() {
+fn the_acknowledged_record_lost_before_an_undone_transition_is_stored_on_closed() {
     let (w, p) = closed_after_an_undone_transition(false);
-    let trace = w.finish(All);
-    undone_then_closed(&trace, p);
-    assert_eq!(record_commits(&trace, p).len(), 1);
-    judge::judge(&trace).unwrap();
-    let failures = judge::judge_strict(&trace).unwrap_err();
-    assert!(failures.starts_with("1 failures"), "{failures}");
-    assert!(
-        failures.contains(&format!("omission: record {p} ")),
-        "{failures}"
+    let trace = finish(w, All);
+    let (lost, closed) = undone_then_closed(&trace, p);
+    let notices = closed.notices.as_ref().unwrap();
+    assert!(notices.lost.is_empty());
+    assert!(!notices.close);
+    let commits = record_commits(&trace, p);
+    assert_eq!(commits.len(), 2);
+    assert!(commits[0].1 < lost.ev);
+    assert_eq!(commits[1], (E1, commits[1].1, closed.stream, 1));
+    assert!(commits[1].1 > closed.ev);
+}
+
+/// The record the undone transition targeted is no longer held when the
+/// state gone back to gets `closed`: its acknowledged copy's 24 hours
+/// ended at that connection's `hello_ack`. Knowing nothing of what the
+/// entry lost, the endpoint neither resends nor reports it, as the rule
+/// for `closed` says, and the judges hold it to nothing more.
+#[test]
+fn a_copy_no_longer_held_when_the_state_gone_back_to_gets_closed_is_not_resent() {
+    let mut w = world(Setup {
+        collect_limit: 1,
+        queue_limit: 4000,
+        retention_hours: 2,
+        list: List::E1,
+    });
+    run(&mut w, &[EntrySnapshot(Entry::E1), Session(All)]);
+    let p = w.collect(Proc2, Normal);
+    run(
+        &mut w,
+        &[
+            Exchange,
+            Session(All),
+            Session(All),
+            Snapshot,
+            EntryRestore(Entry::E1, 0),
+            Session(OnlyNet),
+            Advance(Step::Day),
+            Rollback(0),
+        ],
     );
+    let trace = finish(w, OnlyNet);
+    let (id, lost) = lost_recovery(&trace);
+    assert!(lost.targets.contains(&p));
+    assert!(!trace.final_state.lineage.contains(&id));
+    let closed = recoveries(&trace, Some(Reset::Closed));
+    assert_eq!(closed.len(), 1);
+    let (closed_id, c) = closed[0];
+    assert!(trace.final_state.lineage.contains(&closed_id));
+    assert_eq!((c.entry, c.old_stream), (lost.entry, lost.old_stream));
+    assert!(!c.targets.contains(&p));
+    assert!(c.notices.as_ref().unwrap().lost.is_empty());
+    assert_eq!(record_commits(&trace, p).len(), 1);
 }

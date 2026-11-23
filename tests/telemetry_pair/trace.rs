@@ -217,12 +217,6 @@ pub enum Ev {
     },
     /// The endpoint lost state.
     EndpointLoss,
-    /// The entry's store was restored to an earlier point or emptied,
-    /// keeping the records of `held`.
-    IngressLoss {
-        entry: Uuid,
-        held: BTreeSet<Mark>,
-    },
     /// An entry forgot the closed streams it no longer remembers: the
     /// commits of this event's index.
     Pruned,
@@ -279,11 +273,6 @@ pub enum Fate {
     /// deleted there in the same transition: only that recovery's
     /// `lost_on_reset` reports it.
     LostOnResetOnly(RecoveryId),
-    /// Its dropped sequence number was acknowledged by a `resume_info`
-    /// whose `A` passed every sequence number this state sent, so the
-    /// entry's loss record behind that `A` is another assignment's: the
-    /// defect the pull request reports. See `cases::defect_*`.
-    ConfirmedUnsent,
 }
 
 #[derive(Debug, Clone, Default)]
