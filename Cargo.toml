@@ -19,6 +19,7 @@ auth = [
   "dep:semver",
   "dep:serde_json",
   "dep:sha2",
+  "dep:subtle",
   "dep:thiserror",
   "dep:time",
   "dep:url",
@@ -51,6 +52,9 @@ serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", optional = true }
 # SHA-256 of JWS payloads and of the SubjectPublicKeyInfo.
 sha2 = { version = "0.11", optional = true }
+# Compares an enrollment result's SPKI hash in constant time. Already in
+# the build through `ed25519-dalek` and `curve25519-dalek`.
+subtle = { version = "2.6", optional = true, default-features = false }
 # Typed errors a caller matches on.
 thiserror = { version = "2", optional = true }
 # The validity time type `rcgen` takes.
