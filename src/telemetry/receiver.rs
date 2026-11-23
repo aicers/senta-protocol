@@ -6,7 +6,7 @@
 mod memory;
 mod store;
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::sync::atomic::{AtomicU64, Ordering};
 
 use jiff::{SignedDuration, Timestamp};
@@ -599,9 +599,12 @@ impl<S: ReceiverStore> ReceiverStream<S> {
             return ReceiverOutput::error(old_stream, TelemetryError::BadRange);
         }
         let mut changes = Vec::new();
-        let mut new_ranges: Vec<SeqRange> = Vec::new();
+        // A message may carry as many ranges as its frame holds, so a range
+        // repeated within it is found in a set rather than by scanning the
+        // ranges before it; `changes` keeps the order they arrived in.
+        let mut new_ranges = BTreeSet::new();
         for range in ranges {
-            if new_ranges.contains(&range) {
+            if new_ranges.contains(&(range.from, range.to)) {
                 continue;
             }
             match self.store.has_lost_on_reset(
@@ -614,7 +617,7 @@ impl<S: ReceiverStore> ReceiverStream<S> {
                 Ok(false) => {}
                 Err(_) => return ReceiverOutput::Disconnect,
             }
-            new_ranges.push(range);
+            new_ranges.insert((range.from, range.to));
             changes.push(ReceiverChange::AppendLoss(ReceiverLoss {
                 endpoint_id: connection.endpoint_id,
                 stream: old_stream,

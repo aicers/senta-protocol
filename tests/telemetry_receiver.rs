@@ -816,6 +816,38 @@ fn lost_on_reset_received_again_adds_no_record() {
 }
 
 #[test]
+fn lost_on_reset_with_many_ranges_is_deduplicated_without_rescanning() {
+    // As many distinct ranges as a frame can carry, each sent twice. A
+    // duplicate check that scans the ranges before it, or every loss
+    // record kept, takes billions of comparisons here.
+    const RANGES: u64 = 100_000;
+    let (store, mut machine, mut conn) = opened();
+    let ranges: Vec<(u64, u64)> = (0..RANGES)
+        .flat_map(|i| [(2 * i + 1, 2 * i + 1), (2 * i + 1, 2 * i + 1)])
+        .collect();
+    let writes = store.writes();
+    assert_eq!(
+        machine.receive(&mut conn, lost(S3, &ranges), t0()),
+        silent()
+    );
+    assert_eq!(store.writes(), writes + 1);
+    let losses = store.losses(ENTRY);
+    assert_eq!(losses.len(), usize::try_from(RANGES).unwrap());
+    assert!(losses.iter().zip(0..).all(|(loss, i)| loss.range
+        == SeqRange {
+            from: 2 * i + 1,
+            to: 2 * i + 1
+        }));
+    // Received again: every range is already kept, so nothing is written.
+    assert_eq!(
+        machine.receive(&mut conn, lost(S3, &ranges), t0()),
+        silent()
+    );
+    assert_eq!(store.writes(), writes + 1);
+    assert_eq!(store.losses(ENTRY).len(), usize::try_from(RANGES).unwrap());
+}
+
+#[test]
 fn lost_on_reset_stays_idempotent_after_the_stream_is_pruned() {
     let (store, mut machine, mut conn) = opened();
     let _ = machine.receive(&mut conn, lost(S1, &[(1, 4)]), t0());

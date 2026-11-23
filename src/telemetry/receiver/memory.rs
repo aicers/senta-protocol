@@ -1,6 +1,6 @@
 //! A [`ReceiverStore`] held in memory, with failures a test can inject.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
@@ -29,11 +29,18 @@ pub struct MemoryReceiverStore {
     inner: Arc<Mutex<Inner>>,
 }
 
+/// The entry, endpoint, stream, `from` and `to` of a `LostOnReset` loss
+/// record.
+type LostOnResetKey = (Uuid, Uuid, Uuid, u64, u64);
+
 #[derive(Debug, Default)]
 struct Inner {
     entries: BTreeMap<Uuid, ReceiverEntryState>,
     records: Vec<(Uuid, ReceiverRecord)>,
     losses: Vec<(Uuid, ReceiverLoss)>,
+    /// The coordinates of every `LostOnReset` loss record in `losses`, so
+    /// that [`ReceiverStore::has_lost_on_reset`] does not scan them all.
+    lost_on_reset: BTreeSet<LostOnResetKey>,
     fail_writes: bool,
     fail_reads: bool,
     writes: u64,
@@ -148,13 +155,9 @@ impl ReceiverStore for MemoryReceiverStore {
         if inner.fail_reads {
             return Err(MemoryReceiverStoreError::Read);
         }
-        Ok(inner.losses.iter().any(|(entry, loss)| {
-            *entry == entry_id
-                && loss.endpoint_id == endpoint_id
-                && loss.stream == stream
-                && loss.range == range
-                && loss.reason == ReceiverLossReason::LostOnReset
-        }))
+        Ok(inner
+            .lost_on_reset
+            .contains(&(entry_id, endpoint_id, stream, range.from, range.to)))
     }
 
     fn write(&mut self, entry_id: Uuid, changes: Vec<ReceiverChange>) -> Result<(), Self::Error> {
@@ -165,7 +168,18 @@ impl ReceiverStore for MemoryReceiverStore {
         for change in changes {
             match change {
                 ReceiverChange::AppendRecord(record) => inner.records.push((entry_id, record)),
-                ReceiverChange::AppendLoss(loss) => inner.losses.push((entry_id, loss)),
+                ReceiverChange::AppendLoss(loss) => {
+                    if loss.reason == ReceiverLossReason::LostOnReset {
+                        inner.lost_on_reset.insert((
+                            entry_id,
+                            loss.endpoint_id,
+                            loss.stream,
+                            loss.range.from,
+                            loss.range.to,
+                        ));
+                    }
+                    inner.losses.push((entry_id, loss));
+                }
                 change @ (ReceiverChange::SetFlow { .. } | ReceiverChange::RemoveFlow(_)) => {
                     inner.entries.entry(entry_id).or_default().apply(&change);
                 }
