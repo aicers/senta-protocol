@@ -23,25 +23,35 @@
 //! The `results` module is public whatever the features: it holds the
 //! result enums that the trust state machines produce and the control
 //! channel carries.
+//!
+//! The `host` module is public whatever the features too: the operating
+//! system and collection mode an endpoint reports about its host, which
+//! telemetry record headers and control messages both carry.
 
 #[cfg(feature = "auth")]
 pub mod auth;
 pub mod connection;
 #[cfg(feature = "control")]
 pub mod control;
+pub mod host;
 pub mod results;
 #[cfg(feature = "telemetry")]
 pub mod telemetry;
 
 /// Doctests asserting that each feature-gated module exists exactly when its
-/// feature is on, and `connection` always. A module whose feature is off
-/// must not resolve.
+/// feature is on, and `connection` and `host` always. A module whose
+/// feature is off must not resolve.
 #[cfg(doctest)]
 mod feature_gates {
     #[doc = "```"]
     #[doc = "use senta_protocol::connection;"]
     #[doc = "```"]
     struct Connection;
+
+    #[doc = "```"]
+    #[doc = "use senta_protocol::host;"]
+    #[doc = "```"]
+    struct Host;
 
     #[cfg_attr(feature = "auth", doc = "```")]
     #[cfg_attr(not(feature = "auth"), doc = "```compile_fail,E0432")]

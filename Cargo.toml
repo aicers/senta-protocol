@@ -24,7 +24,7 @@ auth = [
   "dep:url",
 ]
 control = []
-telemetry = []
+telemetry = ["dep:sha2"]
 test-util = []
 
 [dependencies]
@@ -49,7 +49,8 @@ rustls-webpki = { version = "0.103.14", optional = true, default-features = fals
 semver = { version = "1.0.28", optional = true, default-features = false, features = ["std"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", optional = true }
-# SHA-256 of JWS payloads and of the SubjectPublicKeyInfo.
+# SHA-256 of JWS payloads, of the SubjectPublicKeyInfo and of telemetry
+# record bytes.
 sha2 = { version = "0.11", optional = true }
 # Typed errors a caller matches on.
 thiserror = { version = "2", optional = true }

@@ -291,7 +291,7 @@ impl Serialize for ReasonFields<'_> {
 }
 
 /// What a tag names in one of the enums.
-enum Class<T: Tagged> {
+pub(crate) enum Class<T: Tagged> {
     /// A variant without content.
     Unit(T),
     /// A variant whose content has to be read.
@@ -301,7 +301,7 @@ enum Class<T: Tagged> {
 }
 
 /// The decoding side of an enum tagged by a text string.
-trait Tagged: Sized {
+pub(crate) trait Tagged: Sized {
     /// The variants with content, read by [`Tagged::read_content`].
     type Content;
 
@@ -323,7 +323,7 @@ trait Tagged: Sized {
 }
 
 /// The variants of [`DocumentResult`] with content.
-enum DocumentContent {
+pub(crate) enum DocumentContent {
     KeysetGap,
     RecoveryKeyGap,
     ApplyFailed,
@@ -388,7 +388,7 @@ impl Tagged for DocumentResult {
 }
 
 /// The variants of [`CommandResultKind`] with content.
-enum CommandContent {
+pub(crate) enum CommandContent {
     Failed,
     Rejected,
 }
@@ -476,7 +476,7 @@ impl<'de> Deserialize<'de> for InstallConfigFailure {
 }
 
 /// Decodes one of the tagged enums from text or a one-entry map.
-struct TaggedVisitor<T>(PhantomData<T>);
+pub(crate) struct TaggedVisitor<T>(pub(crate) PhantomData<T>);
 
 impl<T: Tagged> TaggedVisitor<T> {
     fn from_text<E: de::Error>(tag: Cow<'_, str>) -> Result<T, E> {

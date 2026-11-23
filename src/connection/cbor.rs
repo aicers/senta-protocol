@@ -99,6 +99,14 @@ impl DecodeError {
     pub fn kind(&self) -> DecodeErrorKind {
         self.kind
     }
+
+    /// Returns a [`DecodeErrorKind::Invalid`] error with its message.
+    pub(crate) fn invalid(message: impl Into<String>) -> Self {
+        Self {
+            kind: DecodeErrorKind::Invalid,
+            message: Some(message.into()),
+        }
+    }
 }
 
 impl From<ScanError> for DecodeError {
@@ -191,10 +199,7 @@ impl std::error::Error for EncodeError {}
 /// tags through ciborium's tag protocol.
 pub fn from_slice<T: DeserializeOwned>(bytes: &[u8]) -> Result<T, DecodeError> {
     scan::check_body(bytes)?;
-    de::from_slice(bytes).map_err(|error| DecodeError {
-        kind: DecodeErrorKind::Invalid,
-        message: Some(error.to_string()),
-    })
+    de::from_slice(bytes).map_err(|error| DecodeError::invalid(error.to_string()))
 }
 
 /// Encodes a value as CBOR.
