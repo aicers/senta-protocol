@@ -297,6 +297,9 @@ fn every_problem() -> Vec<Problem> {
         Problem::SysmonMissing,
         Problem::ClockSkew,
         Problem::InstallConfigInvalid,
+        Problem::SysmonStopped,
+        Problem::SysmonConfigChanged,
+        Problem::UnexpectedRestart,
         Problem::Other("disk_full".to_owned()),
     ]
 }
@@ -1488,6 +1491,9 @@ fn content_enums_round_trip_in_their_shapes() {
             Problem::InstallConfigInvalid,
             text("install_config_invalid"),
         ),
+        (Problem::SysmonStopped, text("sysmon_stopped")),
+        (Problem::SysmonConfigChanged, text("sysmon_config_changed")),
+        (Problem::UnexpectedRestart, text("unexpected_restart")),
     ]);
     assert_shapes(vec![
         (
@@ -1568,6 +1574,22 @@ fn tag_rules_hold_for_every_enum() {
         None,
         &["approved", "pending", "rejected"],
     );
+}
+
+#[test]
+fn tamper_problem_tags_are_read_as_their_variants_not_other() {
+    for (tag, variant) in [
+        ("sysmon_stopped", Problem::SysmonStopped),
+        ("sysmon_config_changed", Problem::SysmonConfigChanged),
+        ("unexpected_restart", Problem::UnexpectedRestart),
+    ] {
+        assert_eq!(decode::<Problem>(&text(tag)).unwrap(), variant, "{tag}");
+        assert_eq!(
+            decode::<Problem>(&value_of(&Problem::Other(tag.to_owned()))).unwrap(),
+            variant,
+            "{tag}"
+        );
+    }
 }
 
 #[test]
