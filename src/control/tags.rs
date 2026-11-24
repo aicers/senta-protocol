@@ -54,6 +54,9 @@ const PRIOR_EPOCH_STATE: &str = "prior_epoch_state";
 const SYSMON_MISSING: &str = "sysmon_missing";
 const CLOCK_SKEW: &str = "clock_skew";
 const INSTALL_CONFIG_INVALID: &str = "install_config_invalid";
+const SYSMON_STOPPED: &str = "sysmon_stopped";
+const SYSMON_CONFIG_CHANGED: &str = "sysmon_config_changed";
+const UNEXPECTED_RESTART: &str = "unexpected_restart";
 
 const APPROVED: &str = "approved";
 const REJECTED: &str = "rejected";
@@ -239,7 +242,11 @@ pub enum Problem {
     /// The endpoint still runs on state applied in a prior recovery epoch,
     /// tagged `prior_epoch_state`.
     PriorEpochState,
-    /// Sysmon is missing, tagged `sysmon_missing`.
+    /// Sysmon (on Linux, Sysmon for Linux) is not installed, tagged
+    /// `sysmon_missing`.
+    ///
+    /// Sysmon that is installed but not running is
+    /// [`SysmonStopped`](Self::SysmonStopped) instead.
     SysmonMissing,
     /// The endpoint's clock is too far from the server's, tagged
     /// `clock_skew`.
@@ -247,6 +254,33 @@ pub enum Problem {
     /// The install configuration is invalid, tagged
     /// `install_config_invalid`.
     InstallConfigInvalid,
+    /// Sysmon (on Linux, Sysmon for Linux) is installed but its service or
+    /// driver is not running, tagged `sysmon_stopped`.
+    ///
+    /// This differs from [`SysmonMissing`](Self::SysmonMissing), where
+    /// Sysmon is not installed at all.
+    SysmonStopped,
+    /// The Sysmon configuration in effect differs from the one the endpoint
+    /// applied from a signed policy, tagged `sysmon_config_changed`.
+    ///
+    /// It means the configuration was changed outside the endpoint. It is
+    /// carried only when the endpoint has applied a configuration of its
+    /// own: not when there is none, as when the customer chose to keep
+    /// their existing Sysmon as it is, and not while the endpoint has not
+    /// yet finished applying one. Once the two match again, whether the
+    /// endpoint applied its configuration again or the change was
+    /// reverted, the next status report no longer carries it.
+    SysmonConfigChanged,
+    /// The endpoint's previous run ended without a clean shutdown, tagged
+    /// `unexpected_restart`.
+    ///
+    /// Such a run ended in a forced termination of the process, a crash, or
+    /// an operating system crash or power loss. It is carried once, in the
+    /// first status report after the endpoint starts again. A clean
+    /// operating system shutdown or reboot, a restart for an update, and
+    /// the first run after installation do not carry it. It is a signal,
+    /// not evidence of tampering.
+    UnexpectedRestart,
     /// A problem this version of the crate does not know, by its tag.
     Other(String),
 }
@@ -551,6 +585,9 @@ impl Serialize for Problem {
             Self::SysmonMissing => SYSMON_MISSING,
             Self::ClockSkew => CLOCK_SKEW,
             Self::InstallConfigInvalid => INSTALL_CONFIG_INVALID,
+            Self::SysmonStopped => SYSMON_STOPPED,
+            Self::SysmonConfigChanged => SYSMON_CONFIG_CHANGED,
+            Self::UnexpectedRestart => UNEXPECTED_RESTART,
             Self::Other(tag) => tag,
         };
         serializer.serialize_str(tag)
@@ -580,6 +617,9 @@ impl Tagged for Problem {
             SYSMON_MISSING => Self::SysmonMissing,
             CLOCK_SKEW => Self::ClockSkew,
             INSTALL_CONFIG_INVALID => Self::InstallConfigInvalid,
+            SYSMON_STOPPED => Self::SysmonStopped,
+            SYSMON_CONFIG_CHANGED => Self::SysmonConfigChanged,
+            UNEXPECTED_RESTART => Self::UnexpectedRestart,
             _ => return Class::Unknown,
         })
     }
