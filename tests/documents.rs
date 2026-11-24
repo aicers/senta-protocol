@@ -20,7 +20,7 @@ use senta_protocol::auth::documents::{
     check_validity_window, inspect_install_config, inspect_keyset, inspect_recovery_key,
     verify_addresses, verify_assign, verify_command, verify_deployment_cert, verify_enroll,
     verify_enroll_result, verify_install_config, verify_keyset, verify_policy, verify_recovery_key,
-    verify_update,
+    verify_self_signed_keyset, verify_update,
 };
 use senta_protocol::auth::jws::strict::{
     self, Base64UrlArray, Base64UrlBytes, LowerUuid, UtcTimestamp,
@@ -2193,6 +2193,76 @@ fn diagnostics_hold_the_header_as_written() {
             .header(),
         None
     );
+}
+
+// ---------------------------------------------------------------------------
+// Key sets signed by their own current_kid
+// ---------------------------------------------------------------------------
+
+#[test]
+fn self_signed_key_set_verifies_under_its_own_current_kid() {
+    let payload = serde_json::to_vec(&valid(Typ::Keyset)).unwrap();
+    // `current_kid` is version 3, whose key in `keys` is `stranger_key`.
+    let jws = stranger_key().sign(Typ::Keyset, &customer_kid(3), &payload);
+    let verified = verify_self_signed_keyset(&jws).unwrap();
+    assert_eq!(verified.kid().as_str(), customer_kid(3));
+    assert_eq!(verified.typ(), Typ::Keyset);
+    assert_eq!(verified.payload(), payload.as_slice());
+    assert_eq!(verified.content(), &keyset_content());
+    // The same document `verify_keyset` gives with that one key.
+    let source = Source::default().with(&customer_kid(3), &stranger_key(), KeyKind::Customer);
+    assert_eq!(
+        outcome!(verify_self_signed_keyset(&jws)),
+        verify_typ(Typ::Keyset, &jws, &source)
+    );
+}
+
+#[test]
+fn self_signed_key_set_rejects_every_other_signer() {
+    let payload = serde_json::to_vec(&valid(Typ::Keyset)).unwrap();
+    let cases = [
+        // Another kid of `keys`, with its own key.
+        (
+            customer_key().sign(Typ::Keyset, &customer_kid(2), &payload),
+            DocumentResult::UnknownKid,
+        ),
+        // The recovery key.
+        (
+            recovery_key().sign(Typ::Keyset, RECOVERY_KID, &payload),
+            DocumentResult::UnknownKid,
+        ),
+        // `current_kid`, with another key.
+        (
+            customer_key().sign(Typ::Keyset, &customer_kid(3), &payload),
+            DocumentResult::BadSignature,
+        ),
+        (
+            break_signature(&stranger_key().sign(Typ::Keyset, &customer_kid(3), &payload)),
+            DocumentResult::BadSignature,
+        ),
+        // Another `typ`.
+        (
+            stranger_key().sign(Typ::Policy, &customer_kid(3), &payload),
+            DocumentResult::SchemaError,
+        ),
+        // Not a JWS.
+        ("a.b".to_owned(), DocumentResult::SchemaError),
+    ];
+    for (jws, expected) in cases {
+        let error = verify_self_signed_keyset(&jws).unwrap_err();
+        assert_eq!(error.result(), expected, "{error:?}");
+        assert!(matches!(error, DocumentError::Verify(_)), "{error:?}");
+    }
+
+    // `current_kid` is not in `keys`.
+    let mut value = valid(Typ::Keyset);
+    value["current_kid"] = json!(customer_kid(4));
+    let payload = serde_json::to_vec(&value).unwrap();
+    let error =
+        verify_self_signed_keyset(&stranger_key().sign(Typ::Keyset, &customer_kid(4), &payload))
+            .unwrap_err();
+    assert_eq!(error.result(), DocumentResult::SchemaError);
+    assert!(error.schema_error().is_some(), "{error:?}");
 }
 
 // ---------------------------------------------------------------------------

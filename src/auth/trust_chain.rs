@@ -54,7 +54,7 @@ use super::jws::strict::LowerUuid;
 use super::jws::{
     self, Jwk, KeyKind, KeyLookup, KeySource, Kid, KidError, PublicKey, Typ, VendorKeyClass,
 };
-use super::keyset::{CurrentKidSource, TrustState};
+use super::keyset::TrustState;
 use super::versions::{DocumentVersions, MemoryVersionStore, VersionStore, VersionsError};
 use crate::results::{DocumentResult, InstallConfigFailure};
 
@@ -769,17 +769,8 @@ fn verify_keyset(
             cause,
         )
     };
-    let jws = config.keyset.as_str();
-    // Read only to pick the key: the key set's own `current_kid`.
-    let inspected =
-        documents::inspect_keyset(jws).map_err(|error| invalid(FailureCause::Document(error)))?;
-    let keyset = documents::verify_keyset(
-        jws,
-        &CurrentKidSource {
-            keyset: inspected.content(),
-        },
-    )
-    .map_err(|error| invalid(FailureCause::Document(error)))?;
+    let keyset = documents::verify_self_signed_keyset(config.keyset.as_str())
+        .map_err(|error| invalid(FailureCause::Document(error)))?;
     let content = keyset.content();
     if content.customer_endpoint_id() != config.customer_endpoint_id {
         return Err(invalid(FailureCause::CustomerMismatch {

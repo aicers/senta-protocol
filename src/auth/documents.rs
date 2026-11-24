@@ -25,6 +25,10 @@
 //! [`check_validity_window`] is the window check they run on commands and
 //! updates.
 //!
+//! [`verify_self_signed_keyset`] verifies a `senta-keyset` document with no
+//! key source: the key is the one its own content gives its `current_kid`.
+//! That shows the document is self-signed, not that it is to be trusted.
+//!
 //! Three `typ`s, `senta-keyset`, `senta-recovery-key` and
 //! `senta-install-config`, can also be read before their signature is
 //! verified, with `inspect_<typ>`, to choose the key to verify with or to
@@ -55,6 +59,7 @@ pub use self::window::{
 };
 use super::jws::strict::{self, SchemaError};
 use super::jws::{self, HeaderDiagnostics, KeySource, Kid, Typ, Unverified, Verified, VerifyError};
+use super::keyset::CurrentKidSource;
 use crate::results::DocumentResult;
 
 /// A signed document whose signature verified, with its content parsed.
@@ -406,6 +411,46 @@ verify_fn!(
     Typ::Command,
     CommandContent
 );
+
+/// Verifies a `senta-keyset` document against its own `current_kid`.
+///
+/// The document passes only if it is signed by the customer kid its content
+/// names as `current_kid`, under that kid's key in its own `keys`: the rule
+/// the install configuration's chain applies to its key set. Any other kid —
+/// another customer kid of the same key set, a recovery kid — is a kid with
+/// no key. The JWS goes through the checks of [`verify_keyset`] and its
+/// content through the strict parse of [`KeysetContent`], every rule of
+/// that schema included.
+///
+/// **This shows only that the document is consistently self-signed, not
+/// that it comes from anyone in particular.** Anyone holding a key can make
+/// a key set naming that key as its `current_kid`, so the result is no
+/// ground for trusting the document. That ground must come from how the
+/// caller obtained the document. Nothing else is checked: not the recovery
+/// epoch or version, not the customer endpoint identifier or key name, and
+/// not the `revoked_kids` of a key set already trusted.
+///
+/// # Errors
+///
+/// Returns [`DocumentError::Verify`] if the JWS fails a check of
+/// [`jws::inspect`] or [`jws::verify`]: a header kid that is a customer kid
+/// other than `current_kid`, or a recovery kid, is
+/// [`VerifyError::UnknownKid`], and a signature that does not verify under
+/// `current_kid`'s key is [`VerifyError::Signature`]. Returns
+/// [`DocumentError::Schema`] if the content does not match its schema,
+/// including a `current_kid` that is not in `keys`.
+pub fn verify_self_signed_keyset(
+    jws: &str,
+) -> Result<VerifiedDocument<KeysetContent>, DocumentError> {
+    // Read only to pick the key: the key set's own `current_kid`.
+    let inspected = inspect_keyset(jws)?;
+    verify_keyset(
+        jws,
+        &CurrentKidSource {
+            keyset: inspected.content(),
+        },
+    )
+}
 
 inspect_fn!(
     /// Reads a `senta-keyset` document without verifying its signature, for
