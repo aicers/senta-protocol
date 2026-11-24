@@ -181,7 +181,10 @@ impl TrustState {
     /// set signed by its own `current_kid` and the customer identifiers
     /// agreeing — which the trust chain does; that `keyset` is a
     /// [`VerifiedDocument`] shows only that its signature verified under the
-    /// key it was checked with.
+    /// key it was checked with. A caller with its own ground for trusting a
+    /// key set, other than an install configuration's chain, checks that it
+    /// is signed by its own `current_kid` with
+    /// [`documents::verify_self_signed_keyset`].
     #[must_use]
     pub fn new(
         keyset: VerifiedDocument<KeysetContent>,
@@ -525,9 +528,9 @@ impl KeySource for TrustState {
 /// The key lookup for the next key set of the same epoch: only the current
 /// key set's `current_kid`.
 ///
-/// The trust chain uses it too, with the content of the install
-/// configuration's key set read before its signature is verified, to check
-/// that the key set is signed by its own `current_kid`.
+/// [`documents::verify_self_signed_keyset`] uses it too, with the content
+/// of the key set read before its signature is verified, to check that the
+/// key set is signed by its own `current_kid`.
 pub(super) struct CurrentKidSource<'a> {
     pub(super) keyset: &'a KeysetContent,
 }

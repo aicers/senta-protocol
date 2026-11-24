@@ -7,7 +7,9 @@ use serde_json::json;
 use uuid::Uuid;
 
 use super::*;
-use crate::auth::documents::{Hash32, verify_enroll_result, verify_keyset};
+use crate::auth::documents::{
+    Hash32, verify_enroll_result, verify_keyset, verify_self_signed_keyset,
+};
 use crate::auth::jws::PublicKey;
 use crate::auth::jws::test_util::TestKey;
 
@@ -528,6 +530,128 @@ fn unreadable_key_sets_are_schema_errors() {
     assert_keyset_rejected(&mut state, &policy, &schema);
     let broken = ck(NAME_A, 1).sign(Typ::Keyset, &ckid(NAME_A, 1), b"{}");
     assert_keyset_rejected(&mut state, &broken, &schema);
+}
+
+// --- self-signed key sets -------------------------------------------------------
+
+#[track_caller]
+fn assert_self_signed_rejected(jws: &str, expected: &DocumentResult) {
+    let error = verify_self_signed_keyset(jws).unwrap_err();
+    assert_eq!(&error.result(), expected, "{error:?}");
+}
+
+#[test]
+fn self_signed_key_set_starts_a_trust_state() {
+    for ks in [Ks::rotation(1, NAME_A, 1), Ks::rotation(1, NAME_A, 2)] {
+        let verified = verify_self_signed_keyset(&ks.resigned()).unwrap();
+        assert_eq!(verified.kid().as_str(), ckid(NAME_A, ks.version));
+        assert_eq!(verified.payload(), ks.payload());
+        assert_eq!(verified.content().keyset_version().get(), ks.version);
+
+        let mut state = TrustState::new(
+            verified,
+            install_id(),
+            rk(1).jwk(),
+            PositiveInteger::new(1).unwrap(),
+        );
+        assert_eq!(position(&state), (1, ks.version, 1));
+        // N + 1 of the same epoch, signed by N's `current_kid`.
+        let next = Ks::rotation(1, NAME_A, ks.version + 1);
+        assert_eq!(assert_applied(&mut state, &next.rotated()), None);
+        assert_eq!(position(&state), (1, ks.version + 1, 1));
+    }
+}
+
+#[test]
+fn self_signed_key_set_must_be_signed_by_its_current_kid() {
+    let v2 = Ks::rotation(1, NAME_A, 2);
+    // Another customer kid of the same `keys`.
+    assert_self_signed_rejected(&v2.signed_by(NAME_A, 1), &DocumentResult::UnknownKid);
+    // A customer kid outside `keys`.
+    assert_self_signed_rejected(&v2.signed_by(NAME_C, 2), &DocumentResult::UnknownKid);
+    // A recovery kid.
+    assert_self_signed_rejected(&v2.recovery_signed(1), &DocumentResult::UnknownKid);
+    // `current_kid` in the header, signed with another key.
+    assert_self_signed_rejected(&v2.forged(&ckid(NAME_A, 2)), &DocumentResult::BadSignature);
+    assert_self_signed_rejected(
+        &ck(NAME_A, 1).sign(Typ::Keyset, &ckid(NAME_A, 2), &v2.payload()),
+        &DocumentResult::BadSignature,
+    );
+    // A non-customer kid the key set `typ` does not allow.
+    assert_self_signed_rejected(
+        &stranger().sign(Typ::Keyset, "install-a:1", &v2.payload()),
+        &DocumentResult::WrongKeyClass,
+    );
+}
+
+#[test]
+fn self_signed_key_set_must_be_readable() {
+    let schema = DocumentResult::SchemaError;
+    let v1 = Ks::rotation(1, NAME_A, 1);
+    assert_self_signed_rejected("not a jws", &schema);
+    assert_self_signed_rejected("", &schema);
+    // Another `typ`, signed by the key set's own `current_kid`.
+    assert_self_signed_rejected(
+        &ck(NAME_A, 1).sign(Typ::Policy, &ckid(NAME_A, 1), &v1.payload()),
+        &schema,
+    );
+    assert_self_signed_rejected(&rk_doc(2), &schema);
+    // A content that is not a key set.
+    assert_self_signed_rejected(
+        &ck(NAME_A, 1).sign(Typ::Keyset, &ckid(NAME_A, 1), b"{}"),
+        &schema,
+    );
+    // `current_kid` is not in `keys`, whichever kid signs.
+    let mut missing = Ks::rotation(1, NAME_A, 2);
+    missing.keys = vec![1];
+    for jws in [
+        missing.resigned(),
+        missing.signed_by(NAME_A, 1),
+        missing.recovery_signed(1),
+    ] {
+        assert_self_signed_rejected(&jws, &schema);
+    }
+    // A revoked kid still in `keys`.
+    let overlapping = Ks::rotation(1, NAME_A, 2).revoking([ckid(NAME_A, 1)]);
+    assert_self_signed_rejected(&overlapping.resigned(), &schema);
+}
+
+#[test]
+fn recovery_signed_key_set_is_self_signed_only_once_resigned() {
+    // (e + 1, 1), as the recovery key signs it.
+    let ks = Ks::rotation(2, NAME_B, 1).revoking([ckid(NAME_A, 1)]);
+    assert_self_signed_rejected(&ks.recovery_signed(1), &DocumentResult::UnknownKid);
+
+    // The same content, signed again by its `current_kid`.
+    let verified = verify_self_signed_keyset(&ks.resigned()).unwrap();
+    assert_eq!(verified.kid().as_str(), ckid(NAME_B, 1));
+    assert_eq!(verified.payload(), ks.payload());
+    let mut state = TrustState::new(
+        verified,
+        install_id(),
+        rk(1).jwk(),
+        PositiveInteger::new(1).unwrap(),
+    );
+    assert_eq!(position(&state), (2, 1, 1));
+    assert_eq!(strs(state.revoked_kids()), [ckid(NAME_A, 1)]);
+    assert_applied(&mut state, &Ks::rotation(2, NAME_B, 2).rotated());
+    assert_eq!(position(&state), (2, 2, 1));
+}
+
+#[test]
+fn self_signed_verification_ignores_any_trust_state() {
+    // A key set whose `current_kid` an existing state has revoked still
+    // verifies on its own: revocation is the state's decision.
+    let mut state = installed();
+    assert_applied(&mut state, &Ks::rotation(1, NAME_A, 2).rotated());
+    assert_applied(&mut state, &Ks::rotation(1, NAME_A, 3).rotated());
+    assert_eq!(strs(state.revoked_kids()), [ckid(NAME_A, 1)]);
+    let old = Ks::rotation(1, NAME_A, 1);
+    assert!(verify_self_signed_keyset(&old.resigned()).is_ok());
+    // Another customer and any epoch or version, too.
+    let mut other = Ks::rotation(7, NAME_C, 9);
+    other.customer = OTHER_CUSTOMER;
+    assert!(verify_self_signed_keyset(&other.resigned()).is_ok());
 }
 
 #[test]
