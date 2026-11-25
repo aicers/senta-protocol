@@ -224,10 +224,12 @@ fn policy(epoch: u64, group: &str, version: u64) -> Doc {
             "group_id": group,
             "version": version,
             "collection_mode": "extended",
-            "sysmon_config": {
+            "sysmon_configs": [{
+                "os": "windows",
                 "sha256": Hash32::from([1; 32]),
                 "sources": ["https://example.com/sysmon.xml"],
-            },
+            }],
+            "existing_sysmon": "keep",
             "field_exclusions": {},
             "audit_settings": {"windows_local_apply": true, "linux_auditd_rules": false},
             "event_log_channels": {},
@@ -276,9 +278,12 @@ fn update(epoch: u64, target: (&str, &str), version: u64, target_version: Option
     });
     payload[target.0] = json!(target.1);
     if target_version.is_some() {
-        payload["package_sha256"] = json!(Hash32::from([3; 32]));
-        payload["package_size"] = json!(1024);
-        payload["sources"] = json!(["https://example.com/senta.pkg"]);
+        payload["packages"] = json!([{
+            "platform": "windows-x86_64-msi",
+            "sha256": Hash32::from([3; 32]),
+            "size": 1024,
+            "sources": ["https://example.com/senta.msi"],
+        }]);
     }
     Doc {
         typ: Typ::Update,

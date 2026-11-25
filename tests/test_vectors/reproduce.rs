@@ -4,6 +4,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use jiff::Timestamp;
+use senta_protocol::auth::active_list::ListUpdate;
 use senta_protocol::auth::commands::{CommandStateMachine, CommandVerdict, MemoryCommandStore};
 use senta_protocol::auth::documents::{
     DocumentError, SemVer, VerifiedDocument, verify_addresses, verify_assign, verify_command,
@@ -21,17 +22,20 @@ use senta_protocol::auth::versions::{
     DocumentContent, DocumentVersions, EntryOutcome, MemoryTrustStore, MemoryVersionStore, Slot,
     TrustStore as _, receive_documents,
 };
-use senta_protocol::connection::Envelope;
-use senta_protocol::control::{ControlMessage, MachineId, machine_id_hash};
+use senta_protocol::connection::{Envelope, cbor};
+use senta_protocol::control::{
+    ControlMessage, EnrollRequest, MachineId, StatusReport, machine_id_hash,
+};
 use senta_protocol::results::CommandResultKind;
 use serde::de::DeserializeOwned;
 
+use crate::cbor_cases::{self, Schema, b64_standard, b64_standard_decode, rebuild, view};
 use crate::fixtures::{b64, b64_decode, sha256};
 use crate::json::J;
 use crate::model::{
-    Action, Category, ChainCase, ChainInput, FORMAT_VERSION, FileHeader, HardwareCase, JwsCase,
-    KeyEntry, KeyKindName, MachineIdKind, SequenceCase, SlotSummary, StateSummary, Step,
-    VectorFile,
+    Action, ActiveListCase, Category, ChainCase, ChainInput, ControlCborCase, ControlMessageType,
+    FORMAT_VERSION, FileHeader, HardwareCase, JwsCase, KeyEntry, KeyKindName, MachineIdKind,
+    SequenceCase, SlotSummary, StateSummary, Step, VectorFile,
 };
 use crate::notation::{chain_verified, enrolled, execute, jws_verified, not_processed, ok};
 
@@ -127,7 +131,31 @@ fn reproduce_file(name: &str, bytes: &[u8], report: &mut Report<'_>) {
                 }
             }
         }
-        _ => {
+        Category::ControlCbor => {
+            if let Some(file) = parse::<VectorFile<ControlCborCase>>(bytes, report) {
+                if !file.keys.is_empty() {
+                    report.fail("keys", "the control CBOR file uses no key");
+                }
+                for case in &file.cases {
+                    run_control_cbor(case, report);
+                }
+            }
+        }
+        Category::ActiveList => {
+            if let Some(file) = parse::<VectorFile<ActiveListCase>>(bytes, report) {
+                if !file.keys.is_empty() {
+                    report.fail("keys", "the active list file uses no key");
+                }
+                for case in &file.cases {
+                    run_active_list(case, report);
+                }
+            }
+        }
+        Category::Keyset
+        | Category::Leak
+        | Category::DocumentVersions
+        | Category::EnrollResult
+        | Category::Commands => {
             if let Some(file) = parse::<VectorFile<SequenceCase>>(bytes, report) {
                 let keys = read_keys(&file.keys, report);
                 for case in &file.cases {
@@ -222,6 +250,20 @@ fn verify_typ<K: KeySource>(typ: Typ, jws: &str, keys: &K) -> Result<[u8; 32], D
     }
 }
 
+/// Verifies `jws` as a `senta-policy` or `senta-update` and returns its
+/// content serialized again, which writes the members in the order the
+/// crate fixes; `None` for another `typ`, or a document that fails.
+fn reserialized<K: KeySource>(typ: Typ, jws: &str, keys: &K) -> Option<Vec<u8>> {
+    fn to_json<C: serde::Serialize>(document: VerifiedDocument<C>) -> Option<Vec<u8>> {
+        serde_json::to_vec(document.content()).ok()
+    }
+    match typ {
+        Typ::Policy => verify_policy(jws, keys).ok().and_then(to_json),
+        Typ::Update => verify_update(jws, keys).ok().and_then(to_json),
+        _ => None,
+    }
+}
+
 /// Returns the compact form of a JWS: the text itself, or the
 /// `protected`, `payload` and `signature` members of the JSON
 /// serialization joined with `.`.
@@ -279,7 +321,8 @@ fn run_jws(case: &JwsCase, keys: &BTreeMap<String, Key>, report: &mut Report<'_>
         lookups.insert(kid.clone(), KeyLookup::Revoked);
     }
 
-    let actual = match verify_typ(typ, &input.jws, &CaseKeys(lookups)) {
+    let keys_of_case = CaseKeys(lookups);
+    let actual = match verify_typ(typ, &input.jws, &keys_of_case) {
         Ok(hash) => jws_verified(&b64(&hash)),
         Err(error) => J::of(&error.result()),
     };
@@ -296,6 +339,14 @@ fn run_jws(case: &JwsCase, keys: &BTreeMap<String, Key>, report: &mut Report<'_>
     let readable = |bytes: &[u8]| String::from_utf8(bytes.to_vec()).ok();
     if input.header_json != readable(&header) || input.payload_json != readable(&payload) {
         report.fail(at, "header_json or payload_json is not the decoded segment");
+    }
+    if let Some(content) = reserialized(typ, &input.jws, &keys_of_case)
+        && content != payload
+    {
+        report.fail(
+            at,
+            "the payload's members are not in the order the crate serializes them",
+        );
     }
     if let Some(verified) = case.expected.get("verified") {
         if verified.get("payload_sha256") != Some(&J::str(b64(&sha256(&payload)))) {
@@ -386,6 +437,93 @@ fn run_hardware(case: &HardwareCase, report: &mut Report<'_>) {
         ),
         Err(error) => report.fail(at, format!("the crate rejected the machine id: {error}")),
     }
+}
+
+// --- CBOR ------------------------------------------------------------------------------------------
+
+/// Checks that `value` is the JSON view of `bytes` and that it encodes back
+/// to them, and returns the bytes.
+fn check_cbor(
+    at: &str,
+    cbor: &str,
+    value: &J,
+    schema: &Schema,
+    report: &mut Report<'_>,
+) -> Option<Vec<u8>> {
+    let Some(bytes) = b64_standard_decode(cbor).filter(|bytes| b64_standard(bytes) == cbor) else {
+        report.fail(at, "cbor is not canonical standard base64");
+        return None;
+    };
+    match view(&bytes, schema) {
+        Ok(actual) if actual == *value => {}
+        Ok(actual) => report.fail(at, format!("the JSON view of cbor is {actual}, not value")),
+        Err(error) => report.fail(at, format!("cbor has no JSON view: {error}")),
+    }
+    match rebuild(value, schema).and_then(|tree| cbor::to_vec(&tree).map_err(|e| e.to_string())) {
+        Ok(encoded) if encoded == bytes => {}
+        Ok(_) => report.fail(at, "value does not encode to cbor"),
+        Err(error) => report.fail(at, format!("value does not encode: {error}")),
+    }
+    Some(bytes)
+}
+
+/// Decodes `bytes` as `T` with the crate's decoder and returns the value
+/// encoded again.
+fn decode_again<T: serde::Serialize + DeserializeOwned>(bytes: &[u8]) -> Result<Vec<u8>, String> {
+    let value: T = cbor::from_slice(bytes).map_err(|error| format!("decoding: {error}"))?;
+    cbor::to_vec(&value).map_err(|error| format!("encoding: {error}"))
+}
+
+fn check_decodes(at: &str, bytes: &[u8], again: Result<Vec<u8>, String>, report: &mut Report<'_>) {
+    match again {
+        Ok(again) if again == bytes => {}
+        Ok(_) => report.fail(at, "the decoded value encodes to other bytes"),
+        Err(error) => report.fail(at, format!("the crate rejects cbor: {error}")),
+    }
+}
+
+fn run_control_cbor(case: &ControlCborCase, report: &mut Report<'_>) {
+    let at = case.name.as_str();
+    let prefix = match case.message_type {
+        ControlMessageType::EnrollRequest => "enroll_request:",
+        ControlMessageType::StatusReport => "status_report:",
+    };
+    if !at.starts_with(prefix) {
+        report.fail(at, "the name does not start with the case's type");
+    }
+    let schema = cbor_cases::schema_of(case.message_type);
+    let Some(bytes) = check_cbor(at, &case.cbor, &case.value, schema, report) else {
+        return;
+    };
+    let again = match case.message_type {
+        ControlMessageType::EnrollRequest => decode_again::<EnrollRequest>(&bytes),
+        ControlMessageType::StatusReport => decode_again::<StatusReport>(&bytes),
+    };
+    check_decodes(at, &bytes, again, report);
+}
+
+fn run_active_list(case: &ActiveListCase, report: &mut Report<'_>) {
+    let at = case.name.as_str();
+    if !at.starts_with("list_update:") {
+        report.fail(at, "the name does not start with list_update");
+    }
+    let Some(bytes) = check_cbor(
+        at,
+        &case.cbor,
+        &case.value,
+        &cbor_cases::LIST_UPDATE,
+        report,
+    ) else {
+        return;
+    };
+    let again = ListUpdate::decode(&bytes)
+        .map_err(|error| format!("decoding: {error}"))
+        .and_then(|update| {
+            update
+                .encode()
+                .map_err(|error| format!("encoding: {error}"))
+        });
+    check_decodes(at, &bytes, again, report);
 }
 
 // --- sequences ------------------------------------------------------------------------------------

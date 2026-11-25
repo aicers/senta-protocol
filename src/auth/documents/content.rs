@@ -1,10 +1,11 @@
 //! The content types of the eleven signed document `typ`s.
 //!
 //! A content type whose fields stand alone has public fields. One with a
-//! rule across fields keeps them private behind a constructor that checks
-//! the rule, and reads through a private raw type, with
-//! `#[serde(try_from)]`, that is checked by the same rule; so a value made
-//! outside the crate always serializes to JSON that parses back to it.
+//! rule across fields, or a list that may not be empty, keeps them private
+//! behind a constructor that checks the rule, and reads through a private
+//! raw type, with `#[serde(try_from)]`, that is checked by the same rule;
+//! so a value made outside the crate always serializes to JSON that parses
+//! back to it.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
@@ -115,14 +116,30 @@ pub enum ContentError {
     /// An update names both or neither of `group_id` and `endpoint_id`.
     #[error("an update names exactly one of group_id and endpoint_id")]
     UpdateTarget,
-    /// An update with a `target_version` lacks one of `package_sha256`,
-    /// `package_size` and `sources`.
-    #[error("an update with a target_version has package_sha256, package_size and sources")]
-    MissingPackageField,
-    /// An update whose `target_version` is `null` has one of
-    /// `package_sha256`, `package_size` and `sources`.
-    #[error("an update whose target_version is null has no package field")]
-    UnexpectedPackageField,
+    /// An update with a `target_version` has no `packages`.
+    #[error("an update with a target_version has packages")]
+    MissingPackages,
+    /// An update whose `target_version` is `null` has `packages`.
+    #[error("an update whose target_version is null has no packages")]
+    UnexpectedPackages,
+    /// An update's `packages` is empty.
+    #[error("packages is empty")]
+    EmptyPackages,
+    /// Two entries of an update's `packages` have the same `platform`.
+    #[error("packages repeats a platform")]
+    DuplicatePlatform,
+    /// The `sources` of an entry of an update's `packages` is empty.
+    #[error("the sources of a packages entry is empty")]
+    EmptyPackageSources,
+    /// Two entries of a policy's `sysmon_configs` have the same `os`.
+    #[error("sysmon_configs repeats an os")]
+    DuplicateSysmonOs,
+    /// The `sources` of an entry of a policy's `sysmon_configs` is empty.
+    #[error("the sources of a sysmon_configs entry is empty")]
+    EmptySysmonConfigSources,
+    /// The `sources` of a policy's `windows_sysmon_package` is empty.
+    #[error("the sources of windows_sysmon_package is empty")]
+    EmptyWindowsSysmonPackageSources,
     /// An update to a group has a `null` `target_version`, which only an
     /// update to an endpoint may have.
     #[error("only an update to an endpoint may have a null target_version")]
@@ -519,13 +536,242 @@ string_enum!(StatusUi, "`tray`, `notify` or `hidden`", {
     Hidden => "hidden",
 });
 
-/// The Sysmon configuration of a policy.
+/// What the endpoint does with a standalone Sysmon already installed on
+/// its host, as `existing_sysmon` writes it.
+///
+/// Closed: a value other than these is a schema error, unlike a transport
+/// enum.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub enum ExistingSysmon {
+    /// `keep`: the installed Sysmon is used as it is.
+    Keep,
+    /// `take_over`: the endpoint takes the installed Sysmon over.
+    TakeOver,
+}
+
+string_enum!(ExistingSysmon, "`keep` or `take_over`", {
+    Keep => "keep",
+    TakeOver => "take_over",
+});
+
+/// The Sysmon configuration of a policy for one operating system, an entry
+/// of `sysmon_configs`.
+///
+/// `os` is a lowercase operating system name, such as `windows` or
+/// `linux`, of which only emptiness is checked: a name the endpoint does
+/// not know is kept, and the endpoint ignores it. `sources` is not empty.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(try_from = "RawSysmonConfig", into = "RawSysmonConfig")]
 pub struct SysmonConfig {
-    /// The SHA-256 of the configuration file.
-    pub sha256: Hash32,
-    /// Where the configuration file is fetched from.
-    pub sources: Vec<AbsoluteUrl>,
+    os: NonEmptyString,
+    sha256: Hash32,
+    sources: Vec<AbsoluteUrl>,
+}
+
+impl SysmonConfig {
+    /// Creates the configuration.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ContentError::EmptySysmonConfigSources`] if `sources` is
+    /// empty.
+    pub fn new(
+        os: NonEmptyString,
+        sha256: Hash32,
+        sources: Vec<AbsoluteUrl>,
+    ) -> Result<Self, ContentError> {
+        if sources.is_empty() {
+            return Err(ContentError::EmptySysmonConfigSources);
+        }
+        Ok(Self {
+            os,
+            sha256,
+            sources,
+        })
+    }
+
+    /// Returns `os`, the operating system the configuration is for.
+    #[must_use]
+    pub fn os(&self) -> &NonEmptyString {
+        &self.os
+    }
+
+    /// Returns `sha256`, the SHA-256 of the configuration file.
+    #[must_use]
+    pub fn sha256(&self) -> &Hash32 {
+        &self.sha256
+    }
+
+    /// Returns `sources`, where the configuration file is fetched from;
+    /// never empty.
+    #[must_use]
+    pub fn sources(&self) -> &[AbsoluteUrl] {
+        &self.sources
+    }
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+struct RawSysmonConfig {
+    os: NonEmptyString,
+    sha256: Hash32,
+    sources: Vec<AbsoluteUrl>,
+}
+
+impl TryFrom<RawSysmonConfig> for SysmonConfig {
+    type Error = ContentError;
+
+    fn try_from(raw: RawSysmonConfig) -> Result<Self, ContentError> {
+        Self::new(raw.os, raw.sha256, raw.sources)
+    }
+}
+
+impl From<SysmonConfig> for RawSysmonConfig {
+    fn from(config: SysmonConfig) -> Self {
+        Self {
+            os: config.os,
+            sha256: config.sha256,
+            sources: config.sources,
+        }
+    }
+}
+
+/// The Sysmon configurations of a policy, `sysmon_configs`: at most one
+/// per `os`, and possibly none.
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(try_from = "Vec<SysmonConfig>", into = "Vec<SysmonConfig>")]
+pub struct SysmonConfigs(Vec<SysmonConfig>);
+
+impl SysmonConfigs {
+    /// Creates the list, in the order given.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ContentError::DuplicateSysmonOs`] if two configurations
+    /// have the same `os`.
+    pub fn new(configs: Vec<SysmonConfig>) -> Result<Self, ContentError> {
+        let mut names = BTreeSet::new();
+        if !configs.iter().all(|config| names.insert(&config.os)) {
+            return Err(ContentError::DuplicateSysmonOs);
+        }
+        Ok(Self(configs))
+    }
+
+    /// Returns the configurations, in the order written.
+    #[must_use]
+    pub fn as_slice(&self) -> &[SysmonConfig] {
+        &self.0
+    }
+
+    /// Returns the configuration whose `os` is exactly `os`, if any.
+    #[must_use]
+    pub fn get(&self, os: &str) -> Option<&SysmonConfig> {
+        self.0.iter().find(|config| config.os.as_str() == os)
+    }
+}
+
+impl TryFrom<Vec<SysmonConfig>> for SysmonConfigs {
+    type Error = ContentError;
+
+    fn try_from(configs: Vec<SysmonConfig>) -> Result<Self, ContentError> {
+        Self::new(configs)
+    }
+}
+
+impl From<SysmonConfigs> for Vec<SysmonConfig> {
+    fn from(configs: SysmonConfigs) -> Self {
+        configs.0
+    }
+}
+
+/// The standalone Sysmon package a policy has Windows endpoints install,
+/// `windows_sysmon_package`.
+///
+/// `version` is the Sysmon version, `size` at least 1, and `sources` not
+/// empty.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(try_from = "RawWindowsSysmonPackage", into = "RawWindowsSysmonPackage")]
+pub struct WindowsSysmonPackage {
+    version: NonEmptyString,
+    sha256: Hash32,
+    size: PositiveInteger,
+    sources: Vec<AbsoluteUrl>,
+}
+
+impl WindowsSysmonPackage {
+    /// Creates the package.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ContentError::EmptyWindowsSysmonPackageSources`] if
+    /// `sources` is empty.
+    pub fn new(
+        version: NonEmptyString,
+        sha256: Hash32,
+        size: PositiveInteger,
+        sources: Vec<AbsoluteUrl>,
+    ) -> Result<Self, ContentError> {
+        if sources.is_empty() {
+            return Err(ContentError::EmptyWindowsSysmonPackageSources);
+        }
+        Ok(Self {
+            version,
+            sha256,
+            size,
+            sources,
+        })
+    }
+
+    /// Returns `version`, the Sysmon version of the package.
+    #[must_use]
+    pub fn version(&self) -> &NonEmptyString {
+        &self.version
+    }
+
+    /// Returns `sha256`, the SHA-256 of the package file.
+    #[must_use]
+    pub fn sha256(&self) -> &Hash32 {
+        &self.sha256
+    }
+
+    /// Returns `size`, the size of the package file in bytes.
+    #[must_use]
+    pub fn size(&self) -> PositiveInteger {
+        self.size
+    }
+
+    /// Returns `sources`, where the package file is fetched from; never
+    /// empty.
+    #[must_use]
+    pub fn sources(&self) -> &[AbsoluteUrl] {
+        &self.sources
+    }
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+struct RawWindowsSysmonPackage {
+    version: NonEmptyString,
+    sha256: Hash32,
+    size: PositiveInteger,
+    sources: Vec<AbsoluteUrl>,
+}
+
+impl TryFrom<RawWindowsSysmonPackage> for WindowsSysmonPackage {
+    type Error = ContentError;
+
+    fn try_from(raw: RawWindowsSysmonPackage) -> Result<Self, ContentError> {
+        Self::new(raw.version, raw.sha256, raw.size, raw.sources)
+    }
+}
+
+impl From<WindowsSysmonPackage> for RawWindowsSysmonPackage {
+    fn from(package: WindowsSysmonPackage) -> Self {
+        Self {
+            version: package.version,
+            sha256: package.sha256,
+            size: package.size,
+            sources: package.sources,
+        }
+    }
 }
 
 /// The audit settings of a policy.
@@ -548,8 +794,15 @@ pub struct PolicyContent {
     pub version: Integer,
     /// How much is collected.
     pub collection_mode: PolicyCollectionMode,
-    /// The Sysmon configuration.
-    pub sysmon_config: SysmonConfig,
+    /// The Sysmon configuration of each operating system, at most one per
+    /// `os`.
+    pub sysmon_configs: SysmonConfigs,
+    /// What the endpoint does with a standalone Sysmon already installed.
+    pub existing_sysmon: ExistingSysmon,
+    /// The standalone Sysmon package Windows endpoints install, or `None`
+    /// when the policy deploys none; written only when present.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub windows_sysmon_package: Option<WindowsSysmonPackage>,
     /// The names of the fields left out of each event kind, by kind number.
     pub field_exclusions: BTreeMap<KindNumber, Vec<NonEmptyString>>,
     /// The audit settings.
@@ -736,45 +989,178 @@ pub enum UpdateTarget {
     Endpoint(LowerUuid),
 }
 
-/// The package an update installs.
-#[derive(Clone, Debug, PartialEq, Eq)]
+/// The package of an update for one platform, an entry of `packages`.
+///
+/// `platform` is a lowercase `<os>-<arch>-<format>` string, such as
+/// `windows-x86_64-msi`, of which only emptiness is checked: a platform
+/// the endpoint does not know is kept, and the endpoint looks only at the
+/// entry of its own. `size` is at least 1, and `sources` is not empty.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(try_from = "RawUpdatePackage", into = "RawUpdatePackage")]
 pub struct UpdatePackage {
-    /// The version to install, `target_version`.
-    pub target_version: SemVer,
-    /// The SHA-256 of the package, `package_sha256`.
-    pub package_sha256: Hash32,
-    /// The size of the package in bytes, `package_size`.
-    pub package_size: Integer,
-    /// Where the package is fetched from, `sources`.
-    pub sources: Vec<AbsoluteUrl>,
+    platform: NonEmptyString,
+    sha256: Hash32,
+    size: PositiveInteger,
+    sources: Vec<AbsoluteUrl>,
+}
+
+impl UpdatePackage {
+    /// Creates the package.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ContentError::EmptyPackageSources`] if `sources` is empty.
+    pub fn new(
+        platform: NonEmptyString,
+        sha256: Hash32,
+        size: PositiveInteger,
+        sources: Vec<AbsoluteUrl>,
+    ) -> Result<Self, ContentError> {
+        if sources.is_empty() {
+            return Err(ContentError::EmptyPackageSources);
+        }
+        Ok(Self {
+            platform,
+            sha256,
+            size,
+            sources,
+        })
+    }
+
+    /// Returns `platform`, the platform the package is for.
+    #[must_use]
+    pub fn platform(&self) -> &NonEmptyString {
+        &self.platform
+    }
+
+    /// Returns `sha256`, the SHA-256 of the package.
+    #[must_use]
+    pub fn sha256(&self) -> &Hash32 {
+        &self.sha256
+    }
+
+    /// Returns `size`, the size of the package in bytes.
+    #[must_use]
+    pub fn size(&self) -> PositiveInteger {
+        self.size
+    }
+
+    /// Returns `sources`, where the package is fetched from; never empty.
+    #[must_use]
+    pub fn sources(&self) -> &[AbsoluteUrl] {
+        &self.sources
+    }
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+struct RawUpdatePackage {
+    platform: NonEmptyString,
+    sha256: Hash32,
+    size: PositiveInteger,
+    sources: Vec<AbsoluteUrl>,
+}
+
+impl TryFrom<RawUpdatePackage> for UpdatePackage {
+    type Error = ContentError;
+
+    fn try_from(raw: RawUpdatePackage) -> Result<Self, ContentError> {
+        Self::new(raw.platform, raw.sha256, raw.size, raw.sources)
+    }
+}
+
+impl From<UpdatePackage> for RawUpdatePackage {
+    fn from(package: UpdatePackage) -> Self {
+        Self {
+            platform: package.platform,
+            sha256: package.sha256,
+            size: package.size,
+            sources: package.sources,
+        }
+    }
+}
+
+/// What an update with a `target_version` installs: that version, and its
+/// package for each platform, `packages`.
+///
+/// `packages` is not empty and repeats no `platform`.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct UpdateRelease {
+    target_version: SemVer,
+    packages: Vec<UpdatePackage>,
+}
+
+impl UpdateRelease {
+    /// Creates the release, its packages in the order given.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ContentError::EmptyPackages`] if `packages` is empty, and
+    /// [`ContentError::DuplicatePlatform`] if two packages have the same
+    /// `platform`.
+    pub fn new(target_version: SemVer, packages: Vec<UpdatePackage>) -> Result<Self, ContentError> {
+        if packages.is_empty() {
+            return Err(ContentError::EmptyPackages);
+        }
+        let mut platforms = BTreeSet::new();
+        if !packages
+            .iter()
+            .all(|package| platforms.insert(&package.platform))
+        {
+            return Err(ContentError::DuplicatePlatform);
+        }
+        Ok(Self {
+            target_version,
+            packages,
+        })
+    }
+
+    /// Returns `target_version`, the version to install.
+    #[must_use]
+    pub fn target_version(&self) -> &SemVer {
+        &self.target_version
+    }
+
+    /// Returns `packages`, in the order written; never empty.
+    #[must_use]
+    pub fn packages(&self) -> &[UpdatePackage] {
+        &self.packages
+    }
+
+    /// Returns the package whose `platform` is exactly `platform`, if any.
+    #[must_use]
+    pub fn package(&self, platform: &str) -> Option<&UpdatePackage> {
+        self.packages
+            .iter()
+            .find(|package| package.platform.as_str() == platform)
+    }
 }
 
 /// The content of a `senta-update` document, signed by a customer key.
 ///
 /// It names exactly one of `group_id` and `endpoint_id`. Its
-/// `target_version` is a SemVer version together with `package_sha256`,
-/// `package_size` and `sources`, or an explicit `null` without any of the
-/// three, which releases the endpoint from a pinned version and only an
-/// update to an endpoint may have. `expires_at` is not before `issued_at`.
+/// `target_version` is a SemVer version together with `packages`, or an
+/// explicit `null` without `packages`, which releases the endpoint from a
+/// pinned version and only an update to an endpoint may have. `expires_at`
+/// is not before `issued_at`.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(try_from = "RawUpdate", into = "RawUpdate")]
 pub struct UpdateContent {
     recovery_epoch: Integer,
     version: Integer,
     target: UpdateTarget,
-    package: Option<UpdatePackage>,
+    release: Option<UpdateRelease>,
     rollback: bool,
     issued_at: UtcTimestamp,
     expires_at: UtcTimestamp,
 }
 
 impl UpdateContent {
-    /// Creates the content; `package` is `None` for a `null`
+    /// Creates the content; `release` is `None` for a `null`
     /// `target_version`.
     ///
     /// # Errors
     ///
-    /// Returns [`ContentError::NullTargetVersionForGroup`] if `package` is
+    /// Returns [`ContentError::NullTargetVersionForGroup`] if `release` is
     /// `None` and `target` a group, and
     /// [`ContentError::ExpiresBeforeIssued`] if `expires_at` is before
     /// `issued_at`.
@@ -782,12 +1168,12 @@ impl UpdateContent {
         recovery_epoch: Integer,
         version: Integer,
         target: UpdateTarget,
-        package: Option<UpdatePackage>,
+        release: Option<UpdateRelease>,
         rollback: bool,
         issued_at: UtcTimestamp,
         expires_at: UtcTimestamp,
     ) -> Result<Self, ContentError> {
-        if package.is_none() && matches!(target, UpdateTarget::Group(_)) {
+        if release.is_none() && matches!(target, UpdateTarget::Group(_)) {
             return Err(ContentError::NullTargetVersionForGroup);
         }
         check_window(issued_at, expires_at)?;
@@ -795,7 +1181,7 @@ impl UpdateContent {
             recovery_epoch,
             version,
             target,
-            package,
+            release,
             rollback,
             issued_at,
             expires_at,
@@ -820,16 +1206,23 @@ impl UpdateContent {
         self.target
     }
 
-    /// Returns the package, or `None` when `target_version` is `null`.
+    /// Returns the release, or `None` when `target_version` is `null`.
     #[must_use]
-    pub fn package(&self) -> Option<&UpdatePackage> {
-        self.package.as_ref()
+    pub fn release(&self) -> Option<&UpdateRelease> {
+        self.release.as_ref()
     }
 
     /// Returns `target_version`, or `None` when it is `null`.
     #[must_use]
     pub fn target_version(&self) -> Option<&SemVer> {
-        self.package.as_ref().map(|package| &package.target_version)
+        self.release.as_ref().map(UpdateRelease::target_version)
+    }
+
+    /// Returns `packages`, or an empty slice when `target_version` is
+    /// `null` and the update has none.
+    #[must_use]
+    pub fn packages(&self) -> &[UpdatePackage] {
+        self.release.as_ref().map_or(&[], UpdateRelease::packages)
     }
 
     /// Returns `rollback`.
@@ -863,11 +1256,7 @@ struct RawUpdate {
     // `null` is the only explicit null any content accepts.
     target_version: Nullable<SemVer>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    package_sha256: Option<Hash32>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    package_size: Option<Integer>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    sources: Option<Vec<AbsoluteUrl>>,
+    packages: Option<Vec<UpdatePackage>>,
     rollback: bool,
     issued_at: UtcTimestamp,
     expires_at: UtcTimestamp,
@@ -882,32 +1271,19 @@ impl TryFrom<RawUpdate> for UpdateContent {
             (None, Some(endpoint_id)) => UpdateTarget::Endpoint(endpoint_id),
             _ => return Err(ContentError::UpdateTarget),
         };
-        let package = match (
-            raw.target_version,
-            raw.package_sha256,
-            raw.package_size,
-            raw.sources,
-        ) {
-            (
-                Nullable::Value(target_version),
-                Some(package_sha256),
-                Some(package_size),
-                Some(sources),
-            ) => Some(UpdatePackage {
-                target_version,
-                package_sha256,
-                package_size,
-                sources,
-            }),
-            (Nullable::Value(_), ..) => return Err(ContentError::MissingPackageField),
-            (_, None, None, None) => None,
-            _ => return Err(ContentError::UnexpectedPackageField),
+        let release = match (raw.target_version, raw.packages) {
+            (Nullable::Value(target_version), Some(packages)) => {
+                Some(UpdateRelease::new(target_version, packages)?)
+            }
+            (Nullable::Value(_), None) => return Err(ContentError::MissingPackages),
+            (_, None) => None,
+            (_, Some(_)) => return Err(ContentError::UnexpectedPackages),
         };
         Self::new(
             raw.recovery_epoch,
             raw.version,
             target,
-            package,
+            release,
             raw.rollback,
             raw.issued_at,
             raw.expires_at,
@@ -921,14 +1297,12 @@ impl From<UpdateContent> for RawUpdate {
             UpdateTarget::Group(group_id) => (Some(group_id), None),
             UpdateTarget::Endpoint(endpoint_id) => (None, Some(endpoint_id)),
         };
-        let (target_version, package_sha256, package_size, sources) = match content.package {
-            Some(package) => (
-                Nullable::Value(package.target_version),
-                Some(package.package_sha256),
-                Some(package.package_size),
-                Some(package.sources),
+        let (target_version, packages) = match content.release {
+            Some(release) => (
+                Nullable::Value(release.target_version),
+                Some(release.packages),
             ),
-            None => (Nullable::Null, None, None, None),
+            None => (Nullable::Null, None),
         };
         Self {
             recovery_epoch: content.recovery_epoch,
@@ -936,9 +1310,7 @@ impl From<UpdateContent> for RawUpdate {
             group_id,
             endpoint_id,
             target_version,
-            package_sha256,
-            package_size,
-            sources,
+            packages,
             rollback: content.rollback,
             issued_at: content.issued_at,
             expires_at: content.expires_at,

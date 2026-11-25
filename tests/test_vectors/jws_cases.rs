@@ -5,8 +5,8 @@ use senta_protocol::auth::jws::Typ;
 
 use crate::fixtures::{
     self, CommandSpec, ENDPOINT, EPOCH, EnrollResultSpec, INSTALL_ID, KeyRing, KeysetSpec,
-    MAX_INTEGER, TOKEN, VENDOR_RELEASE, b64, b64_decode, customer_kid, install_kid, recovery_kid,
-    sha256,
+    LINUX_DEB, MAX_INTEGER, TOKEN, VENDOR_RELEASE, WINDOWS_MSI, b64, b64_decode, bytes32,
+    customer_kid, install_kid, recovery_kid, sha256, sysmon_config, update_package,
 };
 use crate::json::J;
 use crate::model::{Category, FORMAT_VERSION, JwsCase, JwsInput, TrustedKey, VectorFile};
@@ -90,6 +90,260 @@ fn valid_content(ring: &mut KeyRing, typ: Typ) -> J {
             })
         }
     }
+}
+
+/// A content of `senta-policy` or `senta-update` that changes the valid
+/// one in a field those two carry, and whether it is still valid.
+struct FieldVariant {
+    name: &'static str,
+    description: &'static str,
+    content: J,
+    valid: bool,
+}
+
+fn valid_variant(name: &'static str, description: &'static str, content: J) -> FieldVariant {
+    FieldVariant {
+        name,
+        description,
+        content,
+        valid: true,
+    }
+}
+
+fn invalid_variant(name: &'static str, description: &'static str, content: J) -> FieldVariant {
+    FieldVariant {
+        name,
+        description,
+        content,
+        valid: false,
+    }
+}
+
+/// The variants of the valid policy `content` in `sysmon_configs`,
+/// `existing_sysmon` and `windows_sysmon_package`.
+fn policy_variants(content: &J) -> Vec<FieldVariant> {
+    let package = content
+        .get("windows_sysmon_package")
+        .cloned()
+        .expect("the valid policy has a windows_sysmon_package");
+    let configs = |items: Vec<J>| content.with("sysmon_configs", J::arr(items));
+    let windows = sysmon_config("windows");
+    let linux = sysmon_config("linux");
+    let with_package = |package: J| content.with("windows_sysmon_package", package);
+    vec![
+        valid_variant(
+            "valid_without_windows_sysmon_package",
+            "A valid senta-policy without windows_sysmon_package, which deploys no standalone Sysmon.",
+            content.without("windows_sysmon_package"),
+        ),
+        valid_variant(
+            "valid_empty_sysmon_configs",
+            "A valid senta-policy whose sysmon_configs is empty.",
+            configs(Vec::new()),
+        ),
+        valid_variant(
+            "valid_unknown_os",
+            "A valid senta-policy with a Sysmon configuration for macos, an os the endpoint may not know.",
+            configs(vec![windows.clone(), sysmon_config("macos")]),
+        ),
+        valid_variant(
+            "valid_existing_sysmon_take_over",
+            "A valid senta-policy whose existing_sysmon is take_over.",
+            content.with("existing_sysmon", J::str("take_over")),
+        ),
+        invalid_variant(
+            "sysmon_configs_repeated_os",
+            "Two entries of sysmon_configs have the os windows.",
+            configs(vec![windows.clone(), linux.with("os", J::str("windows"))]),
+        ),
+        invalid_variant(
+            "sysmon_configs_empty_os",
+            "An entry of sysmon_configs has an empty os.",
+            configs(vec![windows.clone(), linux.with("os", J::str(""))]),
+        ),
+        invalid_variant(
+            "sysmon_configs_empty_sources",
+            "An entry of sysmon_configs has an empty sources.",
+            configs(vec![windows.with("sources", J::arr([])), linux.clone()]),
+        ),
+        invalid_variant(
+            "sysmon_configs_unknown_field",
+            "An entry of sysmon_configs carries a field its schema does not define.",
+            configs(vec![windows.with("unknown_field", J::str("value")), linux]),
+        ),
+        invalid_variant(
+            "existing_sysmon_missing",
+            "The content lacks existing_sysmon.",
+            content.without("existing_sysmon"),
+        ),
+        invalid_variant(
+            "existing_sysmon_unknown",
+            "existing_sysmon is replace, neither keep nor take_over.",
+            content.with("existing_sysmon", J::str("replace")),
+        ),
+        invalid_variant(
+            "windows_sysmon_package_null",
+            "windows_sysmon_package is null rather than left out.",
+            with_package(J::Null),
+        ),
+        invalid_variant(
+            "windows_sysmon_package_empty_version",
+            "windows_sysmon_package has an empty version.",
+            with_package(package.with("version", J::str(""))),
+        ),
+        invalid_variant(
+            "windows_sysmon_package_sha256_31_bytes",
+            "The sha256 of windows_sysmon_package is 31 bytes.",
+            with_package(package.with("sha256", J::str(b64(&[7; 31])))),
+        ),
+        invalid_variant(
+            "windows_sysmon_package_size_0",
+            "The size of windows_sysmon_package is 0.",
+            with_package(package.with("size", J::Int(0))),
+        ),
+        invalid_variant(
+            "windows_sysmon_package_empty_sources",
+            "windows_sysmon_package has an empty sources.",
+            with_package(package.with("sources", J::arr([]))),
+        ),
+        invalid_variant(
+            "windows_sysmon_package_unknown_field",
+            "windows_sysmon_package carries a field its schema does not define.",
+            with_package(package.with("unknown_field", J::str("value"))),
+        ),
+        invalid_variant(
+            "sysmon_config_present",
+            "The content also carries sysmon_config, the field sysmon_configs replaced.",
+            content.with("sysmon_config", windows.without("os")),
+        ),
+    ]
+}
+
+/// The variants of the valid group update `content` in `target_version`
+/// and `packages`; `release` is a valid update of an endpoint whose
+/// `target_version` is `null`.
+fn update_variants(content: &J, release: J) -> Vec<FieldVariant> {
+    let packages = |items: Vec<J>| content.with("packages", J::arr(items));
+    let msi = update_package(WINDOWS_MSI);
+    let deb = update_package(LINUX_DEB);
+    vec![
+        valid_variant(
+            "valid_null_target_version",
+            "A valid senta-update of an endpoint whose target_version is null, without packages.",
+            release.clone(),
+        ),
+        valid_variant(
+            "valid_one_platform",
+            "A valid senta-update with a package for one platform.",
+            packages(vec![msi.clone()]),
+        ),
+        valid_variant(
+            "valid_unknown_platform",
+            "A valid senta-update with a package for macos-aarch64-pkg, a platform the endpoint may not know.",
+            packages(vec![msi.clone(), update_package("macos-aarch64-pkg")]),
+        ),
+        invalid_variant(
+            "packages_missing",
+            "The target_version is a version and the content lacks packages.",
+            content.without("packages"),
+        ),
+        invalid_variant("packages_empty", "packages is empty.", packages(Vec::new())),
+        invalid_variant(
+            "packages_repeated_platform",
+            "Two entries of packages have the platform windows-x86_64-msi.",
+            packages(vec![msi.clone(), deb.with("platform", J::str(WINDOWS_MSI))]),
+        ),
+        invalid_variant(
+            "packages_empty_platform",
+            "An entry of packages has an empty platform.",
+            packages(vec![msi.clone(), deb.with("platform", J::str(""))]),
+        ),
+        invalid_variant(
+            "packages_empty_sources",
+            "An entry of packages has an empty sources.",
+            packages(vec![msi.clone(), deb.with("sources", J::arr([]))]),
+        ),
+        invalid_variant(
+            "packages_size_0",
+            "An entry of packages has the size 0.",
+            packages(vec![msi.clone(), deb.with("size", J::Int(0))]),
+        ),
+        invalid_variant(
+            "packages_sha256_33_bytes",
+            "The sha256 of an entry of packages is 33 bytes.",
+            packages(vec![msi.with("sha256", J::str(b64(&[7; 33]))), deb.clone()]),
+        ),
+        invalid_variant(
+            "packages_unknown_field",
+            "An entry of packages carries a field its schema does not define.",
+            packages(vec![
+                msi.clone(),
+                deb.with("unknown_field", J::str("value")),
+            ]),
+        ),
+        invalid_variant(
+            "null_target_version_with_packages",
+            "The target_version is null and the content has packages.",
+            release.with("packages", J::arr([msi.clone()])),
+        ),
+        invalid_variant(
+            "package_sha256_present",
+            "The content also carries package_sha256, a field packages replaced.",
+            content.with("package_sha256", J::str(b64(&bytes32("package")))),
+        ),
+        invalid_variant(
+            "package_size_present",
+            "The content also carries package_size, a field packages replaced.",
+            content.with("package_size", J::Int(1_048_576)),
+        ),
+        invalid_variant(
+            "sources_present",
+            "The content also carries sources, a field packages replaced.",
+            content.with(
+                "sources",
+                J::arr([J::str("https://dist.example/senta-1.2.0.msi")]),
+            ),
+        ),
+    ]
+}
+
+/// The cases of the fields `senta-policy` and `senta-update` carry beyond
+/// the cases every `typ` has; none for another `typ`.
+fn field_cases(ring: &mut KeyRing, typ: Typ, content: &J) -> Vec<JwsCase> {
+    let variants = match typ {
+        Typ::Policy => policy_variants(content),
+        Typ::Update => {
+            let mut issuer = fixtures::Issuer::new();
+            let (at, version) = issuer.issue(&format!("{typ}:{ENDPOINT}"));
+            let release = fixtures::endpoint_release(
+                EPOCH,
+                version,
+                at,
+                at + jiff::SignedDuration::from_hours(24),
+            );
+            update_variants(content, release)
+        }
+        _ => return Vec::new(),
+    };
+    let kid = signer(typ);
+    variants
+        .into_iter()
+        .map(|variant| {
+            let expected = if variant.valid {
+                jws_verified(&b64(&sha256(variant.content.to_text().as_bytes())))
+            } else {
+                tag("schema_error")
+            };
+            case(
+                typ,
+                variant.name,
+                variant.description.to_owned(),
+                ring.sign(typ, &kid, &variant.content),
+                Some(kid.clone()),
+                expected,
+            )
+        })
+        .collect()
 }
 
 /// The content with its first member written twice.
@@ -335,6 +589,7 @@ fn cases_of(ring: &mut KeyRing, typ: Typ, index: usize) -> Vec<JwsCase> {
         Some(wrong),
         tag("wrong_key_class"),
     ));
+    cases.extend(field_cases(ring, typ, &content));
     cases
 }
 

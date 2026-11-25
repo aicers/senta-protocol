@@ -46,9 +46,10 @@ use serde::de::DeserializeOwned;
 pub use self::content::{
     AddressesContent, AssignContent, AuditSettings, CommandAction, CommandContent, CommandKind,
     ContentError, ControlEntry, DeploymentCertContent, DiagnoseArgs, EnrollContent,
-    EnrollResultContent, Hash32, InstallConfigContent, KeysetContent, KeysetEntry,
-    PolicyCollectionMode, PolicyContent, RecoveryKeyContent, StatusUi, SysmonConfig,
-    TelemetryEntry, UpdateContent, UpdatePackage, UpdateTarget,
+    EnrollResultContent, ExistingSysmon, Hash32, InstallConfigContent, KeysetContent, KeysetEntry,
+    PolicyCollectionMode, PolicyContent, RecoveryKeyContent, StatusUi, SysmonConfig, SysmonConfigs,
+    TelemetryEntry, UpdateContent, UpdatePackage, UpdateRelease, UpdateTarget,
+    WindowsSysmonPackage,
 };
 pub use self::forms::{
     AbsoluteUrl, Address, AddressHost, CertificatePem, CustomerKeyName, CustomerKid, DnsName,

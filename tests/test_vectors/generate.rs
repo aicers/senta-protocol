@@ -4,7 +4,7 @@
 use std::collections::BTreeMap;
 
 use crate::model::{Category, to_file_bytes};
-use crate::{chain_cases, hardware_cases, jws_cases, sequence_cases};
+use crate::{cbor_cases, chain_cases, hardware_cases, jws_cases, sequence_cases};
 
 /// The extension of the files compared; anything else under
 /// `tests/vectors/`, the README included, is not a vector file.
@@ -19,6 +19,8 @@ pub fn generate() -> BTreeMap<String, Vec<u8>> {
                 Category::Jws => to_file_bytes(&jws_cases::file()),
                 Category::TrustChain => to_file_bytes(&chain_cases::file()),
                 Category::HardwareHash => to_file_bytes(&hardware_cases::file()),
+                Category::ControlCbor => to_file_bytes(&cbor_cases::control_file()),
+                Category::ActiveList => to_file_bytes(&cbor_cases::active_list_file()),
                 sequence => to_file_bytes(&sequence_cases::file(sequence)),
             };
             (category.file_name(), bytes)

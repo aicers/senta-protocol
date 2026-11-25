@@ -55,6 +55,11 @@ pub const SENTA_VERSION: &str = "1.0.0";
 /// The version an update installs.
 pub const TARGET_VERSION: &str = "1.2.0";
 
+/// The platforms of the packages an update carries.
+pub const WINDOWS_MSI: &str = "windows-x86_64-msi";
+pub const LINUX_DEB: &str = "linux-x86_64-deb";
+pub const LINUX_RPM: &str = "linux-x86_64-rpm";
+
 /// The largest integer a signed document carries, 2^53 − 1.
 pub const MAX_INTEGER: u64 = (1 << 53) - 1;
 
@@ -405,6 +410,37 @@ pub fn enroll_result(spec: &EnrollResultSpec<'_>) -> J {
     ])
 }
 
+/// The Sysmon configuration of a policy for `os`.
+pub fn sysmon_config(os: &str) -> J {
+    J::obj([
+        ("os", J::str(os)),
+        (
+            "sha256",
+            J::str(b64(&bytes32(&format!("sysmon config {os}")))),
+        ),
+        (
+            "sources",
+            J::arr([J::str(format!("https://dist.example/sysmon/{os}.xml"))]),
+        ),
+    ])
+}
+
+/// The standalone Sysmon package a policy has Windows endpoints install.
+pub fn windows_sysmon_package() -> J {
+    J::obj([
+        ("version", J::str("15.15")),
+        ("sha256", J::str(b64(&bytes32("windows sysmon package")))),
+        ("size", J::Int(4_194_304)),
+        (
+            "sources",
+            J::arr([J::str("https://dist.example/sysmon/sysmon.zip")]),
+        ),
+    ])
+}
+
+/// A policy with a Sysmon configuration for Windows and one for Linux,
+/// keeping a standalone Sysmon already installed, and deploying the
+/// Windows Sysmon package.
 pub fn policy(epoch: u64, version: u64, status_ui: &str) -> J {
     J::obj([
         ("recovery_epoch", J::Int(epoch)),
@@ -412,15 +448,11 @@ pub fn policy(epoch: u64, version: u64, status_ui: &str) -> J {
         ("version", J::Int(version)),
         ("collection_mode", J::str("extended")),
         (
-            "sysmon_config",
-            J::obj([
-                ("sha256", J::str(b64(&bytes32("sysmon config")))),
-                (
-                    "sources",
-                    J::arr([J::str("https://dist.example/sysmon.xml")]),
-                ),
-            ]),
+            "sysmon_configs",
+            J::arr([sysmon_config("windows"), sysmon_config("linux")]),
         ),
+        ("existing_sysmon", J::str("keep")),
+        ("windows_sysmon_package", windows_sysmon_package()),
         (
             "field_exclusions",
             J::obj([("1", J::arr([J::str("CommandLine")]))]),
@@ -453,18 +485,66 @@ pub fn assign(epoch: u64, version: u64) -> J {
     ])
 }
 
+/// The package of [`TARGET_VERSION`] for `platform`.
+pub fn update_package(platform: &str) -> J {
+    let size = match platform {
+        WINDOWS_MSI => 1_048_576,
+        LINUX_DEB => 917_504,
+        _ => 925_696,
+    };
+    J::obj([
+        ("platform", J::str(platform)),
+        (
+            "sha256",
+            J::str(b64(&bytes32(&format!(
+                "package {TARGET_VERSION} {platform}"
+            )))),
+        ),
+        ("size", J::Int(size)),
+        (
+            "sources",
+            J::arr([J::str(format!(
+                "https://dist.example/packages/{TARGET_VERSION}/{platform}"
+            ))]),
+        ),
+    ])
+}
+
+/// An update of the group to [`TARGET_VERSION`], with a package for each
+/// of the three platforms.
 pub fn group_update(epoch: u64, version: u64, issued_at: Timestamp, expires_at: Timestamp) -> J {
     J::obj([
         ("recovery_epoch", J::Int(epoch)),
         ("version", J::Int(version)),
         ("group_id", J::str(GROUP)),
         ("target_version", J::str(TARGET_VERSION)),
-        ("package_sha256", J::str(b64(&bytes32("package")))),
-        ("package_size", J::Int(1_048_576)),
         (
-            "sources",
-            J::arr([J::str("https://dist.example/senta-1.2.0.msi")]),
+            "packages",
+            J::arr([
+                update_package(WINDOWS_MSI),
+                update_package(LINUX_DEB),
+                update_package(LINUX_RPM),
+            ]),
         ),
+        ("rollback", J::Bool(false)),
+        ("issued_at", J::str(rfc3339(issued_at))),
+        ("expires_at", J::str(rfc3339(expires_at))),
+    ])
+}
+
+/// An update of [`ENDPOINT`] whose `target_version` is `null`, releasing
+/// it from a pinned version, and so with no `packages`.
+pub fn endpoint_release(
+    epoch: u64,
+    version: u64,
+    issued_at: Timestamp,
+    expires_at: Timestamp,
+) -> J {
+    J::obj([
+        ("recovery_epoch", J::Int(epoch)),
+        ("version", J::Int(version)),
+        ("endpoint_id", J::str(ENDPOINT)),
+        ("target_version", J::Null),
         ("rollback", J::Bool(false)),
         ("issued_at", J::str(rfc3339(issued_at))),
         ("expires_at", J::str(rfc3339(expires_at))),

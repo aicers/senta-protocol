@@ -1,0 +1,429 @@
+{
+  "format_version": 1,
+  "category": "control_cbor",
+  "keys": [],
+  "cases": [
+    {
+      "name": "enroll_request:with_smbios",
+      "description": "A Windows endpoint's request whose hardware carries both SMBIOS fields.",
+      "type": "enroll_request",
+      "value": {
+        "attempt_id": "6ba7b811-9dad-11d1-80b4-00c04fd430c8",
+        "trusted_keyset": {
+          "recovery_epoch": 1,
+          "keyset_version": 1
+        },
+        "trusted_recovery_key_version": 1,
+        "enroll_token": "eyJ0ZXN0Ijp0cnVlfQ.eyJ0b2tlbl9pZCI6InRlc3QifQ.dGVzdC1zaWduYXR1cmU",
+        "hardware": {
+          "machine_id_hash": "nRM/CxkxB2Mx3iYw6ebqdMaHHCj+Glviz2B50S+5XUw=",
+          "smbios_uuid": "4c4c4544-0042-3510-8051-b4c04f4a4d32",
+          "smbios_serial": "5XQ8VD2"
+        },
+        "hostname": "ws-0042.acme.example",
+        "os": {
+          "family": "windows",
+          "version": "10.0.22631"
+        },
+        "senta_version": "1.0.0",
+        "key_storage": "tpm",
+        "vdi_mode": false
+      },
+      "cbor": "qmphdHRlbXB0X2lkUGunuBGdrRHRgLQAwE/UMMhudHJ1c3RlZF9rZXlzZXSibnJlY292ZXJ5X2Vwb2NoAW5rZXlzZXRfdmVyc2lvbgF4HHRydXN0ZWRfcmVjb3Zlcnlfa2V5X3ZlcnNpb24BbGVucm9sbF90b2tlbnhBZXlKMFpYTjBJanAwY25WbGZRLmV5SjBiMnRsYmw5cFpDSTZJblJsYzNRaWZRLmRHVnpkQzF6YVdkdVlYUjFjbVVoaGFyZHdhcmWjb21hY2hpbmVfaWRfaGFzaFggnRM/CxkxB2Mx3iYw6ebqdMaHHCj+Glviz2B50S+5XUxrc21iaW9zX3V1aWR4JDRjNGM0NTQ0LTAwNDItMzUxMC04MDUxLWI0YzA0ZjRhNGQzMm1zbWJpb3Nfc2VyaWFsZzVYUThWRDJoaG9zdG5hbWV0d3MtMDA0Mi5hY21lLmV4YW1wbGVib3OiZmZhbWlseWd3aW5kb3dzZ3ZlcnNpb25qMTAuMC4yMjYzMW1zZW50YV92ZXJzaW9uZTEuMC4wa2tleV9zdG9yYWdlY3RwbWh2ZGlfbW9kZfQ="
+    },
+    {
+      "name": "enroll_request:without_smbios",
+      "description": "A Linux endpoint's request in VDI mode whose hardware carries neither SMBIOS field.",
+      "type": "enroll_request",
+      "value": {
+        "attempt_id": "6ba7b811-9dad-11d1-80b4-00c04fd430c8",
+        "trusted_keyset": {
+          "recovery_epoch": 2,
+          "keyset_version": 7
+        },
+        "trusted_recovery_key_version": 3,
+        "enroll_token": "eyJ0ZXN0Ijp0cnVlfQ.eyJ0b2tlbl9pZCI6InRlc3QifQ.dGVzdC1zaWduYXR1cmU",
+        "hardware": {
+          "machine_id_hash": "obEm8+SdW189hC+vcV/af3ADwMRzEcumoF5ypxsZ/uM="
+        },
+        "hostname": "vdi-pool-17",
+        "os": {
+          "family": "linux",
+          "version": "6.8.0-45-generic"
+        },
+        "senta_version": "1.2.0-rc.1",
+        "key_storage": "file",
+        "vdi_mode": true
+      },
+      "cbor": "qmphdHRlbXB0X2lkUGunuBGdrRHRgLQAwE/UMMhudHJ1c3RlZF9rZXlzZXSibnJlY292ZXJ5X2Vwb2NoAm5rZXlzZXRfdmVyc2lvbgd4HHRydXN0ZWRfcmVjb3Zlcnlfa2V5X3ZlcnNpb24DbGVucm9sbF90b2tlbnhBZXlKMFpYTjBJanAwY25WbGZRLmV5SjBiMnRsYmw5cFpDSTZJblJsYzNRaWZRLmRHVnpkQzF6YVdkdVlYUjFjbVVoaGFyZHdhcmWhb21hY2hpbmVfaWRfaGFzaFggobEm8+SdW189hC+vcV/af3ADwMRzEcumoF5ypxsZ/uNoaG9zdG5hbWVrdmRpLXBvb2wtMTdib3OiZmZhbWlseWVsaW51eGd2ZXJzaW9ucDYuOC4wLTQ1LWdlbmVyaWNtc2VudGFfdmVyc2lvbmoxLjIuMC1yYy4xa2tleV9zdG9yYWdlZGZpbGVodmRpX21vZGX1"
+    },
+    {
+      "name": "status_report:optional_fields_absent",
+      "description": "Every optional field left out: a slot with no target, versions or in_use, a Sysmon with no version, an entry with no last_success_at, no clock offset, no SMBIOS fields, and no problem.",
+      "type": "status_report",
+      "value": {
+        "endpoint": {
+          "senta_version": "1.0.0",
+          "os": {
+            "family": "linux",
+            "version": "6.8.0-45-generic"
+          },
+          "key_storage": "file",
+          "keyset": {
+            "recovery_epoch": 1,
+            "keyset_version": 2
+          },
+          "recovery_key_version": 1
+        },
+        "documents": [
+          {
+            "typ": "senta-addresses",
+            "state": "current",
+            "untrusted": false
+          }
+        ],
+        "collection": {
+          "collection_mode": "essential",
+          "sysmon": {
+            "state": "none"
+          },
+          "audit_policy": "off"
+        },
+        "transport": {
+          "entries": [
+            {
+              "entry_id": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+            }
+          ],
+          "buffered_records": 0,
+          "buffered_bytes": 0,
+          "dropped_ranges": 0,
+          "unsupported_dropped": 0
+        },
+        "clock": {
+          "exceeds_tolerance": false
+        },
+        "hardware": {
+          "machine_id_hash": "obEm8+SdW189hC+vcV/af3ADwMRzEcumoF5ypxsZ/uM="
+        },
+        "problems": []
+      },
+      "cbor": "p2hlbmRwb2ludKVtc2VudGFfdmVyc2lvbmUxLjAuMGJvc6JmZmFtaWx5ZWxpbnV4Z3ZlcnNpb25wNi44LjAtNDUtZ2VuZXJpY2trZXlfc3RvcmFnZWRmaWxlZmtleXNldKJucmVjb3ZlcnlfZXBvY2gBbmtleXNldF92ZXJzaW9uAnRyZWNvdmVyeV9rZXlfdmVyc2lvbgFpZG9jdW1lbnRzgaNjdHlwb3NlbnRhLWFkZHJlc3Nlc2VzdGF0ZWdjdXJyZW50aXVudHJ1c3RlZPRqY29sbGVjdGlvbqNvY29sbGVjdGlvbl9tb2RlaWVzc2VudGlhbGZzeXNtb26hZXN0YXRlZG5vbmVsYXVkaXRfcG9saWN5Y29mZml0cmFuc3BvcnSlZ2VudHJpZXOBoWhlbnRyeV9pZFCg7ryZnAtO+Ltta7m9OAoRcGJ1ZmZlcmVkX3JlY29yZHMAbmJ1ZmZlcmVkX2J5dGVzAG5kcm9wcGVkX3JhbmdlcwBzdW5zdXBwb3J0ZWRfZHJvcHBlZABlY2xvY2uhcWV4Y2VlZHNfdG9sZXJhbmNl9GhoYXJkd2FyZaFvbWFjaGluZV9pZF9oYXNoWCChsSbz5J1bXz2EL69xX9p/cAPAxHMRy6agXnKnGxn+42hwcm9ibGVtc4A="
+    },
+    {
+      "name": "status_report:empty_lists",
+      "description": "No document slot, no telemetry entry and no problem.",
+      "type": "status_report",
+      "value": {
+        "endpoint": {
+          "senta_version": "1.0.0",
+          "os": {
+            "family": "linux",
+            "version": "6.8.0-45-generic"
+          },
+          "key_storage": "file",
+          "keyset": {
+            "recovery_epoch": 1,
+            "keyset_version": 2
+          },
+          "recovery_key_version": 1
+        },
+        "documents": [],
+        "collection": {
+          "collection_mode": "essential",
+          "sysmon": {
+            "state": "builtin"
+          },
+          "audit_policy": "applied"
+        },
+        "transport": {
+          "entries": [],
+          "buffered_records": 0,
+          "buffered_bytes": 0,
+          "dropped_ranges": 0,
+          "unsupported_dropped": 0
+        },
+        "clock": {
+          "exceeds_tolerance": false
+        },
+        "hardware": {
+          "machine_id_hash": "obEm8+SdW189hC+vcV/af3ADwMRzEcumoF5ypxsZ/uM="
+        },
+        "problems": []
+      },
+      "cbor": "p2hlbmRwb2ludKVtc2VudGFfdmVyc2lvbmUxLjAuMGJvc6JmZmFtaWx5ZWxpbnV4Z3ZlcnNpb25wNi44LjAtNDUtZ2VuZXJpY2trZXlfc3RvcmFnZWRmaWxlZmtleXNldKJucmVjb3ZlcnlfZXBvY2gBbmtleXNldF92ZXJzaW9uAnRyZWNvdmVyeV9rZXlfdmVyc2lvbgFpZG9jdW1lbnRzgGpjb2xsZWN0aW9uo29jb2xsZWN0aW9uX21vZGVpZXNzZW50aWFsZnN5c21vbqFlc3RhdGVnYnVpbHRpbmxhdWRpdF9wb2xpY3lnYXBwbGllZGl0cmFuc3BvcnSlZ2VudHJpZXOAcGJ1ZmZlcmVkX3JlY29yZHMAbmJ1ZmZlcmVkX2J5dGVzAG5kcm9wcGVkX3JhbmdlcwBzdW5zdXBwb3J0ZWRfZHJvcHBlZABlY2xvY2uhcWV4Y2VlZHNfdG9sZXJhbmNl9GhoYXJkd2FyZaFvbWFjaGluZV9pZF9oYXNoWCChsSbz5J1bXz2EL69xX9p/cAPAxHMRy6agXnKnGxn+42hwcm9ibGVtc4A="
+    },
+    {
+      "name": "status_report:optional_fields_present",
+      "description": "Every optional field present: slots with each target and slot state, versions and a document in use from a prior epoch, a Sysmon version, a last success with nanoseconds, a negative clock offset and both SMBIOS fields.",
+      "type": "status_report",
+      "value": {
+        "endpoint": {
+          "senta_version": "1.0.0",
+          "os": {
+            "family": "windows",
+            "version": "10.0.22631"
+          },
+          "key_storage": "dpapi",
+          "keyset": {
+            "recovery_epoch": 1,
+            "keyset_version": 2
+          },
+          "recovery_key_version": 1
+        },
+        "documents": [
+          {
+            "typ": "senta-policy",
+            "target": {
+              "group": "16fd2706-8baf-433b-82eb-8c7fada847da"
+            },
+            "verified_version": 1767225600000,
+            "applied_version": 1767225600000,
+            "state": "current",
+            "untrusted": false
+          },
+          {
+            "typ": "senta-assign",
+            "target": {
+              "endpoint": "7c9e6679-7425-40de-944b-e07fc1f90ae7"
+            },
+            "verified_version": 1767225660000,
+            "state": {
+              "halted": {
+                "reason": "group not found"
+              }
+            },
+            "in_use": {
+              "recovery_epoch": 1,
+              "version": 1767139200000
+            },
+            "untrusted": true
+          },
+          {
+            "typ": "senta-update",
+            "target": {
+              "group": "16fd2706-8baf-433b-82eb-8c7fada847da"
+            },
+            "verified_version": 1767225720000,
+            "applied_version": 1767225600000,
+            "state": "pending",
+            "untrusted": false
+          },
+          {
+            "typ": "senta-update",
+            "target": {
+              "endpoint": "7c9e6679-7425-40de-944b-e07fc1f90ae7"
+            },
+            "verified_version": 1767225780000,
+            "state": "pending_off_target",
+            "untrusted": false
+          },
+          {
+            "typ": "senta-keyset",
+            "target": {
+              "customer": "0f8fad5b-d9cb-469f-a165-70867728950e"
+            },
+            "verified_version": 2,
+            "applied_version": 2,
+            "state": "current",
+            "untrusted": false
+          },
+          {
+            "typ": "senta-install-config",
+            "target": {
+              "install": "acme"
+            },
+            "state": "current",
+            "untrusted": false
+          }
+        ],
+        "collection": {
+          "collection_mode": "extended",
+          "sysmon": {
+            "state": "standalone",
+            "version": "15.15"
+          },
+          "audit_policy": "gpo_managed"
+        },
+        "transport": {
+          "entries": [
+            {
+              "entry_id": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+              "last_success_at": "2026-01-01T23:58:29.876543211Z"
+            }
+          ],
+          "buffered_records": 1024,
+          "buffered_bytes": 1048576,
+          "dropped_ranges": 2,
+          "unsupported_dropped": 7
+        },
+        "clock": {
+          "offset": {
+            "offset_ms": -1500,
+            "uncertainty_ms": 20,
+            "measured_at": "2026-01-02T00:00:00Z"
+          },
+          "exceeds_tolerance": false
+        },
+        "hardware": {
+          "machine_id_hash": "nRM/CxkxB2Mx3iYw6ebqdMaHHCj+Glviz2B50S+5XUw=",
+          "smbios_uuid": "4c4c4544-0042-3510-8051-b4c04f4a4d32",
+          "smbios_serial": "5XQ8VD2"
+        },
+        "problems": [
+          "source_unreachable"
+        ]
+      },
+      "cbor": "p2hlbmRwb2ludKVtc2VudGFfdmVyc2lvbmUxLjAuMGJvc6JmZmFtaWx5Z3dpbmRvd3NndmVyc2lvbmoxMC4wLjIyNjMxa2tleV9zdG9yYWdlZWRwYXBpZmtleXNldKJucmVjb3ZlcnlfZXBvY2gBbmtleXNldF92ZXJzaW9uAnRyZWNvdmVyeV9rZXlfdmVyc2lvbgFpZG9jdW1lbnRzhqZjdHlwbHNlbnRhLXBvbGljeWZ0YXJnZXShZWdyb3VwUBb9JwaLr0M7guuMf62oR9pwdmVyaWZpZWRfdmVyc2lvbhsAAAGbdtqoAG9hcHBsaWVkX3ZlcnNpb24bAAABm3baqABlc3RhdGVnY3VycmVudGl1bnRydXN0ZWT0pmN0eXBsc2VudGEtYXNzaWduZnRhcmdldKFoZW5kcG9pbnRQfJ5meXQlQN6US+B/wfkK53B2ZXJpZmllZF92ZXJzaW9uGwAAAZt225JgZXN0YXRloWZoYWx0ZWShZnJlYXNvbm9ncm91cCBub3QgZm91bmRmaW5fdXNlom5yZWNvdmVyeV9lcG9jaAFndmVyc2lvbhsAAAGbcbRMAGl1bnRydXN0ZWT1pmN0eXBsc2VudGEtdXBkYXRlZnRhcmdldKFlZ3JvdXBQFv0nBouvQzuC64x/rahH2nB2ZXJpZmllZF92ZXJzaW9uGwAAAZt23HzAb2FwcGxpZWRfdmVyc2lvbhsAAAGbdtqoAGVzdGF0ZWdwZW5kaW5naXVudHJ1c3RlZPSlY3R5cGxzZW50YS11cGRhdGVmdGFyZ2V0oWhlbmRwb2ludFB8nmZ5dCVA3pRL4H/B+QrncHZlcmlmaWVkX3ZlcnNpb24bAAABm3bdZyBlc3RhdGVycGVuZGluZ19vZmZfdGFyZ2V0aXVudHJ1c3RlZPSmY3R5cGxzZW50YS1rZXlzZXRmdGFyZ2V0oWhjdXN0b21lclAPj61b2ctGn6FlcIZ3KJUOcHZlcmlmaWVkX3ZlcnNpb24Cb2FwcGxpZWRfdmVyc2lvbgJlc3RhdGVnY3VycmVudGl1bnRydXN0ZWT0pGN0eXB0c2VudGEtaW5zdGFsbC1jb25maWdmdGFyZ2V0oWdpbnN0YWxsZGFjbWVlc3RhdGVnY3VycmVudGl1bnRydXN0ZWT0amNvbGxlY3Rpb26jb2NvbGxlY3Rpb25fbW9kZWhleHRlbmRlZGZzeXNtb26iZXN0YXRlanN0YW5kYWxvbmVndmVyc2lvbmUxNS4xNWxhdWRpdF9wb2xpY3lrZ3BvX21hbmFnZWRpdHJhbnNwb3J0pWdlbnRyaWVzgaJoZW50cnlfaWRQoO68mZwLTvi7bWu5vTgKEW9sYXN0X3N1Y2Nlc3NfYXQbGIbA0YOCLutwYnVmZmVyZWRfcmVjb3JkcxkEAG5idWZmZXJlZF9ieXRlcxoAEAAAbmRyb3BwZWRfcmFuZ2VzAnN1bnN1cHBvcnRlZF9kcm9wcGVkB2VjbG9ja6Jmb2Zmc2V0o2lvZmZzZXRfbXM5BdtudW5jZXJ0YWludHlfbXMUa21lYXN1cmVkX2F0GxiGwOZ/SQAAcWV4Y2VlZHNfdG9sZXJhbmNl9GhoYXJkd2FyZaNvbWFjaGluZV9pZF9oYXNoWCCdEz8LGTEHYzHeJjDp5up0xoccKP4aW+LPYHnRL7ldTGtzbWJpb3NfdXVpZHgkNGM0YzQ1NDQtMDA0Mi0zNTEwLTgwNTEtYjRjMDRmNGE0ZDMybXNtYmlvc19zZXJpYWxnNVhROFZEMmhwcm9ibGVtc4Fyc291cmNlX3VucmVhY2hhYmxl"
+    },
+    {
+      "name": "status_report:every_problem",
+      "description": "Every Problem value, the three tampering signs and an unknown tag among them, with a clock offset beyond one hour.",
+      "type": "status_report",
+      "value": {
+        "endpoint": {
+          "senta_version": "1.0.0",
+          "os": {
+            "family": "windows",
+            "version": "10.0.22631"
+          },
+          "key_storage": "tpm",
+          "keyset": {
+            "recovery_epoch": 1,
+            "keyset_version": 2
+          },
+          "recovery_key_version": 1
+        },
+        "documents": [
+          {
+            "typ": "senta-addresses",
+            "state": "current",
+            "untrusted": false
+          }
+        ],
+        "collection": {
+          "collection_mode": "extended",
+          "sysmon": {
+            "state": "standalone",
+            "version": "15.15"
+          },
+          "audit_policy": "applied"
+        },
+        "transport": {
+          "entries": [
+            {
+              "entry_id": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+              "last_success_at": "2026-01-02T00:00:00Z"
+            }
+          ],
+          "buffered_records": 0,
+          "buffered_bytes": 0,
+          "dropped_ranges": 0,
+          "unsupported_dropped": 0
+        },
+        "clock": {
+          "offset": {
+            "offset_ms": 3600001,
+            "uncertainty_ms": 5,
+            "measured_at": "2026-01-02T00:00:00Z"
+          },
+          "exceeds_tolerance": true
+        },
+        "hardware": {
+          "machine_id_hash": "nRM/CxkxB2Mx3iYw6ebqdMaHHCj+Glviz2B50S+5XUw=",
+          "smbios_uuid": "4c4c4544-0042-3510-8051-b4c04f4a4d32",
+          "smbios_serial": "5XQ8VD2"
+        },
+        "problems": [
+          {
+            "signature_rejected": {
+              "typ": "senta-policy",
+              "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:2",
+              "result": "bad_signature"
+            }
+          },
+          {
+            "signature_rejected": {
+              "result": {
+                "keyset_gap": {
+                  "have_epoch": 1,
+                  "have_version": 2
+                }
+              }
+            }
+          },
+          {
+            "unknown_kid": {
+              "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:9"
+            }
+          },
+          "keyset_gap",
+          "update_failed",
+          "update_rolled_back",
+          "source_unreachable",
+          "prior_epoch_state",
+          "sysmon_missing",
+          "clock_skew",
+          "install_config_invalid",
+          "sysmon_stopped",
+          "sysmon_config_changed",
+          "unexpected_restart",
+          "disk_full"
+        ]
+      },
+      "cbor": "p2hlbmRwb2ludKVtc2VudGFfdmVyc2lvbmUxLjAuMGJvc6JmZmFtaWx5Z3dpbmRvd3NndmVyc2lvbmoxMC4wLjIyNjMxa2tleV9zdG9yYWdlY3RwbWZrZXlzZXSibnJlY292ZXJ5X2Vwb2NoAW5rZXlzZXRfdmVyc2lvbgJ0cmVjb3Zlcnlfa2V5X3ZlcnNpb24BaWRvY3VtZW50c4GjY3R5cG9zZW50YS1hZGRyZXNzZXNlc3RhdGVnY3VycmVudGl1bnRydXN0ZWT0amNvbGxlY3Rpb26jb2NvbGxlY3Rpb25fbW9kZWhleHRlbmRlZGZzeXNtb26iZXN0YXRlanN0YW5kYWxvbmVndmVyc2lvbmUxNS4xNWxhdWRpdF9wb2xpY3lnYXBwbGllZGl0cmFuc3BvcnSlZ2VudHJpZXOBomhlbnRyeV9pZFCg7ryZnAtO+Ltta7m9OAoRb2xhc3Rfc3VjY2Vzc19hdBsYhsDmf0kAAHBidWZmZXJlZF9yZWNvcmRzAG5idWZmZXJlZF9ieXRlcwBuZHJvcHBlZF9yYW5nZXMAc3Vuc3VwcG9ydGVkX2Ryb3BwZWQAZWNsb2NromZvZmZzZXSjaW9mZnNldF9tcxoANu6BbnVuY2VydGFpbnR5X21zBWttZWFzdXJlZF9hdBsYhsDmf0kAAHFleGNlZWRzX3RvbGVyYW5jZfVoaGFyZHdhcmWjb21hY2hpbmVfaWRfaGFzaFggnRM/CxkxB2Mx3iYw6ebqdMaHHCj+Glviz2B50S+5XUxrc21iaW9zX3V1aWR4JDRjNGM0NTQ0LTAwNDItMzUxMC04MDUxLWI0YzA0ZjRhNGQzMm1zbWJpb3Nfc2VyaWFsZzVYUThWRDJocHJvYmxlbXOPoXJzaWduYXR1cmVfcmVqZWN0ZWSjY3R5cGxzZW50YS1wb2xpY3lja2lkeC9lbmRwb2ludC0wZjhmYWQ1Yi1kOWNiLTQ2OWYtYTE2NS03MDg2NzcyODk1MGU6MmZyZXN1bHRtYmFkX3NpZ25hdHVyZaFyc2lnbmF0dXJlX3JlamVjdGVkoWZyZXN1bHShamtleXNldF9nYXCiamhhdmVfZXBvY2gBbGhhdmVfdmVyc2lvbgKha3Vua25vd25fa2lkoWNraWR4L2VuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZTo5amtleXNldF9nYXBtdXBkYXRlX2ZhaWxlZHJ1cGRhdGVfcm9sbGVkX2JhY2tyc291cmNlX3VucmVhY2hhYmxlcXByaW9yX2Vwb2NoX3N0YXRlbnN5c21vbl9taXNzaW5namNsb2NrX3NrZXd2aW5zdGFsbF9jb25maWdfaW52YWxpZG5zeXNtb25fc3RvcHBlZHVzeXNtb25fY29uZmlnX2NoYW5nZWRydW5leHBlY3RlZF9yZXN0YXJ0aWRpc2tfZnVsbA=="
+    },
+    {
+      "name": "status_report:unknown_tags",
+      "description": "A tag this crate does not know in each field that takes one, read as Other.",
+      "type": "status_report",
+      "value": {
+        "endpoint": {
+          "senta_version": "1.0.0",
+          "os": {
+            "family": "freebsd",
+            "version": "14.1"
+          },
+          "key_storage": "hsm",
+          "keyset": {
+            "recovery_epoch": 1,
+            "keyset_version": 2
+          },
+          "recovery_key_version": 1
+        },
+        "documents": [
+          {
+            "typ": "senta-future",
+            "target": "fleet",
+            "state": "frozen",
+            "untrusted": false
+          }
+        ],
+        "collection": {
+          "collection_mode": "forensic",
+          "sysmon": {
+            "state": "embedded"
+          },
+          "audit_policy": "partial"
+        },
+        "transport": {
+          "entries": [],
+          "buffered_records": 0,
+          "buffered_bytes": 0,
+          "dropped_ranges": 0,
+          "unsupported_dropped": 0
+        },
+        "clock": {
+          "exceeds_tolerance": false
+        },
+        "hardware": {
+          "machine_id_hash": "obEm8+SdW189hC+vcV/af3ADwMRzEcumoF5ypxsZ/uM="
+        },
+        "problems": [
+          "disk_full"
+        ]
+      },
+      "cbor": "p2hlbmRwb2ludKVtc2VudGFfdmVyc2lvbmUxLjAuMGJvc6JmZmFtaWx5Z2ZyZWVic2RndmVyc2lvbmQxNC4xa2tleV9zdG9yYWdlY2hzbWZrZXlzZXSibnJlY292ZXJ5X2Vwb2NoAW5rZXlzZXRfdmVyc2lvbgJ0cmVjb3Zlcnlfa2V5X3ZlcnNpb24BaWRvY3VtZW50c4GkY3R5cGxzZW50YS1mdXR1cmVmdGFyZ2V0ZWZsZWV0ZXN0YXRlZmZyb3plbml1bnRydXN0ZWT0amNvbGxlY3Rpb26jb2NvbGxlY3Rpb25fbW9kZWhmb3JlbnNpY2ZzeXNtb26hZXN0YXRlaGVtYmVkZGVkbGF1ZGl0X3BvbGljeWdwYXJ0aWFsaXRyYW5zcG9ydKVnZW50cmllc4BwYnVmZmVyZWRfcmVjb3JkcwBuYnVmZmVyZWRfYnl0ZXMAbmRyb3BwZWRfcmFuZ2VzAHN1bnN1cHBvcnRlZF9kcm9wcGVkAGVjbG9ja6FxZXhjZWVkc190b2xlcmFuY2X0aGhhcmR3YXJloW9tYWNoaW5lX2lkX2hhc2hYIKGxJvPknVtfPYQvr3Ff2n9wA8DEcxHLpqBecqcbGf7jaHByb2JsZW1zgWlkaXNrX2Z1bGw="
+    }
+  ]
+}

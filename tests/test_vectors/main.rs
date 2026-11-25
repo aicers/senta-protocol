@@ -10,6 +10,7 @@
 //! ```
 #![cfg(all(feature = "auth", feature = "control", feature = "test-util"))]
 
+mod cbor_cases;
 mod chain_cases;
 mod fixtures;
 mod generate;
@@ -21,13 +22,21 @@ mod notation;
 mod reproduce;
 mod sequence_cases;
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::path::PathBuf;
 
+use senta_protocol::auth::active_list::{EntryState, ListUpdate};
+use senta_protocol::connection::cbor;
+use senta_protocol::control::{EnrollRequest, Problem, StatusReport};
+use senta_protocol::standing::SuspendReason;
+
 use crate::generate::{compare, generate, is_vector_file};
 use crate::json::J;
-use crate::model::{JwsCase, SequenceCase, VectorFile, to_file_bytes};
+use crate::model::{
+    ActiveListCase, ControlCborCase, ControlMessageType, JwsCase, SequenceCase, VectorFile,
+    to_file_bytes,
+};
 use crate::reproduce::reproduce;
 
 /// The command that writes the vector files again.
@@ -260,4 +269,247 @@ fn reproduction_catches_a_wrong_hardware_hash() {
     files.insert("hardware_hash.json".to_owned(), to_file_bytes(&file));
     let mismatches = reproduce(&files);
     assert_eq!(mismatches.len(), 1, "{mismatches:?}");
+}
+
+/// Reads the committed vector file `name` as cases of type `C`.
+fn committed_file<C: serde::de::DeserializeOwned>(name: &str) -> VectorFile<C> {
+    let committed = read_committed();
+    let bytes = committed
+        .get(name)
+        .unwrap_or_else(|| panic!("{name} is committed"));
+    serde_json::from_slice(bytes).unwrap()
+}
+
+/// Decodes the CBOR bytes of a case, which are standard base64.
+fn case_bytes(cbor: &str) -> Vec<u8> {
+    cbor_cases::b64_standard_decode(cbor).unwrap()
+}
+
+/// Asserts that two enrollment requests are equal field by field:
+/// `EnrollRequest` has no equality, since `EnrollToken` has none.
+#[track_caller]
+fn assert_same_enroll_request(actual: &EnrollRequest, expected: &EnrollRequest, at: &str) {
+    assert_eq!(actual.attempt_id, expected.attempt_id, "{at}");
+    assert_eq!(actual.trusted_keyset, expected.trusted_keyset, "{at}");
+    assert_eq!(
+        actual.trusted_recovery_key_version, expected.trusted_recovery_key_version,
+        "{at}"
+    );
+    assert_eq!(
+        actual.enroll_token.expose(),
+        expected.enroll_token.expose(),
+        "{at}"
+    );
+    assert_eq!(actual.hardware, expected.hardware, "{at}");
+    assert_eq!(actual.hostname, expected.hostname, "{at}");
+    assert_eq!(actual.os, expected.os, "{at}");
+    assert_eq!(actual.senta_version, expected.senta_version, "{at}");
+    assert_eq!(actual.key_storage, expected.key_storage, "{at}");
+    assert_eq!(actual.vdi_mode, expected.vdi_mode, "{at}");
+}
+
+#[test]
+fn control_cbor_cases_decode_to_the_values_they_stand_for() {
+    let file: VectorFile<ControlCborCase> = committed_file("control_cbor.json");
+    let find = |name: &str| {
+        file.cases
+            .iter()
+            .find(|case| case.name == name)
+            .unwrap_or_else(|| panic!("{name} is a case of control_cbor.json"))
+    };
+    let requests = cbor_cases::enroll_requests();
+    let reports = cbor_cases::status_reports();
+    assert_eq!(file.cases.len(), requests.len() + reports.len());
+    for case in &requests {
+        let name = format!("enroll_request:{}", case.variant);
+        let vector = find(&name);
+        assert_eq!(vector.message_type, ControlMessageType::EnrollRequest);
+        let decoded: EnrollRequest = cbor::from_slice(&case_bytes(&vector.cbor)).unwrap();
+        assert_same_enroll_request(&decoded, &case.value, &name);
+        assert_eq!(decoded.enroll_token.expose(), cbor_cases::TEST_ENROLL_TOKEN);
+    }
+    for case in &reports {
+        let name = format!("status_report:{}", case.variant);
+        let vector = find(&name);
+        assert_eq!(vector.message_type, ControlMessageType::StatusReport);
+        let decoded: StatusReport = cbor::from_slice(&case_bytes(&vector.cbor)).unwrap();
+        assert_eq!(decoded, case.value, "{name}");
+    }
+}
+
+#[test]
+fn active_list_cases_decode_to_the_values_they_stand_for() {
+    let file: VectorFile<ActiveListCase> = committed_file("active_list.json");
+    let updates = cbor_cases::list_updates();
+    assert_eq!(file.cases.len(), updates.len());
+    for case in &updates {
+        let name = format!("list_update:{}", case.variant);
+        let vector = file
+            .cases
+            .iter()
+            .find(|vector| vector.name == name)
+            .unwrap_or_else(|| panic!("{name} is a case of active_list.json"));
+        let bytes = case_bytes(&vector.cbor);
+        assert_eq!(ListUpdate::decode(&bytes).unwrap(), case.value, "{name}");
+        assert_eq!(case.value.encode().unwrap(), bytes, "{name}");
+    }
+}
+
+/// Names a `Problem` value by its variant; a variant this test does not
+/// know fails it, so that a new one is added to the vectors.
+fn problem_variant(problem: &Problem) -> &'static str {
+    match problem {
+        Problem::SignatureRejected { .. } => "signature_rejected",
+        Problem::UnknownKid { .. } => "unknown_kid",
+        Problem::KeysetGap => "keyset_gap",
+        Problem::UpdateFailed => "update_failed",
+        Problem::UpdateRolledBack => "update_rolled_back",
+        Problem::SourceUnreachable => "source_unreachable",
+        Problem::PriorEpochState => "prior_epoch_state",
+        Problem::SysmonMissing => "sysmon_missing",
+        Problem::ClockSkew => "clock_skew",
+        Problem::InstallConfigInvalid => "install_config_invalid",
+        Problem::SysmonStopped => "sysmon_stopped",
+        Problem::SysmonConfigChanged => "sysmon_config_changed",
+        Problem::UnexpectedRestart => "unexpected_restart",
+        Problem::Other(_) => "other",
+        other => panic!("a Problem value the vectors do not cover: {other:?}"),
+    }
+}
+
+#[test]
+fn cbor_cases_cover_every_problem_and_every_entry_state() {
+    let problems: BTreeSet<&str> = cbor_cases::status_reports()
+        .iter()
+        .flat_map(|case| case.value.problems.iter().map(problem_variant))
+        .collect();
+    assert_eq!(
+        problems,
+        BTreeSet::from([
+            "signature_rejected",
+            "unknown_kid",
+            "keyset_gap",
+            "update_failed",
+            "update_rolled_back",
+            "source_unreachable",
+            "prior_epoch_state",
+            "sysmon_missing",
+            "clock_skew",
+            "install_config_invalid",
+            "sysmon_stopped",
+            "sysmon_config_changed",
+            "unexpected_restart",
+            "other",
+        ])
+    );
+
+    let state_name = |state: &EntryState| match state {
+        EntryState::Active => "active",
+        EntryState::LicensePending => "license_pending",
+        EntryState::Suspended {
+            reason: SuspendReason::Revoked,
+        } => "revoked",
+        EntryState::Suspended {
+            reason: SuspendReason::Operator,
+        } => "operator",
+        EntryState::Suspended {
+            reason: SuspendReason::License,
+        } => "license",
+        EntryState::Suspended { reason } => panic!("an unexpected reason {reason:?}"),
+    };
+    let every_state = BTreeSet::from([
+        "active",
+        "license_pending",
+        "revoked",
+        "operator",
+        "license",
+    ]);
+    let (mut full, mut diff) = (BTreeSet::new(), BTreeSet::new());
+    for case in cbor_cases::list_updates() {
+        match &case.value {
+            ListUpdate::Full { entries, .. } => {
+                full.extend(entries.iter().map(|entry| state_name(&entry.state)));
+            }
+            ListUpdate::Diff { upserts, .. } => {
+                diff.extend(upserts.iter().map(|entry| state_name(&entry.state)));
+            }
+        }
+    }
+    assert_eq!(full, every_state, "Full");
+    assert_eq!(diff, every_state, "Diff");
+}
+
+#[test]
+fn reproduction_catches_a_wrong_cbor_view() {
+    let mismatches = reproduce_changed::<ControlCborCase>("control_cbor.json", |file| {
+        let case = file
+            .cases
+            .iter_mut()
+            .find(|case| case.name == "status_report:every_problem")
+            .unwrap();
+        case.value = case.value.with("problems", J::arr([]));
+    });
+    assert_eq!(mismatches.len(), 2, "{mismatches:?}");
+    assert!(
+        mismatches
+            .iter()
+            .all(|line| line.contains("status_report:every_problem")),
+        "{mismatches:?}"
+    );
+}
+
+#[test]
+fn reproduction_catches_wrong_cbor_bytes() {
+    let mismatches = reproduce_changed::<ActiveListCase>("active_list.json", |file| {
+        let other = file
+            .cases
+            .iter()
+            .find(|case| case.name == "list_update:diff_removals_only")
+            .unwrap()
+            .cbor
+            .clone();
+        let case = file
+            .cases
+            .iter_mut()
+            .find(|case| case.name == "list_update:full_empty")
+            .unwrap();
+        // Bytes the crate decodes, of another update than the value.
+        case.cbor = other;
+    });
+    assert_eq!(mismatches.len(), 2, "{mismatches:?}");
+    assert!(
+        mismatches
+            .iter()
+            .all(|line| line.contains("list_update:full_empty")),
+        "{mismatches:?}"
+    );
+}
+
+#[test]
+fn reproduction_catches_a_payload_out_of_member_order() {
+    let mismatches = reproduce_changed::<JwsCase>("jws.json", |file| {
+        let case = file
+            .cases
+            .iter_mut()
+            .find(|case| case.name == "senta-update:valid")
+            .unwrap();
+        let kid = case.signed_by.clone().unwrap();
+        let header = case.input.header_json.clone().unwrap();
+        // `serde_json`'s map writes the members in name order.
+        let value: serde_json::Value =
+            serde_json::from_str(case.input.payload_json.as_deref().unwrap()).unwrap();
+        let payload = serde_json::to_string(&value).unwrap();
+        let key =
+            senta_protocol::auth::jws::test_util::TestKey::from_seed(&fixtures::seed_of(&kid));
+        case.input.jws = key.sign_raw(header.as_bytes(), payload.as_bytes());
+        case.expected =
+            notation::jws_verified(&fixtures::b64(&fixtures::sha256(payload.as_bytes())));
+        case.input.payload_json = Some(payload);
+    });
+    assert_eq!(mismatches.len(), 1, "{mismatches:?}");
+    assert!(
+        mismatches[0].contains("senta-update:valid")
+            && mismatches[0].contains("order the crate serializes"),
+        "{mismatches:?}"
+    );
 }

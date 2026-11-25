@@ -44,10 +44,12 @@ pub enum Category {
     EnrollResult,
     Commands,
     HardwareHash,
+    ControlCbor,
+    ActiveList,
 }
 
 impl Category {
-    pub const ALL: [Self; 8] = [
+    pub const ALL: [Self; 10] = [
         Self::Jws,
         Self::TrustChain,
         Self::Keyset,
@@ -56,6 +58,8 @@ impl Category {
         Self::EnrollResult,
         Self::Commands,
         Self::HardwareHash,
+        Self::ControlCbor,
+        Self::ActiveList,
     ];
 
     /// Returns the category's name, which is also its file's name without
@@ -70,6 +74,8 @@ impl Category {
             Self::EnrollResult => "enroll_result",
             Self::Commands => "commands",
             Self::HardwareHash => "hardware_hash",
+            Self::ControlCbor => "control_cbor",
+            Self::ActiveList => "active_list",
         }
     }
 
@@ -104,6 +110,40 @@ pub struct JwkJson {
     pub kty: String,
     pub crv: String,
     pub x: String,
+}
+
+// --- CBOR cases -------------------------------------------------------------------
+
+/// The control message a `control_cbor` case holds.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ControlMessageType {
+    EnrollRequest,
+    StatusReport,
+}
+
+/// A case of the `control_cbor` file: one control message body, as its
+/// JSON view and as its CBOR bytes.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct ControlCborCase {
+    pub name: String,
+    pub description: String,
+    #[serde(rename = "type")]
+    pub message_type: ControlMessageType,
+    pub value: J,
+    /// The CBOR bytes, standard base64 with padding.
+    pub cbor: String,
+}
+
+/// A case of the `active_list` file: one active list update, as its JSON
+/// view and as its CBOR bytes.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct ActiveListCase {
+    pub name: String,
+    pub description: String,
+    pub value: J,
+    /// The CBOR bytes, standard base64 with padding.
+    pub cbor: String,
 }
 
 // --- single-verdict cases ----------------------------------------------------
