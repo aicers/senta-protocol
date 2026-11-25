@@ -1,5 +1,6 @@
 //! An ordered JSON tree, for the parts of a vector whose shape varies: the
-//! result notation, and the JSON payloads signed into documents.
+//! result notation, the JSON payloads signed into documents, and the JSON
+//! views of CBOR values.
 //!
 //! Objects keep their members in the order written, both when built here
 //! and when read back from a file, so neither output depends on the map
@@ -18,6 +19,8 @@ pub enum J {
     Null,
     Bool(bool),
     Int(u64),
+    /// A negative integer, which only the JSON views of CBOR values carry.
+    Neg(i64),
     Str(String),
     Arr(Vec<J>),
     Obj(Vec<(String, J)>),
@@ -103,6 +106,7 @@ impl J {
             Self::Null => out.push_str("null"),
             Self::Bool(value) => out.push_str(if *value { "true" } else { "false" }),
             Self::Int(value) => out.push_str(&value.to_string()),
+            Self::Neg(value) => out.push_str(&value.to_string()),
             Self::Str(text) => out.push_str(&json_string(text)),
             Self::Arr(items) => {
                 out.push('[');
@@ -137,6 +141,7 @@ impl J {
             Self::Null => Value::Null,
             Self::Bool(value) => Value::Bool(*value),
             Self::Int(value) => Value::from(*value),
+            Self::Neg(value) => Value::from(*value),
             Self::Str(text) => Value::String(text.clone()),
             Self::Arr(items) => Value::Array(items.iter().map(Self::to_value).collect()),
             Self::Obj(members) => Value::Object(
@@ -155,9 +160,11 @@ impl J {
         match value {
             Value::Null => Self::Null,
             Value::Bool(value) => Self::Bool(*value),
-            Value::Number(number) => number
-                .as_u64()
-                .map_or_else(|| Self::Raw(number.to_string()), Self::Int),
+            Value::Number(number) => match (number.as_u64(), number.as_i64()) {
+                (Some(value), _) => Self::Int(value),
+                (None, Some(value)) => Self::Neg(value),
+                (None, None) => Self::Raw(number.to_string()),
+            },
             Value::String(text) => Self::Str(text.clone()),
             Value::Array(items) => Self::Arr(items.iter().map(Self::from_value).collect()),
             Value::Object(members) => Self::Obj(
@@ -198,6 +205,7 @@ impl Serialize for J {
             Self::Null => serializer.serialize_unit(),
             Self::Bool(value) => serializer.serialize_bool(*value),
             Self::Int(value) => serializer.serialize_u64(*value),
+            Self::Neg(value) => serializer.serialize_i64(*value),
             Self::Str(text) => serializer.serialize_str(text),
             Self::Arr(items) => {
                 let mut seq = serializer.serialize_seq(Some(items.len()))?;
@@ -232,7 +240,7 @@ impl<'de> Visitor<'de> for JVisitor {
     type Value = J;
 
     fn expecting(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str("a JSON value with no negative or fractional number")
+        f.write_str("a JSON value with no fractional number")
     }
 
     fn visit_unit<E: de::Error>(self) -> Result<J, E> {
@@ -248,9 +256,7 @@ impl<'de> Visitor<'de> for JVisitor {
     }
 
     fn visit_i64<E: de::Error>(self, value: i64) -> Result<J, E> {
-        u64::try_from(value)
-            .map(J::Int)
-            .map_err(|_| E::custom("a negative number"))
+        Ok(u64::try_from(value).map_or(J::Neg(value), J::Int))
     }
 
     fn visit_str<E: de::Error>(self, text: &str) -> Result<J, E> {

@@ -13,13 +13,14 @@ use senta_protocol::auth::documents::{
     AbsoluteUrl, Address, AddressHost, AddressesContent, AssignContent, AuditSettings, CLOCK_SKEW,
     CertificatePem, CommandAction, CommandContent, CommandKind, ContentError, ControlEntry,
     CustomerKeyName, CustomerKid, DeploymentCertContent, DiagnoseArgs, DnsName, DocumentError,
-    EnrollContent, EnrollResultContent, InstallConfigContent, InstallId, Integer, JwsText,
-    KeysetContent, KeysetEntry, KindNumber, MAX_COMMAND_LIFETIME, MAX_UPDATE_LIFETIME,
+    EnrollContent, EnrollResultContent, ExistingSysmon, InstallConfigContent, InstallId, Integer,
+    JwsText, KeysetContent, KeysetEntry, KindNumber, MAX_COMMAND_LIFETIME, MAX_UPDATE_LIFETIME,
     NonEmptyString, PolicyCollectionMode, PolicyContent, PositiveInteger, RecoveryKeyContent,
-    SemVer, StatusUi, SysmonConfig, TelemetryEntry, UpdateContent, UpdatePackage, UpdateTarget,
-    check_validity_window, inspect_install_config, inspect_keyset, inspect_recovery_key,
-    verify_addresses, verify_assign, verify_command, verify_deployment_cert, verify_enroll,
-    verify_enroll_result, verify_install_config, verify_keyset, verify_policy, verify_recovery_key,
+    SemVer, StatusUi, SysmonConfig, SysmonConfigs, TelemetryEntry, UpdateContent, UpdatePackage,
+    UpdateRelease, UpdateTarget, WindowsSysmonPackage, check_validity_window,
+    inspect_install_config, inspect_keyset, inspect_recovery_key, verify_addresses, verify_assign,
+    verify_command, verify_deployment_cert, verify_enroll, verify_enroll_result,
+    verify_install_config, verify_keyset, verify_policy, verify_recovery_key,
     verify_self_signed_keyset, verify_update,
 };
 use senta_protocol::auth::jws::strict::{
@@ -295,9 +296,27 @@ fn valid(typ: Typ) -> Value {
             "group_id": GROUP,
             "version": 7,
             "collection_mode": "extended",
-            "sysmon_config": {
-                "sha256": b64(&[7; 32]),
-                "sources": ["https://dist.example/sysmon.xml"],
+            "sysmon_configs": [
+                {
+                    "os": "windows",
+                    "sha256": b64(&[7; 32]),
+                    "sources": ["https://dist.example/sysmon-windows.xml"],
+                },
+                {
+                    "os": "linux",
+                    "sha256": b64(&[17; 32]),
+                    "sources": [
+                        "https://dist.example/sysmon-linux.xml",
+                        "https://mirror.example/sysmon-linux.xml",
+                    ],
+                },
+            ],
+            "existing_sysmon": "take_over",
+            "windows_sysmon_package": {
+                "version": "15.15",
+                "sha256": b64(&[27; 32]),
+                "size": 4_194_304,
+                "sources": ["https://dist.example/sysmon/sysmon.zip"],
             },
             "field_exclusions": {
                 "1": ["CommandLine", "ParentCommandLine"],
@@ -338,9 +357,23 @@ fn valid(typ: Typ) -> Value {
             "version": 4,
             "group_id": GROUP,
             "target_version": "1.2.3-rc.1+build.5",
-            "package_sha256": b64(&[9; 32]),
-            "package_size": 1_048_576,
-            "sources": ["https://dist.example/agent-1.2.3.msi"],
+            "packages": [
+                {
+                    "platform": "windows-x86_64-msi",
+                    "sha256": b64(&[9; 32]),
+                    "size": 1_048_576,
+                    "sources": ["https://dist.example/agent-1.2.3.msi"],
+                },
+                {
+                    "platform": "linux-x86_64-deb",
+                    "sha256": b64(&[19; 32]),
+                    "size": 2_097_152,
+                    "sources": [
+                        "https://dist.example/agent-1.2.3.deb",
+                        "https://mirror.example/agent-1.2.3.deb",
+                    ],
+                },
+            ],
             "rollback": false,
             "issued_at": T0,
             "expires_at": T0_PLUS_DAY,
@@ -495,10 +528,34 @@ fn policy_content() -> PolicyContent {
         group_id: uuid(GROUP),
         version: int(7),
         collection_mode: PolicyCollectionMode::Extended,
-        sysmon_config: SysmonConfig {
-            sha256: Base64UrlArray::from([7; 32]),
-            sources: vec![url("https://dist.example/sysmon.xml")],
-        },
+        sysmon_configs: SysmonConfigs::new(vec![
+            SysmonConfig::new(
+                text("windows"),
+                Base64UrlArray::from([7; 32]),
+                vec![url("https://dist.example/sysmon-windows.xml")],
+            )
+            .unwrap(),
+            SysmonConfig::new(
+                text("linux"),
+                Base64UrlArray::from([17; 32]),
+                vec![
+                    url("https://dist.example/sysmon-linux.xml"),
+                    url("https://mirror.example/sysmon-linux.xml"),
+                ],
+            )
+            .unwrap(),
+        ])
+        .unwrap(),
+        existing_sysmon: ExistingSysmon::TakeOver,
+        windows_sysmon_package: Some(
+            WindowsSysmonPackage::new(
+                text("15.15"),
+                Base64UrlArray::from([27; 32]),
+                positive(4_194_304),
+                vec![url("https://dist.example/sysmon/sysmon.zip")],
+            )
+            .unwrap(),
+        ),
         field_exclusions: BTreeMap::from([
             (
                 KindNumber::new(1).unwrap(),
@@ -554,13 +611,34 @@ fn addresses_content() -> AddressesContent {
     .unwrap()
 }
 
-fn update_package() -> UpdatePackage {
-    UpdatePackage {
-        target_version: SemVer::parse("1.2.3-rc.1+build.5").unwrap(),
-        package_sha256: Base64UrlArray::from([9; 32]),
-        package_size: int(1_048_576),
-        sources: vec![url("https://dist.example/agent-1.2.3.msi")],
-    }
+fn update_packages() -> Vec<UpdatePackage> {
+    vec![
+        UpdatePackage::new(
+            text("windows-x86_64-msi"),
+            Base64UrlArray::from([9; 32]),
+            positive(1_048_576),
+            vec![url("https://dist.example/agent-1.2.3.msi")],
+        )
+        .unwrap(),
+        UpdatePackage::new(
+            text("linux-x86_64-deb"),
+            Base64UrlArray::from([19; 32]),
+            positive(2_097_152),
+            vec![
+                url("https://dist.example/agent-1.2.3.deb"),
+                url("https://mirror.example/agent-1.2.3.deb"),
+            ],
+        )
+        .unwrap(),
+    ]
+}
+
+fn update_release() -> UpdateRelease {
+    UpdateRelease::new(
+        SemVer::parse("1.2.3-rc.1+build.5").unwrap(),
+        update_packages(),
+    )
+    .unwrap()
 }
 
 fn update_content() -> UpdateContent {
@@ -568,7 +646,7 @@ fn update_content() -> UpdateContent {
         int(2),
         int(4),
         UpdateTarget::Group(uuid(GROUP)),
-        Some(update_package()),
+        Some(update_release()),
         false,
         time(T0),
         time(T0_PLUS_DAY),
@@ -785,7 +863,7 @@ fn every_content_type_round_trips_through_strict_json() {
             Integer::MAX,
             int(0),
             UpdateTarget::Endpoint(uuid(OTHER_ENDPOINT)),
-            Some(update_package()),
+            Some(update_release()),
             true,
             time("2026-01-01T00:00:00.123456789Z"),
             time("2026-01-01T00:00:00.123456789Z"),
@@ -807,9 +885,21 @@ fn optional_and_null_fields_serialize_as_specified() {
     let null = serde_json::to_value(null_update_content()).unwrap();
     let object = null.as_object().unwrap();
     assert_eq!(object.get("target_version"), Some(&Value::Null));
-    for absent in ["group_id", "package_sha256", "package_size", "sources"] {
+    for absent in ["group_id", "packages"] {
         assert!(!object.contains_key(absent), "{absent}");
     }
+
+    let without_package = serde_json::to_value(PolicyContent {
+        windows_sysmon_package: None,
+        ..policy_content()
+    })
+    .unwrap();
+    assert!(
+        !without_package
+            .as_object()
+            .unwrap()
+            .contains_key("windows_sysmon_package")
+    );
 }
 
 #[test]
@@ -820,7 +910,14 @@ fn update_and_command_expose_their_window() {
     assert_eq!(update.issued_at(), time(T0).get());
     assert_eq!(update.expires_at(), time(T0_PLUS_DAY).get());
     assert_eq!(update.target(), UpdateTarget::Group(uuid(GROUP)));
-    assert_eq!(update.package(), Some(&update_package()));
+    assert_eq!(update.release(), Some(&update_release()));
+    assert_eq!(update.packages(), update_packages().as_slice());
+    let release = update.release().unwrap();
+    assert_eq!(
+        release.package("linux-x86_64-deb"),
+        update_packages().get(1)
+    );
+    assert_eq!(release.package("linux-x86_64-rpm"), None);
 
     let null = verify_update(&sign_value(Typ::Update, &valid_null_update()), &source())
         .unwrap()
@@ -828,6 +925,8 @@ fn update_and_command_expose_their_window() {
     assert_eq!(null.issued_at(), time(T0).get());
     assert_eq!(null.expires_at(), time(T0_PLUS_DAY).get());
     assert_eq!(null.target_version(), None);
+    assert_eq!(null.release(), None);
+    assert!(null.packages().is_empty());
     assert_eq!(null.target(), UpdateTarget::Endpoint(uuid(OTHER_ENDPOINT)));
 
     let command = verify_command(&sign_value(Typ::Command, &valid(Typ::Command)), &source())
@@ -928,8 +1027,16 @@ fn unknown_fields_are_rejected_at_the_top() {
 
 #[test]
 fn unknown_fields_are_rejected_in_every_nested_object() {
-    let cases: [(Typ, &str, Locate); 7] = [
-        (Typ::Policy, "sysmon_config", |v| &mut v["sysmon_config"]),
+    let cases: [(Typ, &str, Locate); 9] = [
+        (Typ::Policy, "sysmon_configs element", |v| {
+            &mut v["sysmon_configs"][1]
+        }),
+        (
+            Typ::Policy,
+            "windows_sysmon_package",
+            |v| &mut v["windows_sysmon_package"],
+        ),
+        (Typ::Update, "packages element", |v| &mut v["packages"][1]),
         (Typ::Policy, "audit_settings", |v| &mut v["audit_settings"]),
         (Typ::Keyset, "keys element", |v| &mut v["keys"][1]),
         (Typ::Keyset, "JWK", |v| &mut v["keys"][0]["key"]),
@@ -964,8 +1071,18 @@ fn duplicate_keys_are_rejected_at_every_depth() {
     let nested = [
         (
             Typ::Policy,
-            r#""sysmon_config":{"#,
+            r#""sysmon_configs":[{"#,
             format!(r#""sha256":{}"#, b64(&[7; 32])),
+        ),
+        (
+            Typ::Policy,
+            r#""windows_sysmon_package":{"#,
+            r#""size":1"#.to_owned(),
+        ),
+        (
+            Typ::Update,
+            r#""packages":[{"#,
+            r#""platform":"linux-x86_64-rpm""#.to_owned(),
         ),
         (
             Typ::Policy,
@@ -1017,7 +1134,10 @@ fn duplicate_keys_are_rejected_at_every_depth() {
 fn every_missing_required_field_is_rejected() {
     for typ in Typ::ALL {
         for field in valid(typ).as_object().unwrap().keys() {
-            if typ == Typ::Enroll && field == "expires_at" {
+            // The fields that may be left out.
+            if (typ == Typ::Enroll && field == "expires_at")
+                || (typ == Typ::Policy && field == "windows_sysmon_package")
+            {
                 continue;
             }
             let value = edited(typ, |v| {
@@ -1082,7 +1202,6 @@ fn integers_out_of_range_are_rejected() {
         (Typ::Addresses, "version"),
         (Typ::Update, "recovery_epoch"),
         (Typ::Update, "version"),
-        (Typ::Update, "package_size"),
         (Typ::Command, "seq"),
         (Typ::Command, "recovery_epoch"),
     ];
@@ -1189,12 +1308,14 @@ fn signed_document_enums_take_no_other_representation() {
 
 #[test]
 fn hashes_and_the_hardware_salt_are_exactly_32_bytes() {
-    let fields: [(Typ, Locate); 5] = [
+    let fields: [(Typ, Locate); 7] = [
         (Typ::InstallConfig, |v| &mut v["hw_salt"]),
         (Typ::EnrollResult, |v| &mut v["spki_sha256"]),
-        (Typ::Policy, |v| &mut v["sysmon_config"]["sha256"]),
+        (Typ::Policy, |v| &mut v["sysmon_configs"][0]["sha256"]),
+        (Typ::Policy, |v| &mut v["windows_sysmon_package"]["sha256"]),
         (Typ::Assign, |v| &mut v["uninstall_token_sha256"]),
-        (Typ::Update, |v| &mut v["package_sha256"]),
+        (Typ::Update, |v| &mut v["packages"][0]["sha256"]),
+        (Typ::Update, |v| &mut v["packages"][1]["sha256"]),
     ];
     let padded = format!("{}=", b64(&[1; 32]).as_str().unwrap());
     let standard = b64(&[0xfb; 32])
@@ -1219,10 +1340,14 @@ fn hashes_and_the_hardware_salt_are_exactly_32_bytes() {
 
 #[test]
 fn urls_must_be_absolute() {
-    let fields: [(Typ, Locate); 3] = [
-        (Typ::Policy, |v| &mut v["sysmon_config"]["sources"][0]),
+    let fields: [(Typ, Locate); 5] = [
+        (Typ::Policy, |v| &mut v["sysmon_configs"][1]["sources"][1]),
+        (Typ::Policy, |v| {
+            &mut v["windows_sysmon_package"]["sources"][0]
+        }),
         (Typ::Addresses, |v| &mut v["distribution_points"][0]),
-        (Typ::Update, |v| &mut v["sources"][0]),
+        (Typ::Update, |v| &mut v["packages"][0]["sources"][0]),
+        (Typ::Update, |v| &mut v["packages"][1]["sources"][1]),
     ];
     for (typ, at) in fields {
         for bad in [
@@ -1573,9 +1698,9 @@ fn keys_and_trust_roots_may_not_be_empty_but_other_lists_may() {
     let value = edited(Typ::Addresses, |v| v["trust_roots"] = json!([]));
     assert_value_rejected(Typ::Addresses, &value, "empty trust_roots");
 
-    let empty_lists: [(Typ, Edit); 9] = [
+    let empty_lists: [(Typ, Edit); 8] = [
         (Typ::Keyset, |v| v["revoked_kids"] = json!([])),
-        (Typ::Policy, |v| v["sysmon_config"]["sources"] = json!([])),
+        (Typ::Policy, |v| v["sysmon_configs"] = json!([])),
         (Typ::Policy, |v| v["field_exclusions"]["1"] = json!([])),
         (Typ::Policy, |v| v["field_exclusions"] = json!({})),
         (Typ::Policy, |v| {
@@ -1584,7 +1709,6 @@ fn keys_and_trust_roots_may_not_be_empty_but_other_lists_may() {
         (Typ::Addresses, |v| v["control_entries"] = json!([])),
         (Typ::Addresses, |v| v["telemetry_entries"] = json!([])),
         (Typ::Addresses, |v| v["distribution_points"] = json!([])),
-        (Typ::Update, |v| v["sources"] = json!([])),
     ];
     for (typ, edit) in empty_lists {
         assert_value_accepted(typ, &edited(typ, edit), "empty list");
@@ -1833,20 +1957,18 @@ fn expires_at_is_not_before_issued_at() {
 }
 
 #[test]
-fn update_targets_and_package_fields_follow_their_rules() {
-    // A version update without one of its package fields.
-    for field in ["package_sha256", "package_size", "sources"] {
-        let value = edited(Typ::Update, |v| {
-            object(v).remove(field);
-        });
-        assert_value_rejected(Typ::Update, &value, &format!("without {field}"));
-    }
-    // A release with one of them.
+fn update_targets_and_packages_follow_their_rules() {
+    // A version update without `packages`.
+    let value = edited(Typ::Update, |v| {
+        object(v).remove("packages");
+    });
+    assert_value_rejected(Typ::Update, &value, "without packages");
+    // A release with `packages`, even an empty one.
     let semver = valid(Typ::Update);
-    for field in ["package_sha256", "package_size", "sources"] {
+    for packages in [semver["packages"].clone(), json!([])] {
         let mut value = valid_null_update();
-        object(&mut value).insert(field.to_owned(), semver[field].clone());
-        assert_value_rejected(Typ::Update, &value, &format!("null with {field}"));
+        object(&mut value).insert("packages".to_owned(), packages);
+        assert_value_rejected(Typ::Update, &value, "null with packages");
     }
     // A release to a group.
     let mut value = valid_null_update();
@@ -1874,7 +1996,7 @@ fn update_targets_and_package_fields_follow_their_rules() {
     });
     assert_value_rejected(Typ::Update, &value, "no target");
     // An explicit null anywhere else.
-    for field in ["package_sha256", "package_size", "sources", "group_id"] {
+    for field in ["packages", "group_id"] {
         let value = edited(Typ::Update, |v| v[field] = Value::Null);
         assert_value_rejected(Typ::Update, &value, &format!("{field} null"));
     }
@@ -1898,6 +2020,519 @@ fn update_targets_and_package_fields_follow_their_rules() {
             time(T0),
         ),
         Err(ContentError::NullTargetVersionForGroup)
+    );
+}
+
+/// Puts each of the number literals `BAD_NUMBERS` at `at` and asserts the
+/// document is rejected, and the largest integer accepted.
+#[track_caller]
+fn assert_integer_rule_at(typ: Typ, at: Locate, case: &str) {
+    for bad in BAD_NUMBERS {
+        let value = edited(typ, |v| *at(v) = json!("__placeholder__"));
+        let text = serde_json::to_string(&value)
+            .unwrap()
+            .replace("\"__placeholder__\"", bad);
+        assert_schema_error(typ, text.as_bytes(), &format!("{case} = {bad}"));
+    }
+    let value = edited(typ, |v| *at(v) = json!(9_007_199_254_740_991_u64));
+    assert_value_accepted(typ, &value, &format!("{case} = 2^53 - 1"));
+    let value = edited(typ, |v| *at(v) = json!(0));
+    assert_value_rejected(typ, &value, &format!("{case} = 0"));
+    let value = edited(typ, |v| *at(v) = json!(1));
+    assert_value_accepted(typ, &value, &format!("{case} = 1"));
+}
+
+const BAD_NUMBERS: [&str; 6] = [
+    "9007199254740992",
+    "-1",
+    "1.0",
+    "1e3",
+    "18446744073709551616",
+    "\"1\"",
+];
+
+#[test]
+fn updates_carry_a_package_per_platform() {
+    let update = verify_update(&sign_value(Typ::Update, &valid(Typ::Update)), &source())
+        .unwrap()
+        .into_content();
+    let platforms: Vec<&str> = update
+        .packages()
+        .iter()
+        .map(|package| package.platform().as_str())
+        .collect();
+    assert_eq!(platforms, ["windows-x86_64-msi", "linux-x86_64-deb"]);
+    let linux = update.packages().get(1).unwrap();
+    assert_eq!(linux.sha256(), &Base64UrlArray::from([19; 32]));
+    assert_eq!(linux.size().get(), 2_097_152);
+    assert_eq!(linux.sources().len(), 2);
+
+    // A third platform, and one the crate does not know, are accepted.
+    let value = edited(Typ::Update, |v| {
+        let mut rpm = v["packages"][1].clone();
+        rpm["platform"] = json!("linux-x86_64-rpm");
+        let mut other = v["packages"][0].clone();
+        other["platform"] = json!("macos-aarch64-pkg");
+        v["packages"].as_array_mut().unwrap().extend([rpm, other]);
+    });
+    assert_value_accepted(Typ::Update, &value, "four platforms");
+    // A single package is enough.
+    let value = edited(Typ::Update, |v| {
+        v["packages"].as_array_mut().unwrap().truncate(1);
+    });
+    assert_value_accepted(Typ::Update, &value, "one platform");
+}
+
+#[test]
+fn update_packages_follow_their_rules() {
+    let cases: [(&str, Edit); 12] = [
+        ("empty packages", |v| v["packages"] = json!([])),
+        ("repeated platform", |v| {
+            v["packages"][1]["platform"] = json!("windows-x86_64-msi");
+        }),
+        ("empty platform", |v| {
+            v["packages"][0]["platform"] = json!("")
+        }),
+        ("platform not a string", |v| {
+            v["packages"][0]["platform"] = json!(1);
+        }),
+        ("empty package sources", |v| {
+            v["packages"][1]["sources"] = json!([]);
+        }),
+        ("packages not a list", |v| {
+            v["packages"] = v["packages"][0].clone();
+        }),
+        ("package without platform", |v| {
+            object(&mut v["packages"][0]).remove("platform");
+        }),
+        ("package without sha256", |v| {
+            object(&mut v["packages"][0]).remove("sha256");
+        }),
+        ("package without size", |v| {
+            object(&mut v["packages"][0]).remove("size");
+        }),
+        ("package without sources", |v| {
+            object(&mut v["packages"][0]).remove("sources");
+        }),
+        ("package null", |v| v["packages"][0] = Value::Null),
+        ("size null", |v| v["packages"][0]["size"] = Value::Null),
+    ];
+    for (case, edit) in cases {
+        assert_value_rejected(Typ::Update, &edited(Typ::Update, edit), case);
+    }
+    assert_integer_rule_at(Typ::Update, |v| &mut v["packages"][1]["size"], "size");
+
+    // The fields `packages` replaced are unknown fields now, beside
+    // `packages` or in its place.
+    let old = [
+        ("package_sha256", b64(&[9; 32])),
+        ("package_size", json!(1_048_576)),
+        ("sources", json!(["https://dist.example/agent-1.2.3.msi"])),
+    ];
+    for (field, old_value) in &old {
+        let value = edited(Typ::Update, |v| {
+            object(v).insert((*field).to_owned(), old_value.clone());
+        });
+        assert_value_rejected(Typ::Update, &value, &format!("with {field}"));
+        let mut value = valid_null_update();
+        object(&mut value).insert((*field).to_owned(), old_value.clone());
+        assert_value_rejected(Typ::Update, &value, &format!("null with {field}"));
+    }
+    let value = edited(Typ::Update, |v| {
+        object(v).remove("packages");
+        for (field, old_value) in &old {
+            object(v).insert((*field).to_owned(), old_value.clone());
+        }
+    });
+    assert_value_rejected(Typ::Update, &value, "the 0.1 form");
+
+    let package = |platform: &str, sources: Vec<AbsoluteUrl>| {
+        UpdatePackage::new(
+            text(platform),
+            Base64UrlArray::from([1; 32]),
+            positive(1),
+            sources,
+        )
+    };
+    assert_eq!(
+        package("linux-x86_64-deb", vec![]),
+        Err(ContentError::EmptyPackageSources)
+    );
+    let deb = package("linux-x86_64-deb", vec![url("https://dist.example/a.deb")]).unwrap();
+    let version = SemVer::parse("1.0.0").unwrap();
+    assert_eq!(
+        UpdateRelease::new(version.clone(), vec![]),
+        Err(ContentError::EmptyPackages)
+    );
+    assert_eq!(
+        UpdateRelease::new(version.clone(), vec![deb.clone(), deb.clone()]),
+        Err(ContentError::DuplicatePlatform)
+    );
+    let release = UpdateRelease::new(version.clone(), vec![deb.clone()]).unwrap();
+    assert_eq!(release.target_version(), &version);
+    assert_eq!(release.packages(), std::slice::from_ref(&deb));
+    assert_eq!(release.package("linux-x86_64-deb"), Some(&deb));
+}
+
+#[test]
+fn policies_carry_sysmon_configs_and_the_sysmon_package() {
+    let policy = verify_policy(&sign_value(Typ::Policy, &valid(Typ::Policy)), &source())
+        .unwrap()
+        .into_content();
+    assert_eq!(policy, policy_content());
+    let names: Vec<&str> = policy
+        .sysmon_configs
+        .as_slice()
+        .iter()
+        .map(|config| config.os().as_str())
+        .collect();
+    assert_eq!(names, ["windows", "linux"]);
+    let linux = policy.sysmon_configs.get("linux").unwrap();
+    assert_eq!(linux.sha256(), &Base64UrlArray::from([17; 32]));
+    assert_eq!(linux.sources().len(), 2);
+    assert_eq!(policy.sysmon_configs.get("macos"), None);
+    assert_eq!(policy.existing_sysmon, ExistingSysmon::TakeOver);
+    let package = policy.windows_sysmon_package.as_ref().unwrap();
+    assert_eq!(package.version().as_str(), "15.15");
+    assert_eq!(package.sha256(), &Base64UrlArray::from([27; 32]));
+    assert_eq!(package.size().get(), 4_194_304);
+    assert_eq!(package.sources().len(), 1);
+
+    let accepted: [(&str, Edit); 6] = [
+        ("empty sysmon_configs", |v| v["sysmon_configs"] = json!([])),
+        ("an unknown os", |v| {
+            v["sysmon_configs"][1]["os"] = json!("macos")
+        }),
+        ("one sysmon config", |v| {
+            v["sysmon_configs"].as_array_mut().unwrap().truncate(1);
+        }),
+        ("existing_sysmon keep", |v| {
+            v["existing_sysmon"] = json!("keep");
+        }),
+        ("no windows_sysmon_package", |v| {
+            object(v).remove("windows_sysmon_package");
+        }),
+        ("the package's version any text", |v| {
+            v["windows_sysmon_package"]["version"] = json!("v15.15 (build 7)");
+        }),
+    ];
+    for (case, edit) in accepted {
+        assert_value_accepted(Typ::Policy, &edited(Typ::Policy, edit), case);
+    }
+    let value = edited(Typ::Policy, |v| v["existing_sysmon"] = json!("keep"));
+    let policy = verify_policy(&sign_value(Typ::Policy, &value), &source())
+        .unwrap()
+        .into_content();
+    assert_eq!(policy.existing_sysmon, ExistingSysmon::Keep);
+    let value = edited(Typ::Policy, |v| {
+        object(v).remove("windows_sysmon_package");
+    });
+    let policy = verify_policy(&sign_value(Typ::Policy, &value), &source())
+        .unwrap()
+        .into_content();
+    assert_eq!(policy.windows_sysmon_package, None);
+}
+
+#[test]
+fn policy_sysmon_fields_follow_their_rules() {
+    let cases: [(&str, Edit); 26] = [
+        ("repeated os", |v| {
+            v["sysmon_configs"][1]["os"] = json!("windows")
+        }),
+        ("empty os", |v| v["sysmon_configs"][0]["os"] = json!("")),
+        ("os not a string", |v| {
+            v["sysmon_configs"][0]["os"] = json!(1)
+        }),
+        ("empty sysmon config sources", |v| {
+            v["sysmon_configs"][0]["sources"] = json!([]);
+        }),
+        ("sysmon config without os", |v| {
+            object(&mut v["sysmon_configs"][0]).remove("os");
+        }),
+        ("sysmon config without sha256", |v| {
+            object(&mut v["sysmon_configs"][0]).remove("sha256");
+        }),
+        ("sysmon config without sources", |v| {
+            object(&mut v["sysmon_configs"][0]).remove("sources");
+        }),
+        ("sysmon_configs missing", |v| {
+            object(v).remove("sysmon_configs");
+        }),
+        ("sysmon_configs null", |v| v["sysmon_configs"] = Value::Null),
+        ("sysmon_configs an object", |v| {
+            v["sysmon_configs"] = v["sysmon_configs"][0].clone();
+        }),
+        ("existing_sysmon missing", |v| {
+            object(v).remove("existing_sysmon");
+        }),
+        ("existing_sysmon unknown", |v| {
+            v["existing_sysmon"] = json!("replace");
+        }),
+        ("existing_sysmon in another case", |v| {
+            v["existing_sysmon"] = json!("Keep");
+        }),
+        ("existing_sysmon camel case", |v| {
+            v["existing_sysmon"] = json!("takeOver");
+        }),
+        ("existing_sysmon tagged", |v| {
+            v["existing_sysmon"] = json!({"keep": null});
+        }),
+        ("existing_sysmon null", |v| {
+            v["existing_sysmon"] = Value::Null
+        }),
+        ("windows_sysmon_package null", |v| {
+            v["windows_sysmon_package"] = Value::Null;
+        }),
+        ("empty package version", |v| {
+            v["windows_sysmon_package"]["version"] = json!("");
+        }),
+        ("package version a number", |v| {
+            v["windows_sysmon_package"]["version"] = json!(15);
+        }),
+        ("empty package sources", |v| {
+            v["windows_sysmon_package"]["sources"] = json!([]);
+        }),
+        ("package sha256 of 31 bytes", |v| {
+            v["windows_sysmon_package"]["sha256"] = b64(&[1; 31]);
+        }),
+        ("package sha256 of 33 bytes", |v| {
+            v["windows_sysmon_package"]["sha256"] = b64(&[1; 33]);
+        }),
+        ("package without version", |v| {
+            object(&mut v["windows_sysmon_package"]).remove("version");
+        }),
+        ("package without sha256", |v| {
+            object(&mut v["windows_sysmon_package"]).remove("sha256");
+        }),
+        ("package without size", |v| {
+            object(&mut v["windows_sysmon_package"]).remove("size");
+        }),
+        ("package without sources", |v| {
+            object(&mut v["windows_sysmon_package"]).remove("sources");
+        }),
+    ];
+    for (case, edit) in cases {
+        assert_value_rejected(Typ::Policy, &edited(Typ::Policy, edit), case);
+    }
+    let value = edited(Typ::Policy, |v| {
+        object(&mut v["windows_sysmon_package"]).insert("extra".to_owned(), json!(1));
+    });
+    assert_value_rejected(Typ::Policy, &value, "unknown package field");
+    assert_integer_rule_at(
+        Typ::Policy,
+        |v| &mut v["windows_sysmon_package"]["size"],
+        "windows_sysmon_package.size",
+    );
+
+    // `sysmon_config`, which `sysmon_configs` replaced, is an unknown field
+    // now, beside `sysmon_configs` or in its place.
+    let old = json!({
+        "sha256": b64(&[7; 32]),
+        "sources": ["https://dist.example/sysmon.xml"],
+    });
+    let value = edited(Typ::Policy, |v| {
+        object(v).insert("sysmon_config".to_owned(), old.clone());
+    });
+    assert_value_rejected(Typ::Policy, &value, "with sysmon_config");
+    let value = edited(Typ::Policy, |v| {
+        object(v).remove("sysmon_configs");
+        object(v).remove("existing_sysmon");
+        object(v).remove("windows_sysmon_package");
+        object(v).insert("sysmon_config".to_owned(), old.clone());
+    });
+    assert_value_rejected(Typ::Policy, &value, "the 0.1 form");
+
+    let config = |os: &str, sources: Vec<AbsoluteUrl>| {
+        SysmonConfig::new(text(os), Base64UrlArray::from([1; 32]), sources)
+    };
+    assert_eq!(
+        config("linux", vec![]),
+        Err(ContentError::EmptySysmonConfigSources)
+    );
+    let linux = config("linux", vec![url("https://dist.example/s.xml")]).unwrap();
+    assert_eq!(
+        SysmonConfigs::new(vec![linux.clone(), linux.clone()]),
+        Err(ContentError::DuplicateSysmonOs)
+    );
+    assert_eq!(SysmonConfigs::new(vec![]), Ok(SysmonConfigs::default()));
+    assert_eq!(
+        WindowsSysmonPackage::new(
+            text("15.15"),
+            Base64UrlArray::from([1; 32]),
+            positive(1),
+            vec![]
+        ),
+        Err(ContentError::EmptyWindowsSysmonPackageSources)
+    );
+}
+
+/// A JSON value whose objects keep their members in the order written.
+#[derive(Debug)]
+enum Ordered {
+    Object(Vec<(String, Ordered)>),
+    Array(Vec<Ordered>),
+    Scalar,
+}
+
+impl<'de> serde::Deserialize<'de> for Ordered {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct OrderedVisitor;
+
+        impl<'de> serde::de::Visitor<'de> for OrderedVisitor {
+            type Value = Ordered;
+
+            fn expecting(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                f.write_str("JSON")
+            }
+
+            fn visit_bool<E>(self, _: bool) -> Result<Ordered, E> {
+                Ok(Ordered::Scalar)
+            }
+
+            fn visit_u64<E>(self, _: u64) -> Result<Ordered, E> {
+                Ok(Ordered::Scalar)
+            }
+
+            fn visit_str<E>(self, _: &str) -> Result<Ordered, E> {
+                Ok(Ordered::Scalar)
+            }
+
+            fn visit_unit<E>(self) -> Result<Ordered, E> {
+                Ok(Ordered::Scalar)
+            }
+
+            fn visit_seq<A: serde::de::SeqAccess<'de>>(
+                self,
+                mut seq: A,
+            ) -> Result<Ordered, A::Error> {
+                let mut items = Vec::new();
+                while let Some(item) = seq.next_element()? {
+                    items.push(item);
+                }
+                Ok(Ordered::Array(items))
+            }
+
+            fn visit_map<A: serde::de::MapAccess<'de>>(
+                self,
+                mut map: A,
+            ) -> Result<Ordered, A::Error> {
+                let mut members = Vec::new();
+                while let Some(member) = map.next_entry()? {
+                    members.push(member);
+                }
+                Ok(Ordered::Object(members))
+            }
+        }
+
+        deserializer.deserialize_any(OrderedVisitor)
+    }
+}
+
+impl Ordered {
+    fn keys(&self) -> Vec<&str> {
+        match self {
+            Self::Object(members) => members.iter().map(|(key, _)| key.as_str()).collect(),
+            _ => panic!("not an object: {self:?}"),
+        }
+    }
+
+    fn get(&self, key: &str) -> &Self {
+        match self {
+            Self::Object(members) => members
+                .iter()
+                .find(|(name, _)| name == key)
+                .map(|(_, value)| value)
+                .unwrap_or_else(|| panic!("no {key}")),
+            _ => panic!("not an object: {self:?}"),
+        }
+    }
+
+    fn items(&self) -> &[Self] {
+        match self {
+            Self::Array(items) => items,
+            _ => panic!("not an array: {self:?}"),
+        }
+    }
+}
+
+fn ordered<T: Serialize>(content: &T) -> Ordered {
+    serde_json::from_slice(&serde_json::to_vec(content).unwrap()).unwrap()
+}
+
+#[test]
+fn policy_and_update_serialize_in_the_fixed_member_order() {
+    let policy = ordered(&policy_content());
+    assert_eq!(
+        policy.keys(),
+        [
+            "recovery_epoch",
+            "group_id",
+            "version",
+            "collection_mode",
+            "sysmon_configs",
+            "existing_sysmon",
+            "windows_sysmon_package",
+            "field_exclusions",
+            "audit_settings",
+            "event_log_channels",
+            "status_ui",
+        ]
+    );
+    for config in policy.get("sysmon_configs").items() {
+        assert_eq!(config.keys(), ["os", "sha256", "sources"]);
+    }
+    assert_eq!(
+        policy.get("windows_sysmon_package").keys(),
+        ["version", "sha256", "size", "sources"]
+    );
+    let without = ordered(&PolicyContent {
+        windows_sysmon_package: None,
+        ..policy_content()
+    });
+    assert_eq!(
+        without.keys(),
+        [
+            "recovery_epoch",
+            "group_id",
+            "version",
+            "collection_mode",
+            "sysmon_configs",
+            "existing_sysmon",
+            "field_exclusions",
+            "audit_settings",
+            "event_log_channels",
+            "status_ui",
+        ]
+    );
+
+    let update = ordered(&update_content());
+    assert_eq!(
+        update.keys(),
+        [
+            "recovery_epoch",
+            "version",
+            "group_id",
+            "target_version",
+            "packages",
+            "rollback",
+            "issued_at",
+            "expires_at",
+        ]
+    );
+    for package in update.get("packages").items() {
+        assert_eq!(package.keys(), ["platform", "sha256", "size", "sources"]);
+    }
+    assert_eq!(
+        ordered(&null_update_content()).keys(),
+        [
+            "recovery_epoch",
+            "version",
+            "endpoint_id",
+            "target_version",
+            "rollback",
+            "issued_at",
+            "expires_at",
+        ]
     );
 }
 
@@ -1975,10 +2610,10 @@ fn schema_errors_name_where_they_are() {
         (
             Typ::Policy,
             serde_json::to_vec(&edited(Typ::Policy, |v| {
-                v["sysmon_config"]["sources"][0] = json!("/x");
+                v["sysmon_configs"][1]["sources"][0] = json!("/x");
             }))
             .unwrap(),
-            "$.sysmon_config.sources[0]",
+            "$.sysmon_configs[1].sources[0]",
         ),
         (
             Typ::Policy,
@@ -2014,6 +2649,77 @@ fn schema_errors_name_where_they_are() {
         let error = verify_bytes(typ, &payload).unwrap_err();
         assert_eq!(error.schema_error().unwrap().path(), path, "{error:?}");
     }
+}
+
+#[test]
+fn content_errors_of_the_new_fields_name_them() {
+    // A rule an entry or a list breaks is reported at the value holding it.
+    let cases: [(Typ, Edit, &str, &str); 7] = [
+        (
+            Typ::Update,
+            |v| v["packages"][1]["sources"] = json!([]),
+            "$.packages",
+            "the sources of a packages entry is empty",
+        ),
+        (
+            Typ::Update,
+            |v| v["packages"] = json!([]),
+            "$",
+            "packages is empty",
+        ),
+        (
+            Typ::Update,
+            |v| v["packages"][1]["platform"] = json!("windows-x86_64-msi"),
+            "$",
+            "packages repeats a platform",
+        ),
+        (
+            Typ::Update,
+            |v| {
+                object(v).remove("packages");
+            },
+            "$",
+            "an update with a target_version has packages",
+        ),
+        (
+            Typ::Policy,
+            |v| v["sysmon_configs"][0]["sources"] = json!([]),
+            "$.sysmon_configs",
+            "the sources of a sysmon_configs entry is empty",
+        ),
+        (
+            Typ::Policy,
+            |v| v["sysmon_configs"][1]["os"] = json!("windows"),
+            "$",
+            "sysmon_configs repeats an os",
+        ),
+        (
+            Typ::Policy,
+            |v| v["windows_sysmon_package"]["sources"] = json!([]),
+            "$.windows_sysmon_package",
+            "the sources of windows_sysmon_package is empty",
+        ),
+    ];
+    for (typ, edit, path, message) in cases {
+        let error = verify_value(typ, &edited(typ, edit)).unwrap_err();
+        let schema = error.schema_error().unwrap();
+        assert_eq!(schema.path(), path, "{error:?}");
+        assert!(schema.to_string().contains(message), "{schema}");
+    }
+    let mut value = valid_null_update();
+    object(&mut value).insert(
+        "packages".to_owned(),
+        valid(Typ::Update)["packages"].clone(),
+    );
+    let error = verify_value(Typ::Update, &value).unwrap_err();
+    assert!(
+        error
+            .schema_error()
+            .unwrap()
+            .to_string()
+            .contains("an update whose target_version is null has no packages"),
+        "{error:?}"
+    );
 }
 
 // ---------------------------------------------------------------------------

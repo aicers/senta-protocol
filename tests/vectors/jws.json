@@ -2247,9 +2247,9 @@
       "description": "A valid senta-policy signed by endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1.",
       "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
       "input": {
-        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWciOnsic2hhMjU2IjoiOFRWMWNxWmtpOHR4UVhSVkZjOWE2VVM2ZzN5S0JiOFF5cU1vYlVyV3Y0VSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uLnhtbCJdfSwiZmllbGRfZXhjbHVzaW9ucyI6eyIxIjpbIkNvbW1hbmRMaW5lIl19LCJhdWRpdF9zZXR0aW5ncyI6eyJ3aW5kb3dzX2xvY2FsX2FwcGx5Ijp0cnVlLCJsaW51eF9hdWRpdGRfcnVsZXMiOmZhbHNlfSwiZXZlbnRfbG9nX2NoYW5uZWxzIjp7IlNlY3VyaXR5IjpbNDYyNF19LCJzdGF0dXNfdWkiOiJ0cmF5In0.0qyLlT0xFhawi6IdRhpHsSRkXuoRVdmi_ajTQfj85g4KvEM2MAf8AquIsbRv7_VP8GCxKpvzangR2Li1Ng75AQ",
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbeyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJNVVFWb1pXVk81WnVmQVctSW5wbDBkbUw4NVcyRVFfN1ZIRHFFVU15Zzc0Iiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vd2luZG93cy54bWwiXX0seyJvcyI6ImxpbnV4Iiwic2hhMjU2IjoicmV1WTFaN1BUSkJiYzJXZGR2Zm9sTk1pQXZ6Z0hEUHcydkhTRmdNQVg0QSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL2xpbnV4LnhtbCJdfV0sImV4aXN0aW5nX3N5c21vbiI6ImtlZXAiLCJ3aW5kb3dzX3N5c21vbl9wYWNrYWdlIjp7InZlcnNpb24iOiIxNS4xNSIsInNoYTI1NiI6IloxTWRWLUNyUzAtRkZnVFNDVVBnZHk1M0JFSlFybFVSdVlKTnFHb0lDRVUiLCJzaXplIjo0MTk0MzA0LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3N5c21vbi9zeXNtb24uemlwIl19LCJmaWVsZF9leGNsdXNpb25zIjp7IjEiOlsiQ29tbWFuZExpbmUiXX0sImF1ZGl0X3NldHRpbmdzIjp7IndpbmRvd3NfbG9jYWxfYXBwbHkiOnRydWUsImxpbnV4X2F1ZGl0ZF9ydWxlcyI6ZmFsc2V9LCJldmVudF9sb2dfY2hhbm5lbHMiOnsiU2VjdXJpdHkiOls0NjI0XX0sInN0YXR1c191aSI6InRyYXkifQ.n2YgdE-UsWvOI8E_bLkqSZyNt1kgUsKvHLJgPVnaVI9Mo6PpDvzbhYrK5Qf3MiebJK63NQJpt3efjoWFRQ3tAg",
         "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-policy\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
-        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_config\":{\"sha256\":\"8TV1cqZki8txQXRVFc9a6US6g3yKBb8QyqMobUrWv4U\",\"sources\":[\"https://dist.example/sysmon.xml\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"]},{\"os\":\"linux\",\"sha256\":\"reuY1Z7PTJBbc2WddvfolNMiAvzgHDPw2vHSFgMAX4A\",\"sources\":[\"https://dist.example/sysmon/linux.xml\"]}],\"existing_sysmon\":\"keep\",\"windows_sysmon_package\":{\"version\":\"15.15\",\"sha256\":\"Z1MdV-CrS0-FFgTSCUPgdy53BEJQrlURuYJNqGoICEU\",\"size\":4194304,\"sources\":[\"https://dist.example/sysmon/sysmon.zip\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
         "expected_typ": "senta-policy",
         "trusted_keys": [
           {
@@ -2273,7 +2273,7 @@
       },
       "expected": {
         "verified": {
-          "payload_sha256": "c3E9lcDRiDK3SvsMFrsgTPwjvzOZuDGcjWnC2ZIp2Rw"
+          "payload_sha256": "_fdbqR--6DJ5Bdvyrxbh6J8aS3780TJ-HyHvUOHrUUQ"
         }
       }
     },
@@ -2282,9 +2282,9 @@
       "description": "The header's alg is ES256, not EdDSA.",
       "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
       "input": {
-        "jws": "eyJhbGciOiJFUzI1NiIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWciOnsic2hhMjU2IjoiOFRWMWNxWmtpOHR4UVhSVkZjOWE2VVM2ZzN5S0JiOFF5cU1vYlVyV3Y0VSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uLnhtbCJdfSwiZmllbGRfZXhjbHVzaW9ucyI6eyIxIjpbIkNvbW1hbmRMaW5lIl19LCJhdWRpdF9zZXR0aW5ncyI6eyJ3aW5kb3dzX2xvY2FsX2FwcGx5Ijp0cnVlLCJsaW51eF9hdWRpdGRfcnVsZXMiOmZhbHNlfSwiZXZlbnRfbG9nX2NoYW5uZWxzIjp7IlNlY3VyaXR5IjpbNDYyNF19LCJzdGF0dXNfdWkiOiJ0cmF5In0.ykpy_I0ui5o9Cm1kyI1Mi2POe7emVw64VNd2PAsVGnmV_E1yevtKW2G-M_HBIxjqpEdXSi8Ii6qJMo56tUTBBg",
+        "jws": "eyJhbGciOiJFUzI1NiIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbeyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJNVVFWb1pXVk81WnVmQVctSW5wbDBkbUw4NVcyRVFfN1ZIRHFFVU15Zzc0Iiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vd2luZG93cy54bWwiXX0seyJvcyI6ImxpbnV4Iiwic2hhMjU2IjoicmV1WTFaN1BUSkJiYzJXZGR2Zm9sTk1pQXZ6Z0hEUHcydkhTRmdNQVg0QSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL2xpbnV4LnhtbCJdfV0sImV4aXN0aW5nX3N5c21vbiI6ImtlZXAiLCJ3aW5kb3dzX3N5c21vbl9wYWNrYWdlIjp7InZlcnNpb24iOiIxNS4xNSIsInNoYTI1NiI6IloxTWRWLUNyUzAtRkZnVFNDVVBnZHk1M0JFSlFybFVSdVlKTnFHb0lDRVUiLCJzaXplIjo0MTk0MzA0LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3N5c21vbi9zeXNtb24uemlwIl19LCJmaWVsZF9leGNsdXNpb25zIjp7IjEiOlsiQ29tbWFuZExpbmUiXX0sImF1ZGl0X3NldHRpbmdzIjp7IndpbmRvd3NfbG9jYWxfYXBwbHkiOnRydWUsImxpbnV4X2F1ZGl0ZF9ydWxlcyI6ZmFsc2V9LCJldmVudF9sb2dfY2hhbm5lbHMiOnsiU2VjdXJpdHkiOls0NjI0XX0sInN0YXR1c191aSI6InRyYXkifQ.h3DfMTY0JZP5CriRhe6GeFVzUkl3a_Kb700uOPLDWHwHKszc5KRARHZ3kV1fQs3uAjZASfK6CpapNHuaMoEQAg",
         "header_json": "{\"alg\":\"ES256\",\"typ\":\"senta-policy\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
-        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_config\":{\"sha256\":\"8TV1cqZki8txQXRVFc9a6US6g3yKBb8QyqMobUrWv4U\",\"sources\":[\"https://dist.example/sysmon.xml\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"]},{\"os\":\"linux\",\"sha256\":\"reuY1Z7PTJBbc2WddvfolNMiAvzgHDPw2vHSFgMAX4A\",\"sources\":[\"https://dist.example/sysmon/linux.xml\"]}],\"existing_sysmon\":\"keep\",\"windows_sysmon_package\":{\"version\":\"15.15\",\"sha256\":\"Z1MdV-CrS0-FFgTSCUPgdy53BEJQrlURuYJNqGoICEU\",\"size\":4194304,\"sources\":[\"https://dist.example/sysmon/sysmon.zip\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
         "expected_typ": "senta-policy",
         "trusted_keys": [
           {
@@ -2313,9 +2313,9 @@
       "description": "The header's typ is senta-assign, not the expected senta-policy.",
       "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
       "input": {
-        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLWFzc2lnbiIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWciOnsic2hhMjU2IjoiOFRWMWNxWmtpOHR4UVhSVkZjOWE2VVM2ZzN5S0JiOFF5cU1vYlVyV3Y0VSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uLnhtbCJdfSwiZmllbGRfZXhjbHVzaW9ucyI6eyIxIjpbIkNvbW1hbmRMaW5lIl19LCJhdWRpdF9zZXR0aW5ncyI6eyJ3aW5kb3dzX2xvY2FsX2FwcGx5Ijp0cnVlLCJsaW51eF9hdWRpdGRfcnVsZXMiOmZhbHNlfSwiZXZlbnRfbG9nX2NoYW5uZWxzIjp7IlNlY3VyaXR5IjpbNDYyNF19LCJzdGF0dXNfdWkiOiJ0cmF5In0.TUSMq_384aLY42WEtcNzKtdTH2MIpUZJ5dOaZfmC-yfKa2gjeByV4yhlit9EVEKGay9kLflU41l3cDuezUg7Cg",
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLWFzc2lnbiIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbeyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJNVVFWb1pXVk81WnVmQVctSW5wbDBkbUw4NVcyRVFfN1ZIRHFFVU15Zzc0Iiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vd2luZG93cy54bWwiXX0seyJvcyI6ImxpbnV4Iiwic2hhMjU2IjoicmV1WTFaN1BUSkJiYzJXZGR2Zm9sTk1pQXZ6Z0hEUHcydkhTRmdNQVg0QSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL2xpbnV4LnhtbCJdfV0sImV4aXN0aW5nX3N5c21vbiI6ImtlZXAiLCJ3aW5kb3dzX3N5c21vbl9wYWNrYWdlIjp7InZlcnNpb24iOiIxNS4xNSIsInNoYTI1NiI6IloxTWRWLUNyUzAtRkZnVFNDVVBnZHk1M0JFSlFybFVSdVlKTnFHb0lDRVUiLCJzaXplIjo0MTk0MzA0LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3N5c21vbi9zeXNtb24uemlwIl19LCJmaWVsZF9leGNsdXNpb25zIjp7IjEiOlsiQ29tbWFuZExpbmUiXX0sImF1ZGl0X3NldHRpbmdzIjp7IndpbmRvd3NfbG9jYWxfYXBwbHkiOnRydWUsImxpbnV4X2F1ZGl0ZF9ydWxlcyI6ZmFsc2V9LCJldmVudF9sb2dfY2hhbm5lbHMiOnsiU2VjdXJpdHkiOls0NjI0XX0sInN0YXR1c191aSI6InRyYXkifQ.Gf88hds1NLm4vOwD5OflhdTvKy3e9n6O5B35SwoPC6eR6aHQ8uITtWZJLnVNwPCn_anwKgUvr0n40-Q_WPeRDA",
         "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-assign\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
-        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_config\":{\"sha256\":\"8TV1cqZki8txQXRVFc9a6US6g3yKBb8QyqMobUrWv4U\",\"sources\":[\"https://dist.example/sysmon.xml\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"]},{\"os\":\"linux\",\"sha256\":\"reuY1Z7PTJBbc2WddvfolNMiAvzgHDPw2vHSFgMAX4A\",\"sources\":[\"https://dist.example/sysmon/linux.xml\"]}],\"existing_sysmon\":\"keep\",\"windows_sysmon_package\":{\"version\":\"15.15\",\"sha256\":\"Z1MdV-CrS0-FFgTSCUPgdy53BEJQrlURuYJNqGoICEU\",\"size\":4194304,\"sources\":[\"https://dist.example/sysmon/sysmon.zip\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
         "expected_typ": "senta-policy",
         "trusted_keys": [
           {
@@ -2344,9 +2344,9 @@
       "description": "The header carries crit.",
       "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
       "input": {
-        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIiwiY3JpdCI6WyJiNjQiXX0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWciOnsic2hhMjU2IjoiOFRWMWNxWmtpOHR4UVhSVkZjOWE2VVM2ZzN5S0JiOFF5cU1vYlVyV3Y0VSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uLnhtbCJdfSwiZmllbGRfZXhjbHVzaW9ucyI6eyIxIjpbIkNvbW1hbmRMaW5lIl19LCJhdWRpdF9zZXR0aW5ncyI6eyJ3aW5kb3dzX2xvY2FsX2FwcGx5Ijp0cnVlLCJsaW51eF9hdWRpdGRfcnVsZXMiOmZhbHNlfSwiZXZlbnRfbG9nX2NoYW5uZWxzIjp7IlNlY3VyaXR5IjpbNDYyNF19LCJzdGF0dXNfdWkiOiJ0cmF5In0.2XAydO081TLm57pI7E8nvijAwgzA0KXbOjTeC-Nwl6jyEdpNEixutDDLqjAgxENpx6INfQDlF83PgfOUfiqSBQ",
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIiwiY3JpdCI6WyJiNjQiXX0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbeyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJNVVFWb1pXVk81WnVmQVctSW5wbDBkbUw4NVcyRVFfN1ZIRHFFVU15Zzc0Iiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vd2luZG93cy54bWwiXX0seyJvcyI6ImxpbnV4Iiwic2hhMjU2IjoicmV1WTFaN1BUSkJiYzJXZGR2Zm9sTk1pQXZ6Z0hEUHcydkhTRmdNQVg0QSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL2xpbnV4LnhtbCJdfV0sImV4aXN0aW5nX3N5c21vbiI6ImtlZXAiLCJ3aW5kb3dzX3N5c21vbl9wYWNrYWdlIjp7InZlcnNpb24iOiIxNS4xNSIsInNoYTI1NiI6IloxTWRWLUNyUzAtRkZnVFNDVVBnZHk1M0JFSlFybFVSdVlKTnFHb0lDRVUiLCJzaXplIjo0MTk0MzA0LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3N5c21vbi9zeXNtb24uemlwIl19LCJmaWVsZF9leGNsdXNpb25zIjp7IjEiOlsiQ29tbWFuZExpbmUiXX0sImF1ZGl0X3NldHRpbmdzIjp7IndpbmRvd3NfbG9jYWxfYXBwbHkiOnRydWUsImxpbnV4X2F1ZGl0ZF9ydWxlcyI6ZmFsc2V9LCJldmVudF9sb2dfY2hhbm5lbHMiOnsiU2VjdXJpdHkiOls0NjI0XX0sInN0YXR1c191aSI6InRyYXkifQ.5D75EI4CiFDk58x1554j9ga00WI7JogZrlF9rFgNZ7GiRsIvZpUPJMBIOuCOVDOfMLNKTikWuQsjsxO8p-SZCQ",
         "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-policy\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\",\"crit\":[\"b64\"]}",
-        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_config\":{\"sha256\":\"8TV1cqZki8txQXRVFc9a6US6g3yKBb8QyqMobUrWv4U\",\"sources\":[\"https://dist.example/sysmon.xml\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"]},{\"os\":\"linux\",\"sha256\":\"reuY1Z7PTJBbc2WddvfolNMiAvzgHDPw2vHSFgMAX4A\",\"sources\":[\"https://dist.example/sysmon/linux.xml\"]}],\"existing_sysmon\":\"keep\",\"windows_sysmon_package\":{\"version\":\"15.15\",\"sha256\":\"Z1MdV-CrS0-FFgTSCUPgdy53BEJQrlURuYJNqGoICEU\",\"size\":4194304,\"sources\":[\"https://dist.example/sysmon/sysmon.zip\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
         "expected_typ": "senta-policy",
         "trusted_keys": [
           {
@@ -2375,9 +2375,9 @@
       "description": "The header carries a member other than alg, typ and kid.",
       "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
       "input": {
-        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIiwiZXh0cmEiOiJ2YWx1ZSJ9.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWciOnsic2hhMjU2IjoiOFRWMWNxWmtpOHR4UVhSVkZjOWE2VVM2ZzN5S0JiOFF5cU1vYlVyV3Y0VSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uLnhtbCJdfSwiZmllbGRfZXhjbHVzaW9ucyI6eyIxIjpbIkNvbW1hbmRMaW5lIl19LCJhdWRpdF9zZXR0aW5ncyI6eyJ3aW5kb3dzX2xvY2FsX2FwcGx5Ijp0cnVlLCJsaW51eF9hdWRpdGRfcnVsZXMiOmZhbHNlfSwiZXZlbnRfbG9nX2NoYW5uZWxzIjp7IlNlY3VyaXR5IjpbNDYyNF19LCJzdGF0dXNfdWkiOiJ0cmF5In0.9dTfoVmIE8BWy_huBfopl6HxlpvuLnovAMnhdv3Pr3FeN-tqICtqIfiB5TFtxeujoWw6oqmCYjtIfFRNtr6VBg",
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIiwiZXh0cmEiOiJ2YWx1ZSJ9.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbeyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJNVVFWb1pXVk81WnVmQVctSW5wbDBkbUw4NVcyRVFfN1ZIRHFFVU15Zzc0Iiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vd2luZG93cy54bWwiXX0seyJvcyI6ImxpbnV4Iiwic2hhMjU2IjoicmV1WTFaN1BUSkJiYzJXZGR2Zm9sTk1pQXZ6Z0hEUHcydkhTRmdNQVg0QSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL2xpbnV4LnhtbCJdfV0sImV4aXN0aW5nX3N5c21vbiI6ImtlZXAiLCJ3aW5kb3dzX3N5c21vbl9wYWNrYWdlIjp7InZlcnNpb24iOiIxNS4xNSIsInNoYTI1NiI6IloxTWRWLUNyUzAtRkZnVFNDVVBnZHk1M0JFSlFybFVSdVlKTnFHb0lDRVUiLCJzaXplIjo0MTk0MzA0LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3N5c21vbi9zeXNtb24uemlwIl19LCJmaWVsZF9leGNsdXNpb25zIjp7IjEiOlsiQ29tbWFuZExpbmUiXX0sImF1ZGl0X3NldHRpbmdzIjp7IndpbmRvd3NfbG9jYWxfYXBwbHkiOnRydWUsImxpbnV4X2F1ZGl0ZF9ydWxlcyI6ZmFsc2V9LCJldmVudF9sb2dfY2hhbm5lbHMiOnsiU2VjdXJpdHkiOls0NjI0XX0sInN0YXR1c191aSI6InRyYXkifQ.14sRbSjQ5lLK1JVzCQmCXS0VJXajChlRvwjFz99aiGWLiH5eQv07dOojys-8rEzjufm6QIIFOgo_e0ihk2YfCg",
         "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-policy\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\",\"extra\":\"value\"}",
-        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_config\":{\"sha256\":\"8TV1cqZki8txQXRVFc9a6US6g3yKBb8QyqMobUrWv4U\",\"sources\":[\"https://dist.example/sysmon.xml\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"]},{\"os\":\"linux\",\"sha256\":\"reuY1Z7PTJBbc2WddvfolNMiAvzgHDPw2vHSFgMAX4A\",\"sources\":[\"https://dist.example/sysmon/linux.xml\"]}],\"existing_sysmon\":\"keep\",\"windows_sysmon_package\":{\"version\":\"15.15\",\"sha256\":\"Z1MdV-CrS0-FFgTSCUPgdy53BEJQrlURuYJNqGoICEU\",\"size\":4194304,\"sources\":[\"https://dist.example/sysmon/sysmon.zip\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
         "expected_typ": "senta-policy",
         "trusted_keys": [
           {
@@ -2406,9 +2406,9 @@
       "description": "The content carries a field its schema does not define.",
       "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
       "input": {
-        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWciOnsic2hhMjU2IjoiOFRWMWNxWmtpOHR4UVhSVkZjOWE2VVM2ZzN5S0JiOFF5cU1vYlVyV3Y0VSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uLnhtbCJdfSwiZmllbGRfZXhjbHVzaW9ucyI6eyIxIjpbIkNvbW1hbmRMaW5lIl19LCJhdWRpdF9zZXR0aW5ncyI6eyJ3aW5kb3dzX2xvY2FsX2FwcGx5Ijp0cnVlLCJsaW51eF9hdWRpdGRfcnVsZXMiOmZhbHNlfSwiZXZlbnRfbG9nX2NoYW5uZWxzIjp7IlNlY3VyaXR5IjpbNDYyNF19LCJzdGF0dXNfdWkiOiJ0cmF5IiwidW5rbm93bl9maWVsZCI6InZhbHVlIn0.qrdqiKzJYs8OFkKCvY8INarAurt2UvZ00QYHzkTSISQvCqWzcPZbyE5TOJ8kkqXf97XTl_3F2ZoUF7hbUlEiCQ",
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbeyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJNVVFWb1pXVk81WnVmQVctSW5wbDBkbUw4NVcyRVFfN1ZIRHFFVU15Zzc0Iiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vd2luZG93cy54bWwiXX0seyJvcyI6ImxpbnV4Iiwic2hhMjU2IjoicmV1WTFaN1BUSkJiYzJXZGR2Zm9sTk1pQXZ6Z0hEUHcydkhTRmdNQVg0QSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL2xpbnV4LnhtbCJdfV0sImV4aXN0aW5nX3N5c21vbiI6ImtlZXAiLCJ3aW5kb3dzX3N5c21vbl9wYWNrYWdlIjp7InZlcnNpb24iOiIxNS4xNSIsInNoYTI1NiI6IloxTWRWLUNyUzAtRkZnVFNDVVBnZHk1M0JFSlFybFVSdVlKTnFHb0lDRVUiLCJzaXplIjo0MTk0MzA0LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3N5c21vbi9zeXNtb24uemlwIl19LCJmaWVsZF9leGNsdXNpb25zIjp7IjEiOlsiQ29tbWFuZExpbmUiXX0sImF1ZGl0X3NldHRpbmdzIjp7IndpbmRvd3NfbG9jYWxfYXBwbHkiOnRydWUsImxpbnV4X2F1ZGl0ZF9ydWxlcyI6ZmFsc2V9LCJldmVudF9sb2dfY2hhbm5lbHMiOnsiU2VjdXJpdHkiOls0NjI0XX0sInN0YXR1c191aSI6InRyYXkiLCJ1bmtub3duX2ZpZWxkIjoidmFsdWUifQ.BM1dy2kWBvnNrjoEAZinE1IZkS-cgiQP6gz8WusYKG8PgKL_1v6F5z3SKClvCdDBwWFjzLdrLcb_2KquI461AA",
         "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-policy\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
-        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_config\":{\"sha256\":\"8TV1cqZki8txQXRVFc9a6US6g3yKBb8QyqMobUrWv4U\",\"sources\":[\"https://dist.example/sysmon.xml\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\",\"unknown_field\":\"value\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"]},{\"os\":\"linux\",\"sha256\":\"reuY1Z7PTJBbc2WddvfolNMiAvzgHDPw2vHSFgMAX4A\",\"sources\":[\"https://dist.example/sysmon/linux.xml\"]}],\"existing_sysmon\":\"keep\",\"windows_sysmon_package\":{\"version\":\"15.15\",\"sha256\":\"Z1MdV-CrS0-FFgTSCUPgdy53BEJQrlURuYJNqGoICEU\",\"size\":4194304,\"sources\":[\"https://dist.example/sysmon/sysmon.zip\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\",\"unknown_field\":\"value\"}",
         "expected_typ": "senta-policy",
         "trusted_keys": [
           {
@@ -2437,9 +2437,9 @@
       "description": "The content lacks its required field recovery_epoch.",
       "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
       "input": {
-        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJncm91cF9pZCI6IjE2ZmQyNzA2LThiYWYtNDMzYi04MmViLThjN2ZhZGE4NDdkYSIsInZlcnNpb24iOjE3NjczMDg0NjAwMDAsImNvbGxlY3Rpb25fbW9kZSI6ImV4dGVuZGVkIiwic3lzbW9uX2NvbmZpZyI6eyJzaGEyNTYiOiI4VFYxY3Faa2k4dHhRWFJWRmM5YTZVUzZnM3lLQmI4UXlxTW9iVXJXdjRVIiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24ueG1sIl19LCJmaWVsZF9leGNsdXNpb25zIjp7IjEiOlsiQ29tbWFuZExpbmUiXX0sImF1ZGl0X3NldHRpbmdzIjp7IndpbmRvd3NfbG9jYWxfYXBwbHkiOnRydWUsImxpbnV4X2F1ZGl0ZF9ydWxlcyI6ZmFsc2V9LCJldmVudF9sb2dfY2hhbm5lbHMiOnsiU2VjdXJpdHkiOls0NjI0XX0sInN0YXR1c191aSI6InRyYXkifQ.M0czbnuE6tON94Vs412bHDOjXg3_UbFMl2-aT2OWYJMJxaUCcgLNS4NnTQqpo5cqzqQuN0rLTaXRxWlidcm1CQ",
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJncm91cF9pZCI6IjE2ZmQyNzA2LThiYWYtNDMzYi04MmViLThjN2ZhZGE4NDdkYSIsInZlcnNpb24iOjE3NjczMDg0NjAwMDAsImNvbGxlY3Rpb25fbW9kZSI6ImV4dGVuZGVkIiwic3lzbW9uX2NvbmZpZ3MiOlt7Im9zIjoid2luZG93cyIsInNoYTI1NiI6Ik1VUVZvWldWTzVadWZBVy1JbnBsMGRtTDg1VzJFUV83VkhEcUVVTXlnNzQiLCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3N5c21vbi93aW5kb3dzLnhtbCJdfSx7Im9zIjoibGludXgiLCJzaGEyNTYiOiJyZXVZMVo3UFRKQmJjMldkZHZmb2xOTWlBdnpnSERQdzJ2SFNGZ01BWDRBIiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vbGludXgueG1sIl19XSwiZXhpc3Rpbmdfc3lzbW9uIjoia2VlcCIsIndpbmRvd3Nfc3lzbW9uX3BhY2thZ2UiOnsidmVyc2lvbiI6IjE1LjE1Iiwic2hhMjU2IjoiWjFNZFYtQ3JTMC1GRmdUU0NVUGdkeTUzQkVKUXJsVVJ1WUpOcUdvSUNFVSIsInNpemUiOjQxOTQzMDQsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL3N5c21vbi56aXAiXX0sImZpZWxkX2V4Y2x1c2lvbnMiOnsiMSI6WyJDb21tYW5kTGluZSJdfSwiYXVkaXRfc2V0dGluZ3MiOnsid2luZG93c19sb2NhbF9hcHBseSI6dHJ1ZSwibGludXhfYXVkaXRkX3J1bGVzIjpmYWxzZX0sImV2ZW50X2xvZ19jaGFubmVscyI6eyJTZWN1cml0eSI6WzQ2MjRdfSwic3RhdHVzX3VpIjoidHJheSJ9._2W-LMUmutZ-OzIddz8yg1YqvexG01YWigSpxqFnEq0LOaHAY7ill5-_EratgzS4nbH5GGThzKz82rWCeLX3Bg",
         "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-policy\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
-        "payload_json": "{\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_config\":{\"sha256\":\"8TV1cqZki8txQXRVFc9a6US6g3yKBb8QyqMobUrWv4U\",\"sources\":[\"https://dist.example/sysmon.xml\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
+        "payload_json": "{\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"]},{\"os\":\"linux\",\"sha256\":\"reuY1Z7PTJBbc2WddvfolNMiAvzgHDPw2vHSFgMAX4A\",\"sources\":[\"https://dist.example/sysmon/linux.xml\"]}],\"existing_sysmon\":\"keep\",\"windows_sysmon_package\":{\"version\":\"15.15\",\"sha256\":\"Z1MdV-CrS0-FFgTSCUPgdy53BEJQrlURuYJNqGoICEU\",\"size\":4194304,\"sources\":[\"https://dist.example/sysmon/sysmon.zip\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
         "expected_typ": "senta-policy",
         "trusted_keys": [
           {
@@ -2468,9 +2468,9 @@
       "description": "The content writes its field recovery_epoch twice.",
       "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
       "input": {
-        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWciOnsic2hhMjU2IjoiOFRWMWNxWmtpOHR4UVhSVkZjOWE2VVM2ZzN5S0JiOFF5cU1vYlVyV3Y0VSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uLnhtbCJdfSwiZmllbGRfZXhjbHVzaW9ucyI6eyIxIjpbIkNvbW1hbmRMaW5lIl19LCJhdWRpdF9zZXR0aW5ncyI6eyJ3aW5kb3dzX2xvY2FsX2FwcGx5Ijp0cnVlLCJsaW51eF9hdWRpdGRfcnVsZXMiOmZhbHNlfSwiZXZlbnRfbG9nX2NoYW5uZWxzIjp7IlNlY3VyaXR5IjpbNDYyNF19LCJzdGF0dXNfdWkiOiJ0cmF5IiwicmVjb3ZlcnlfZXBvY2giOjF9.12kNsvAmK4mVoj7gH1fAw9ycHhcFZdh3GSkcBnN_hW69oNo_5SSmeTJWDbM3rnyboxh64HyjQzFTf7H-g16MBQ",
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbeyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJNVVFWb1pXVk81WnVmQVctSW5wbDBkbUw4NVcyRVFfN1ZIRHFFVU15Zzc0Iiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vd2luZG93cy54bWwiXX0seyJvcyI6ImxpbnV4Iiwic2hhMjU2IjoicmV1WTFaN1BUSkJiYzJXZGR2Zm9sTk1pQXZ6Z0hEUHcydkhTRmdNQVg0QSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL2xpbnV4LnhtbCJdfV0sImV4aXN0aW5nX3N5c21vbiI6ImtlZXAiLCJ3aW5kb3dzX3N5c21vbl9wYWNrYWdlIjp7InZlcnNpb24iOiIxNS4xNSIsInNoYTI1NiI6IloxTWRWLUNyUzAtRkZnVFNDVVBnZHk1M0JFSlFybFVSdVlKTnFHb0lDRVUiLCJzaXplIjo0MTk0MzA0LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3N5c21vbi9zeXNtb24uemlwIl19LCJmaWVsZF9leGNsdXNpb25zIjp7IjEiOlsiQ29tbWFuZExpbmUiXX0sImF1ZGl0X3NldHRpbmdzIjp7IndpbmRvd3NfbG9jYWxfYXBwbHkiOnRydWUsImxpbnV4X2F1ZGl0ZF9ydWxlcyI6ZmFsc2V9LCJldmVudF9sb2dfY2hhbm5lbHMiOnsiU2VjdXJpdHkiOls0NjI0XX0sInN0YXR1c191aSI6InRyYXkiLCJyZWNvdmVyeV9lcG9jaCI6MX0.FctvidYBo66-f0JrOVdtj1iKOa5YieroyAOHZA52PcA3JUrlEMzQmZcHH9jHvJGgwWqOMMhwukRwlM9zHwIfBg",
         "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-policy\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
-        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_config\":{\"sha256\":\"8TV1cqZki8txQXRVFc9a6US6g3yKBb8QyqMobUrWv4U\",\"sources\":[\"https://dist.example/sysmon.xml\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\",\"recovery_epoch\":1}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"]},{\"os\":\"linux\",\"sha256\":\"reuY1Z7PTJBbc2WddvfolNMiAvzgHDPw2vHSFgMAX4A\",\"sources\":[\"https://dist.example/sysmon/linux.xml\"]}],\"existing_sysmon\":\"keep\",\"windows_sysmon_package\":{\"version\":\"15.15\",\"sha256\":\"Z1MdV-CrS0-FFgTSCUPgdy53BEJQrlURuYJNqGoICEU\",\"size\":4194304,\"sources\":[\"https://dist.example/sysmon/sysmon.zip\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\",\"recovery_epoch\":1}",
         "expected_typ": "senta-policy",
         "trusted_keys": [
           {
@@ -2499,9 +2499,9 @@
       "description": "The content's version is 2^53, one above the largest integer accepted.",
       "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
       "input": {
-        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjo5MDA3MTk5MjU0NzQwOTkyLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWciOnsic2hhMjU2IjoiOFRWMWNxWmtpOHR4UVhSVkZjOWE2VVM2ZzN5S0JiOFF5cU1vYlVyV3Y0VSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uLnhtbCJdfSwiZmllbGRfZXhjbHVzaW9ucyI6eyIxIjpbIkNvbW1hbmRMaW5lIl19LCJhdWRpdF9zZXR0aW5ncyI6eyJ3aW5kb3dzX2xvY2FsX2FwcGx5Ijp0cnVlLCJsaW51eF9hdWRpdGRfcnVsZXMiOmZhbHNlfSwiZXZlbnRfbG9nX2NoYW5uZWxzIjp7IlNlY3VyaXR5IjpbNDYyNF19LCJzdGF0dXNfdWkiOiJ0cmF5In0.rj995PsDZus-QxnusNZ8oejXYV9C58pi7j7iPZ-a3iJYpcytVVv01N4zxxs7TBcREC5yP8qJ35u7GWDnxOE_Cw",
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjo5MDA3MTk5MjU0NzQwOTkyLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbeyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJNVVFWb1pXVk81WnVmQVctSW5wbDBkbUw4NVcyRVFfN1ZIRHFFVU15Zzc0Iiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vd2luZG93cy54bWwiXX0seyJvcyI6ImxpbnV4Iiwic2hhMjU2IjoicmV1WTFaN1BUSkJiYzJXZGR2Zm9sTk1pQXZ6Z0hEUHcydkhTRmdNQVg0QSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL2xpbnV4LnhtbCJdfV0sImV4aXN0aW5nX3N5c21vbiI6ImtlZXAiLCJ3aW5kb3dzX3N5c21vbl9wYWNrYWdlIjp7InZlcnNpb24iOiIxNS4xNSIsInNoYTI1NiI6IloxTWRWLUNyUzAtRkZnVFNDVVBnZHk1M0JFSlFybFVSdVlKTnFHb0lDRVUiLCJzaXplIjo0MTk0MzA0LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3N5c21vbi9zeXNtb24uemlwIl19LCJmaWVsZF9leGNsdXNpb25zIjp7IjEiOlsiQ29tbWFuZExpbmUiXX0sImF1ZGl0X3NldHRpbmdzIjp7IndpbmRvd3NfbG9jYWxfYXBwbHkiOnRydWUsImxpbnV4X2F1ZGl0ZF9ydWxlcyI6ZmFsc2V9LCJldmVudF9sb2dfY2hhbm5lbHMiOnsiU2VjdXJpdHkiOls0NjI0XX0sInN0YXR1c191aSI6InRyYXkifQ.kzTHKh7lfHy7VGKC6euRq12dZqr3p5pLJuA3ObM2h1pGRDeeg4dwdA-2F6A74XuvpxPkHsy8zjguSf35wCXeAQ",
         "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-policy\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
-        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":9007199254740992,\"collection_mode\":\"extended\",\"sysmon_config\":{\"sha256\":\"8TV1cqZki8txQXRVFc9a6US6g3yKBb8QyqMobUrWv4U\",\"sources\":[\"https://dist.example/sysmon.xml\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":9007199254740992,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"]},{\"os\":\"linux\",\"sha256\":\"reuY1Z7PTJBbc2WddvfolNMiAvzgHDPw2vHSFgMAX4A\",\"sources\":[\"https://dist.example/sysmon/linux.xml\"]}],\"existing_sysmon\":\"keep\",\"windows_sysmon_package\":{\"version\":\"15.15\",\"sha256\":\"Z1MdV-CrS0-FFgTSCUPgdy53BEJQrlURuYJNqGoICEU\",\"size\":4194304,\"sources\":[\"https://dist.example/sysmon/sysmon.zip\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
         "expected_typ": "senta-policy",
         "trusted_keys": [
           {
@@ -2529,9 +2529,9 @@
       "name": "senta-policy:signature_bit_flipped",
       "description": "The valid document with the lowest bit of the first signature byte flipped.",
       "input": {
-        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWciOnsic2hhMjU2IjoiOFRWMWNxWmtpOHR4UVhSVkZjOWE2VVM2ZzN5S0JiOFF5cU1vYlVyV3Y0VSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uLnhtbCJdfSwiZmllbGRfZXhjbHVzaW9ucyI6eyIxIjpbIkNvbW1hbmRMaW5lIl19LCJhdWRpdF9zZXR0aW5ncyI6eyJ3aW5kb3dzX2xvY2FsX2FwcGx5Ijp0cnVlLCJsaW51eF9hdWRpdGRfcnVsZXMiOmZhbHNlfSwiZXZlbnRfbG9nX2NoYW5uZWxzIjp7IlNlY3VyaXR5IjpbNDYyNF19LCJzdGF0dXNfdWkiOiJ0cmF5In0.06yLlT0xFhawi6IdRhpHsSRkXuoRVdmi_ajTQfj85g4KvEM2MAf8AquIsbRv7_VP8GCxKpvzangR2Li1Ng75AQ",
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbeyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJNVVFWb1pXVk81WnVmQVctSW5wbDBkbUw4NVcyRVFfN1ZIRHFFVU15Zzc0Iiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vd2luZG93cy54bWwiXX0seyJvcyI6ImxpbnV4Iiwic2hhMjU2IjoicmV1WTFaN1BUSkJiYzJXZGR2Zm9sTk1pQXZ6Z0hEUHcydkhTRmdNQVg0QSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL2xpbnV4LnhtbCJdfV0sImV4aXN0aW5nX3N5c21vbiI6ImtlZXAiLCJ3aW5kb3dzX3N5c21vbl9wYWNrYWdlIjp7InZlcnNpb24iOiIxNS4xNSIsInNoYTI1NiI6IloxTWRWLUNyUzAtRkZnVFNDVVBnZHk1M0JFSlFybFVSdVlKTnFHb0lDRVUiLCJzaXplIjo0MTk0MzA0LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3N5c21vbi9zeXNtb24uemlwIl19LCJmaWVsZF9leGNsdXNpb25zIjp7IjEiOlsiQ29tbWFuZExpbmUiXX0sImF1ZGl0X3NldHRpbmdzIjp7IndpbmRvd3NfbG9jYWxfYXBwbHkiOnRydWUsImxpbnV4X2F1ZGl0ZF9ydWxlcyI6ZmFsc2V9LCJldmVudF9sb2dfY2hhbm5lbHMiOnsiU2VjdXJpdHkiOls0NjI0XX0sInN0YXR1c191aSI6InRyYXkifQ.nmYgdE-UsWvOI8E_bLkqSZyNt1kgUsKvHLJgPVnaVI9Mo6PpDvzbhYrK5Qf3MiebJK63NQJpt3efjoWFRQ3tAg",
         "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-policy\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
-        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_config\":{\"sha256\":\"8TV1cqZki8txQXRVFc9a6US6g3yKBb8QyqMobUrWv4U\",\"sources\":[\"https://dist.example/sysmon.xml\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"]},{\"os\":\"linux\",\"sha256\":\"reuY1Z7PTJBbc2WddvfolNMiAvzgHDPw2vHSFgMAX4A\",\"sources\":[\"https://dist.example/sysmon/linux.xml\"]}],\"existing_sysmon\":\"keep\",\"windows_sysmon_package\":{\"version\":\"15.15\",\"sha256\":\"Z1MdV-CrS0-FFgTSCUPgdy53BEJQrlURuYJNqGoICEU\",\"size\":4194304,\"sources\":[\"https://dist.example/sysmon/sysmon.zip\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
         "expected_typ": "senta-policy",
         "trusted_keys": [
           {
@@ -2560,9 +2560,9 @@
       "description": "The valid document in the flattened JWS JSON serialization.",
       "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
       "input": {
-        "jws": "{\"protected\":\"eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0\",\"payload\":\"eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWciOnsic2hhMjU2IjoiOFRWMWNxWmtpOHR4UVhSVkZjOWE2VVM2ZzN5S0JiOFF5cU1vYlVyV3Y0VSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uLnhtbCJdfSwiZmllbGRfZXhjbHVzaW9ucyI6eyIxIjpbIkNvbW1hbmRMaW5lIl19LCJhdWRpdF9zZXR0aW5ncyI6eyJ3aW5kb3dzX2xvY2FsX2FwcGx5Ijp0cnVlLCJsaW51eF9hdWRpdGRfcnVsZXMiOmZhbHNlfSwiZXZlbnRfbG9nX2NoYW5uZWxzIjp7IlNlY3VyaXR5IjpbNDYyNF19LCJzdGF0dXNfdWkiOiJ0cmF5In0\",\"signature\":\"0qyLlT0xFhawi6IdRhpHsSRkXuoRVdmi_ajTQfj85g4KvEM2MAf8AquIsbRv7_VP8GCxKpvzangR2Li1Ng75AQ\"}",
+        "jws": "{\"protected\":\"eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0\",\"payload\":\"eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbeyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJNVVFWb1pXVk81WnVmQVctSW5wbDBkbUw4NVcyRVFfN1ZIRHFFVU15Zzc0Iiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vd2luZG93cy54bWwiXX0seyJvcyI6ImxpbnV4Iiwic2hhMjU2IjoicmV1WTFaN1BUSkJiYzJXZGR2Zm9sTk1pQXZ6Z0hEUHcydkhTRmdNQVg0QSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL2xpbnV4LnhtbCJdfV0sImV4aXN0aW5nX3N5c21vbiI6ImtlZXAiLCJ3aW5kb3dzX3N5c21vbl9wYWNrYWdlIjp7InZlcnNpb24iOiIxNS4xNSIsInNoYTI1NiI6IloxTWRWLUNyUzAtRkZnVFNDVVBnZHk1M0JFSlFybFVSdVlKTnFHb0lDRVUiLCJzaXplIjo0MTk0MzA0LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3N5c21vbi9zeXNtb24uemlwIl19LCJmaWVsZF9leGNsdXNpb25zIjp7IjEiOlsiQ29tbWFuZExpbmUiXX0sImF1ZGl0X3NldHRpbmdzIjp7IndpbmRvd3NfbG9jYWxfYXBwbHkiOnRydWUsImxpbnV4X2F1ZGl0ZF9ydWxlcyI6ZmFsc2V9LCJldmVudF9sb2dfY2hhbm5lbHMiOnsiU2VjdXJpdHkiOls0NjI0XX0sInN0YXR1c191aSI6InRyYXkifQ\",\"signature\":\"n2YgdE-UsWvOI8E_bLkqSZyNt1kgUsKvHLJgPVnaVI9Mo6PpDvzbhYrK5Qf3MiebJK63NQJpt3efjoWFRQ3tAg\"}",
         "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-policy\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
-        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_config\":{\"sha256\":\"8TV1cqZki8txQXRVFc9a6US6g3yKBb8QyqMobUrWv4U\",\"sources\":[\"https://dist.example/sysmon.xml\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"]},{\"os\":\"linux\",\"sha256\":\"reuY1Z7PTJBbc2WddvfolNMiAvzgHDPw2vHSFgMAX4A\",\"sources\":[\"https://dist.example/sysmon/linux.xml\"]}],\"existing_sysmon\":\"keep\",\"windows_sysmon_package\":{\"version\":\"15.15\",\"sha256\":\"Z1MdV-CrS0-FFgTSCUPgdy53BEJQrlURuYJNqGoICEU\",\"size\":4194304,\"sources\":[\"https://dist.example/sysmon/sysmon.zip\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
         "expected_typ": "senta-policy",
         "trusted_keys": [
           {
@@ -2591,9 +2591,9 @@
       "description": "Signed by install-acme:1, a kind of key senta-policy does not allow.",
       "signed_by": "install-acme:1",
       "input": {
-        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6Imluc3RhbGwtYWNtZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWciOnsic2hhMjU2IjoiOFRWMWNxWmtpOHR4UVhSVkZjOWE2VVM2ZzN5S0JiOFF5cU1vYlVyV3Y0VSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uLnhtbCJdfSwiZmllbGRfZXhjbHVzaW9ucyI6eyIxIjpbIkNvbW1hbmRMaW5lIl19LCJhdWRpdF9zZXR0aW5ncyI6eyJ3aW5kb3dzX2xvY2FsX2FwcGx5Ijp0cnVlLCJsaW51eF9hdWRpdGRfcnVsZXMiOmZhbHNlfSwiZXZlbnRfbG9nX2NoYW5uZWxzIjp7IlNlY3VyaXR5IjpbNDYyNF19LCJzdGF0dXNfdWkiOiJ0cmF5In0.iSmStblTCiTNyjZzLgC1mDX93-HT7m5NlFXqM2dIwmbe6SZgX81-Eby22wzAfqL_o948Kisz05uYtC2uL-QQBA",
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6Imluc3RhbGwtYWNtZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbeyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJNVVFWb1pXVk81WnVmQVctSW5wbDBkbUw4NVcyRVFfN1ZIRHFFVU15Zzc0Iiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vd2luZG93cy54bWwiXX0seyJvcyI6ImxpbnV4Iiwic2hhMjU2IjoicmV1WTFaN1BUSkJiYzJXZGR2Zm9sTk1pQXZ6Z0hEUHcydkhTRmdNQVg0QSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL2xpbnV4LnhtbCJdfV0sImV4aXN0aW5nX3N5c21vbiI6ImtlZXAiLCJ3aW5kb3dzX3N5c21vbl9wYWNrYWdlIjp7InZlcnNpb24iOiIxNS4xNSIsInNoYTI1NiI6IloxTWRWLUNyUzAtRkZnVFNDVVBnZHk1M0JFSlFybFVSdVlKTnFHb0lDRVUiLCJzaXplIjo0MTk0MzA0LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3N5c21vbi9zeXNtb24uemlwIl19LCJmaWVsZF9leGNsdXNpb25zIjp7IjEiOlsiQ29tbWFuZExpbmUiXX0sImF1ZGl0X3NldHRpbmdzIjp7IndpbmRvd3NfbG9jYWxfYXBwbHkiOnRydWUsImxpbnV4X2F1ZGl0ZF9ydWxlcyI6ZmFsc2V9LCJldmVudF9sb2dfY2hhbm5lbHMiOnsiU2VjdXJpdHkiOls0NjI0XX0sInN0YXR1c191aSI6InRyYXkifQ.iJ5i9vwv_DmprX_2f9gxAVhpo5JTYxzEpJAr3oz9fWU7Rq71ynEx4OPksaqzPLuFocDuLxlvPEXuew4bqlNmDA",
         "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-policy\",\"kid\":\"install-acme:1\"}",
-        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_config\":{\"sha256\":\"8TV1cqZki8txQXRVFc9a6US6g3yKBb8QyqMobUrWv4U\",\"sources\":[\"https://dist.example/sysmon.xml\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"]},{\"os\":\"linux\",\"sha256\":\"reuY1Z7PTJBbc2WddvfolNMiAvzgHDPw2vHSFgMAX4A\",\"sources\":[\"https://dist.example/sysmon/linux.xml\"]}],\"existing_sysmon\":\"keep\",\"windows_sysmon_package\":{\"version\":\"15.15\",\"sha256\":\"Z1MdV-CrS0-FFgTSCUPgdy53BEJQrlURuYJNqGoICEU\",\"size\":4194304,\"sources\":[\"https://dist.example/sysmon/sysmon.zip\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
         "expected_typ": "senta-policy",
         "trusted_keys": [
           {
@@ -2616,6 +2616,549 @@
         "revoked_kids": []
       },
       "expected": "wrong_key_class"
+    },
+    {
+      "name": "senta-policy:valid_without_windows_sysmon_package",
+      "description": "A valid senta-policy without windows_sysmon_package, which deploys no standalone Sysmon.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbeyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJNVVFWb1pXVk81WnVmQVctSW5wbDBkbUw4NVcyRVFfN1ZIRHFFVU15Zzc0Iiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vd2luZG93cy54bWwiXX0seyJvcyI6ImxpbnV4Iiwic2hhMjU2IjoicmV1WTFaN1BUSkJiYzJXZGR2Zm9sTk1pQXZ6Z0hEUHcydkhTRmdNQVg0QSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL2xpbnV4LnhtbCJdfV0sImV4aXN0aW5nX3N5c21vbiI6ImtlZXAiLCJmaWVsZF9leGNsdXNpb25zIjp7IjEiOlsiQ29tbWFuZExpbmUiXX0sImF1ZGl0X3NldHRpbmdzIjp7IndpbmRvd3NfbG9jYWxfYXBwbHkiOnRydWUsImxpbnV4X2F1ZGl0ZF9ydWxlcyI6ZmFsc2V9LCJldmVudF9sb2dfY2hhbm5lbHMiOnsiU2VjdXJpdHkiOls0NjI0XX0sInN0YXR1c191aSI6InRyYXkifQ.rOdP-Ij3MkqSCVFidCBxuoZYn-608AjSNFivMxN0GFp-rtG-1wgDfJIY0lQSuXnNV4KlASYz0nmMZ830Z_K6Dg",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-policy\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"]},{\"os\":\"linux\",\"sha256\":\"reuY1Z7PTJBbc2WddvfolNMiAvzgHDPw2vHSFgMAX4A\",\"sources\":[\"https://dist.example/sysmon/linux.xml\"]}],\"existing_sysmon\":\"keep\",\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
+        "expected_typ": "senta-policy",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": {
+        "verified": {
+          "payload_sha256": "KBlJDe-PTFCMqIbsk3mk02wg2hiq6oAXP1_c6Not4_I"
+        }
+      }
+    },
+    {
+      "name": "senta-policy:valid_empty_sysmon_configs",
+      "description": "A valid senta-policy whose sysmon_configs is empty.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbXSwiZXhpc3Rpbmdfc3lzbW9uIjoia2VlcCIsIndpbmRvd3Nfc3lzbW9uX3BhY2thZ2UiOnsidmVyc2lvbiI6IjE1LjE1Iiwic2hhMjU2IjoiWjFNZFYtQ3JTMC1GRmdUU0NVUGdkeTUzQkVKUXJsVVJ1WUpOcUdvSUNFVSIsInNpemUiOjQxOTQzMDQsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL3N5c21vbi56aXAiXX0sImZpZWxkX2V4Y2x1c2lvbnMiOnsiMSI6WyJDb21tYW5kTGluZSJdfSwiYXVkaXRfc2V0dGluZ3MiOnsid2luZG93c19sb2NhbF9hcHBseSI6dHJ1ZSwibGludXhfYXVkaXRkX3J1bGVzIjpmYWxzZX0sImV2ZW50X2xvZ19jaGFubmVscyI6eyJTZWN1cml0eSI6WzQ2MjRdfSwic3RhdHVzX3VpIjoidHJheSJ9.dATBoddXJPt6lwJXAsoXD4Ox1yUCcZ9Cw3eWq76Yz9Q8lXU1CEMuPBE1_5xsqtNcUsY4bkU5uCLYCM4khLTzBQ",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-policy\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[],\"existing_sysmon\":\"keep\",\"windows_sysmon_package\":{\"version\":\"15.15\",\"sha256\":\"Z1MdV-CrS0-FFgTSCUPgdy53BEJQrlURuYJNqGoICEU\",\"size\":4194304,\"sources\":[\"https://dist.example/sysmon/sysmon.zip\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
+        "expected_typ": "senta-policy",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": {
+        "verified": {
+          "payload_sha256": "mReqdcApdhv20cpz8AsBgSM2-vxmlkdUQK-jSGxfFKM"
+        }
+      }
+    },
+    {
+      "name": "senta-policy:valid_unknown_os",
+      "description": "A valid senta-policy with a Sysmon configuration for macos, an os the endpoint may not know.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbeyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJNVVFWb1pXVk81WnVmQVctSW5wbDBkbUw4NVcyRVFfN1ZIRHFFVU15Zzc0Iiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vd2luZG93cy54bWwiXX0seyJvcyI6Im1hY29zIiwic2hhMjU2IjoidWFMd1kyZjhTRzVMMmNUT1pyZUpkUmlhQzlkZVlqQkZsSGUxSXFaOGpBcyIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL21hY29zLnhtbCJdfV0sImV4aXN0aW5nX3N5c21vbiI6ImtlZXAiLCJ3aW5kb3dzX3N5c21vbl9wYWNrYWdlIjp7InZlcnNpb24iOiIxNS4xNSIsInNoYTI1NiI6IloxTWRWLUNyUzAtRkZnVFNDVVBnZHk1M0JFSlFybFVSdVlKTnFHb0lDRVUiLCJzaXplIjo0MTk0MzA0LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3N5c21vbi9zeXNtb24uemlwIl19LCJmaWVsZF9leGNsdXNpb25zIjp7IjEiOlsiQ29tbWFuZExpbmUiXX0sImF1ZGl0X3NldHRpbmdzIjp7IndpbmRvd3NfbG9jYWxfYXBwbHkiOnRydWUsImxpbnV4X2F1ZGl0ZF9ydWxlcyI6ZmFsc2V9LCJldmVudF9sb2dfY2hhbm5lbHMiOnsiU2VjdXJpdHkiOls0NjI0XX0sInN0YXR1c191aSI6InRyYXkifQ.xPzfDnEfdE6ofrCW2s8eqDB2RCy0Tz5mZH1jJTdSvYP4Jk0Yv7ZUBFjLrV-SjT5RszU_xJcao8mHf70SqoXFDQ",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-policy\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"]},{\"os\":\"macos\",\"sha256\":\"uaLwY2f8SG5L2cTOZreJdRiaC9deYjBFlHe1IqZ8jAs\",\"sources\":[\"https://dist.example/sysmon/macos.xml\"]}],\"existing_sysmon\":\"keep\",\"windows_sysmon_package\":{\"version\":\"15.15\",\"sha256\":\"Z1MdV-CrS0-FFgTSCUPgdy53BEJQrlURuYJNqGoICEU\",\"size\":4194304,\"sources\":[\"https://dist.example/sysmon/sysmon.zip\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
+        "expected_typ": "senta-policy",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": {
+        "verified": {
+          "payload_sha256": "DnQXk_d0L8Nfb-utZSB1utYWpt427bpP-rYe-p3FOHg"
+        }
+      }
+    },
+    {
+      "name": "senta-policy:valid_existing_sysmon_take_over",
+      "description": "A valid senta-policy whose existing_sysmon is take_over.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbeyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJNVVFWb1pXVk81WnVmQVctSW5wbDBkbUw4NVcyRVFfN1ZIRHFFVU15Zzc0Iiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vd2luZG93cy54bWwiXX0seyJvcyI6ImxpbnV4Iiwic2hhMjU2IjoicmV1WTFaN1BUSkJiYzJXZGR2Zm9sTk1pQXZ6Z0hEUHcydkhTRmdNQVg0QSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL2xpbnV4LnhtbCJdfV0sImV4aXN0aW5nX3N5c21vbiI6InRha2Vfb3ZlciIsIndpbmRvd3Nfc3lzbW9uX3BhY2thZ2UiOnsidmVyc2lvbiI6IjE1LjE1Iiwic2hhMjU2IjoiWjFNZFYtQ3JTMC1GRmdUU0NVUGdkeTUzQkVKUXJsVVJ1WUpOcUdvSUNFVSIsInNpemUiOjQxOTQzMDQsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL3N5c21vbi56aXAiXX0sImZpZWxkX2V4Y2x1c2lvbnMiOnsiMSI6WyJDb21tYW5kTGluZSJdfSwiYXVkaXRfc2V0dGluZ3MiOnsid2luZG93c19sb2NhbF9hcHBseSI6dHJ1ZSwibGludXhfYXVkaXRkX3J1bGVzIjpmYWxzZX0sImV2ZW50X2xvZ19jaGFubmVscyI6eyJTZWN1cml0eSI6WzQ2MjRdfSwic3RhdHVzX3VpIjoidHJheSJ9.Ozr8E1wLGmc78XcNVCHpQGl79vo4oM2WQMf8amXtq8l6fB5fU5CWRiKq-i7q_lZiFY9QcRUBGDgw_ZViH7XZAg",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-policy\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"]},{\"os\":\"linux\",\"sha256\":\"reuY1Z7PTJBbc2WddvfolNMiAvzgHDPw2vHSFgMAX4A\",\"sources\":[\"https://dist.example/sysmon/linux.xml\"]}],\"existing_sysmon\":\"take_over\",\"windows_sysmon_package\":{\"version\":\"15.15\",\"sha256\":\"Z1MdV-CrS0-FFgTSCUPgdy53BEJQrlURuYJNqGoICEU\",\"size\":4194304,\"sources\":[\"https://dist.example/sysmon/sysmon.zip\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
+        "expected_typ": "senta-policy",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": {
+        "verified": {
+          "payload_sha256": "XPSI7BVZ8aA64NPzESRMadDRcbN8FvQpN1mRxwNwFP8"
+        }
+      }
+    },
+    {
+      "name": "senta-policy:sysmon_configs_repeated_os",
+      "description": "Two entries of sysmon_configs have the os windows.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbeyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJNVVFWb1pXVk81WnVmQVctSW5wbDBkbUw4NVcyRVFfN1ZIRHFFVU15Zzc0Iiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vd2luZG93cy54bWwiXX0seyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJyZXVZMVo3UFRKQmJjMldkZHZmb2xOTWlBdnpnSERQdzJ2SFNGZ01BWDRBIiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vbGludXgueG1sIl19XSwiZXhpc3Rpbmdfc3lzbW9uIjoia2VlcCIsIndpbmRvd3Nfc3lzbW9uX3BhY2thZ2UiOnsidmVyc2lvbiI6IjE1LjE1Iiwic2hhMjU2IjoiWjFNZFYtQ3JTMC1GRmdUU0NVUGdkeTUzQkVKUXJsVVJ1WUpOcUdvSUNFVSIsInNpemUiOjQxOTQzMDQsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL3N5c21vbi56aXAiXX0sImZpZWxkX2V4Y2x1c2lvbnMiOnsiMSI6WyJDb21tYW5kTGluZSJdfSwiYXVkaXRfc2V0dGluZ3MiOnsid2luZG93c19sb2NhbF9hcHBseSI6dHJ1ZSwibGludXhfYXVkaXRkX3J1bGVzIjpmYWxzZX0sImV2ZW50X2xvZ19jaGFubmVscyI6eyJTZWN1cml0eSI6WzQ2MjRdfSwic3RhdHVzX3VpIjoidHJheSJ9.bi3hyQXwEg-laygzzRy5fmn2uT3i9s9l5MSvcJEWA9vDYrWTF5WbxT2mxnjQchKRIKc9lY9T09hGEUTJYCnkAQ",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-policy\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"]},{\"os\":\"windows\",\"sha256\":\"reuY1Z7PTJBbc2WddvfolNMiAvzgHDPw2vHSFgMAX4A\",\"sources\":[\"https://dist.example/sysmon/linux.xml\"]}],\"existing_sysmon\":\"keep\",\"windows_sysmon_package\":{\"version\":\"15.15\",\"sha256\":\"Z1MdV-CrS0-FFgTSCUPgdy53BEJQrlURuYJNqGoICEU\",\"size\":4194304,\"sources\":[\"https://dist.example/sysmon/sysmon.zip\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
+        "expected_typ": "senta-policy",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": "schema_error"
+    },
+    {
+      "name": "senta-policy:sysmon_configs_empty_os",
+      "description": "An entry of sysmon_configs has an empty os.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbeyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJNVVFWb1pXVk81WnVmQVctSW5wbDBkbUw4NVcyRVFfN1ZIRHFFVU15Zzc0Iiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vd2luZG93cy54bWwiXX0seyJvcyI6IiIsInNoYTI1NiI6InJldVkxWjdQVEpCYmMyV2RkdmZvbE5NaUF2emdIRFB3MnZIU0ZnTUFYNEEiLCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3N5c21vbi9saW51eC54bWwiXX1dLCJleGlzdGluZ19zeXNtb24iOiJrZWVwIiwid2luZG93c19zeXNtb25fcGFja2FnZSI6eyJ2ZXJzaW9uIjoiMTUuMTUiLCJzaGEyNTYiOiJaMU1kVi1DclMwLUZGZ1RTQ1VQZ2R5NTNCRUpRcmxVUnVZSk5xR29JQ0VVIiwic2l6ZSI6NDE5NDMwNCwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vc3lzbW9uLnppcCJdfSwiZmllbGRfZXhjbHVzaW9ucyI6eyIxIjpbIkNvbW1hbmRMaW5lIl19LCJhdWRpdF9zZXR0aW5ncyI6eyJ3aW5kb3dzX2xvY2FsX2FwcGx5Ijp0cnVlLCJsaW51eF9hdWRpdGRfcnVsZXMiOmZhbHNlfSwiZXZlbnRfbG9nX2NoYW5uZWxzIjp7IlNlY3VyaXR5IjpbNDYyNF19LCJzdGF0dXNfdWkiOiJ0cmF5In0.4lQSFjAQ29S-T2gT0aH40W6Y4gIfIHvOFI7iFqvR49z9kU5P2OwwEy6Yl0psRnYvhEjgFAW6TQCxjq3PWMfSCA",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-policy\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"]},{\"os\":\"\",\"sha256\":\"reuY1Z7PTJBbc2WddvfolNMiAvzgHDPw2vHSFgMAX4A\",\"sources\":[\"https://dist.example/sysmon/linux.xml\"]}],\"existing_sysmon\":\"keep\",\"windows_sysmon_package\":{\"version\":\"15.15\",\"sha256\":\"Z1MdV-CrS0-FFgTSCUPgdy53BEJQrlURuYJNqGoICEU\",\"size\":4194304,\"sources\":[\"https://dist.example/sysmon/sysmon.zip\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
+        "expected_typ": "senta-policy",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": "schema_error"
+    },
+    {
+      "name": "senta-policy:sysmon_configs_empty_sources",
+      "description": "An entry of sysmon_configs has an empty sources.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbeyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJNVVFWb1pXVk81WnVmQVctSW5wbDBkbUw4NVcyRVFfN1ZIRHFFVU15Zzc0Iiwic291cmNlcyI6W119LHsib3MiOiJsaW51eCIsInNoYTI1NiI6InJldVkxWjdQVEpCYmMyV2RkdmZvbE5NaUF2emdIRFB3MnZIU0ZnTUFYNEEiLCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3N5c21vbi9saW51eC54bWwiXX1dLCJleGlzdGluZ19zeXNtb24iOiJrZWVwIiwid2luZG93c19zeXNtb25fcGFja2FnZSI6eyJ2ZXJzaW9uIjoiMTUuMTUiLCJzaGEyNTYiOiJaMU1kVi1DclMwLUZGZ1RTQ1VQZ2R5NTNCRUpRcmxVUnVZSk5xR29JQ0VVIiwic2l6ZSI6NDE5NDMwNCwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vc3lzbW9uLnppcCJdfSwiZmllbGRfZXhjbHVzaW9ucyI6eyIxIjpbIkNvbW1hbmRMaW5lIl19LCJhdWRpdF9zZXR0aW5ncyI6eyJ3aW5kb3dzX2xvY2FsX2FwcGx5Ijp0cnVlLCJsaW51eF9hdWRpdGRfcnVsZXMiOmZhbHNlfSwiZXZlbnRfbG9nX2NoYW5uZWxzIjp7IlNlY3VyaXR5IjpbNDYyNF19LCJzdGF0dXNfdWkiOiJ0cmF5In0.FygzqWRlU3_PKDVNp3OKzINqsYcGGUSNFXOtqdq6dq7kFyKSoeJ8PPfp1s2Sv8Utj-fiRHxkLG4PdDIQcnKODQ",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-policy\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[]},{\"os\":\"linux\",\"sha256\":\"reuY1Z7PTJBbc2WddvfolNMiAvzgHDPw2vHSFgMAX4A\",\"sources\":[\"https://dist.example/sysmon/linux.xml\"]}],\"existing_sysmon\":\"keep\",\"windows_sysmon_package\":{\"version\":\"15.15\",\"sha256\":\"Z1MdV-CrS0-FFgTSCUPgdy53BEJQrlURuYJNqGoICEU\",\"size\":4194304,\"sources\":[\"https://dist.example/sysmon/sysmon.zip\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
+        "expected_typ": "senta-policy",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": "schema_error"
+    },
+    {
+      "name": "senta-policy:sysmon_configs_unknown_field",
+      "description": "An entry of sysmon_configs carries a field its schema does not define.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbeyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJNVVFWb1pXVk81WnVmQVctSW5wbDBkbUw4NVcyRVFfN1ZIRHFFVU15Zzc0Iiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vd2luZG93cy54bWwiXSwidW5rbm93bl9maWVsZCI6InZhbHVlIn0seyJvcyI6ImxpbnV4Iiwic2hhMjU2IjoicmV1WTFaN1BUSkJiYzJXZGR2Zm9sTk1pQXZ6Z0hEUHcydkhTRmdNQVg0QSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL2xpbnV4LnhtbCJdfV0sImV4aXN0aW5nX3N5c21vbiI6ImtlZXAiLCJ3aW5kb3dzX3N5c21vbl9wYWNrYWdlIjp7InZlcnNpb24iOiIxNS4xNSIsInNoYTI1NiI6IloxTWRWLUNyUzAtRkZnVFNDVVBnZHk1M0JFSlFybFVSdVlKTnFHb0lDRVUiLCJzaXplIjo0MTk0MzA0LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3N5c21vbi9zeXNtb24uemlwIl19LCJmaWVsZF9leGNsdXNpb25zIjp7IjEiOlsiQ29tbWFuZExpbmUiXX0sImF1ZGl0X3NldHRpbmdzIjp7IndpbmRvd3NfbG9jYWxfYXBwbHkiOnRydWUsImxpbnV4X2F1ZGl0ZF9ydWxlcyI6ZmFsc2V9LCJldmVudF9sb2dfY2hhbm5lbHMiOnsiU2VjdXJpdHkiOls0NjI0XX0sInN0YXR1c191aSI6InRyYXkifQ.-kUPjjaUZDnNvs7pWNE75dJSW5n86DqE8pYfxH4XqgVU94DNX7wpuMbkXSXlQKWPzJRHwYyr9EGUIjVLrO-KBQ",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-policy\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"],\"unknown_field\":\"value\"},{\"os\":\"linux\",\"sha256\":\"reuY1Z7PTJBbc2WddvfolNMiAvzgHDPw2vHSFgMAX4A\",\"sources\":[\"https://dist.example/sysmon/linux.xml\"]}],\"existing_sysmon\":\"keep\",\"windows_sysmon_package\":{\"version\":\"15.15\",\"sha256\":\"Z1MdV-CrS0-FFgTSCUPgdy53BEJQrlURuYJNqGoICEU\",\"size\":4194304,\"sources\":[\"https://dist.example/sysmon/sysmon.zip\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
+        "expected_typ": "senta-policy",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": "schema_error"
+    },
+    {
+      "name": "senta-policy:existing_sysmon_missing",
+      "description": "The content lacks existing_sysmon.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbeyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJNVVFWb1pXVk81WnVmQVctSW5wbDBkbUw4NVcyRVFfN1ZIRHFFVU15Zzc0Iiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vd2luZG93cy54bWwiXX0seyJvcyI6ImxpbnV4Iiwic2hhMjU2IjoicmV1WTFaN1BUSkJiYzJXZGR2Zm9sTk1pQXZ6Z0hEUHcydkhTRmdNQVg0QSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL2xpbnV4LnhtbCJdfV0sIndpbmRvd3Nfc3lzbW9uX3BhY2thZ2UiOnsidmVyc2lvbiI6IjE1LjE1Iiwic2hhMjU2IjoiWjFNZFYtQ3JTMC1GRmdUU0NVUGdkeTUzQkVKUXJsVVJ1WUpOcUdvSUNFVSIsInNpemUiOjQxOTQzMDQsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL3N5c21vbi56aXAiXX0sImZpZWxkX2V4Y2x1c2lvbnMiOnsiMSI6WyJDb21tYW5kTGluZSJdfSwiYXVkaXRfc2V0dGluZ3MiOnsid2luZG93c19sb2NhbF9hcHBseSI6dHJ1ZSwibGludXhfYXVkaXRkX3J1bGVzIjpmYWxzZX0sImV2ZW50X2xvZ19jaGFubmVscyI6eyJTZWN1cml0eSI6WzQ2MjRdfSwic3RhdHVzX3VpIjoidHJheSJ9.Ij7CIGTkaV0gbRRF3vzkjak-1pf-gsPHQ77CdwMnVgPeGWowxDXWqaMXBdyuPZrKgl-Cu2tEcQ474fCVB8RnBA",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-policy\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"]},{\"os\":\"linux\",\"sha256\":\"reuY1Z7PTJBbc2WddvfolNMiAvzgHDPw2vHSFgMAX4A\",\"sources\":[\"https://dist.example/sysmon/linux.xml\"]}],\"windows_sysmon_package\":{\"version\":\"15.15\",\"sha256\":\"Z1MdV-CrS0-FFgTSCUPgdy53BEJQrlURuYJNqGoICEU\",\"size\":4194304,\"sources\":[\"https://dist.example/sysmon/sysmon.zip\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
+        "expected_typ": "senta-policy",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": "schema_error"
+    },
+    {
+      "name": "senta-policy:existing_sysmon_unknown",
+      "description": "existing_sysmon is replace, neither keep nor take_over.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbeyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJNVVFWb1pXVk81WnVmQVctSW5wbDBkbUw4NVcyRVFfN1ZIRHFFVU15Zzc0Iiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vd2luZG93cy54bWwiXX0seyJvcyI6ImxpbnV4Iiwic2hhMjU2IjoicmV1WTFaN1BUSkJiYzJXZGR2Zm9sTk1pQXZ6Z0hEUHcydkhTRmdNQVg0QSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL2xpbnV4LnhtbCJdfV0sImV4aXN0aW5nX3N5c21vbiI6InJlcGxhY2UiLCJ3aW5kb3dzX3N5c21vbl9wYWNrYWdlIjp7InZlcnNpb24iOiIxNS4xNSIsInNoYTI1NiI6IloxTWRWLUNyUzAtRkZnVFNDVVBnZHk1M0JFSlFybFVSdVlKTnFHb0lDRVUiLCJzaXplIjo0MTk0MzA0LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3N5c21vbi9zeXNtb24uemlwIl19LCJmaWVsZF9leGNsdXNpb25zIjp7IjEiOlsiQ29tbWFuZExpbmUiXX0sImF1ZGl0X3NldHRpbmdzIjp7IndpbmRvd3NfbG9jYWxfYXBwbHkiOnRydWUsImxpbnV4X2F1ZGl0ZF9ydWxlcyI6ZmFsc2V9LCJldmVudF9sb2dfY2hhbm5lbHMiOnsiU2VjdXJpdHkiOls0NjI0XX0sInN0YXR1c191aSI6InRyYXkifQ.LNNHz_UdTfgnhkhHHSALjbREWtl-v2h0kCgTuojJyNb_ij1yr_gCiBGEdIs2C1y73sqvi1Jl6p6uzApVK67zDQ",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-policy\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"]},{\"os\":\"linux\",\"sha256\":\"reuY1Z7PTJBbc2WddvfolNMiAvzgHDPw2vHSFgMAX4A\",\"sources\":[\"https://dist.example/sysmon/linux.xml\"]}],\"existing_sysmon\":\"replace\",\"windows_sysmon_package\":{\"version\":\"15.15\",\"sha256\":\"Z1MdV-CrS0-FFgTSCUPgdy53BEJQrlURuYJNqGoICEU\",\"size\":4194304,\"sources\":[\"https://dist.example/sysmon/sysmon.zip\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
+        "expected_typ": "senta-policy",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": "schema_error"
+    },
+    {
+      "name": "senta-policy:windows_sysmon_package_null",
+      "description": "windows_sysmon_package is null rather than left out.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbeyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJNVVFWb1pXVk81WnVmQVctSW5wbDBkbUw4NVcyRVFfN1ZIRHFFVU15Zzc0Iiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vd2luZG93cy54bWwiXX0seyJvcyI6ImxpbnV4Iiwic2hhMjU2IjoicmV1WTFaN1BUSkJiYzJXZGR2Zm9sTk1pQXZ6Z0hEUHcydkhTRmdNQVg0QSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL2xpbnV4LnhtbCJdfV0sImV4aXN0aW5nX3N5c21vbiI6ImtlZXAiLCJ3aW5kb3dzX3N5c21vbl9wYWNrYWdlIjpudWxsLCJmaWVsZF9leGNsdXNpb25zIjp7IjEiOlsiQ29tbWFuZExpbmUiXX0sImF1ZGl0X3NldHRpbmdzIjp7IndpbmRvd3NfbG9jYWxfYXBwbHkiOnRydWUsImxpbnV4X2F1ZGl0ZF9ydWxlcyI6ZmFsc2V9LCJldmVudF9sb2dfY2hhbm5lbHMiOnsiU2VjdXJpdHkiOls0NjI0XX0sInN0YXR1c191aSI6InRyYXkifQ.KI5Y4sQDv_z4vqq0dfwClLwh-SbKM7nGX1qs4QYZsQEfQgcnkghXEP-sWZC-fFHZ6cwSYQM-2bskOSiBoIQgDw",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-policy\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"]},{\"os\":\"linux\",\"sha256\":\"reuY1Z7PTJBbc2WddvfolNMiAvzgHDPw2vHSFgMAX4A\",\"sources\":[\"https://dist.example/sysmon/linux.xml\"]}],\"existing_sysmon\":\"keep\",\"windows_sysmon_package\":null,\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
+        "expected_typ": "senta-policy",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": "schema_error"
+    },
+    {
+      "name": "senta-policy:windows_sysmon_package_empty_version",
+      "description": "windows_sysmon_package has an empty version.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbeyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJNVVFWb1pXVk81WnVmQVctSW5wbDBkbUw4NVcyRVFfN1ZIRHFFVU15Zzc0Iiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vd2luZG93cy54bWwiXX0seyJvcyI6ImxpbnV4Iiwic2hhMjU2IjoicmV1WTFaN1BUSkJiYzJXZGR2Zm9sTk1pQXZ6Z0hEUHcydkhTRmdNQVg0QSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL2xpbnV4LnhtbCJdfV0sImV4aXN0aW5nX3N5c21vbiI6ImtlZXAiLCJ3aW5kb3dzX3N5c21vbl9wYWNrYWdlIjp7InZlcnNpb24iOiIiLCJzaGEyNTYiOiJaMU1kVi1DclMwLUZGZ1RTQ1VQZ2R5NTNCRUpRcmxVUnVZSk5xR29JQ0VVIiwic2l6ZSI6NDE5NDMwNCwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vc3lzbW9uLnppcCJdfSwiZmllbGRfZXhjbHVzaW9ucyI6eyIxIjpbIkNvbW1hbmRMaW5lIl19LCJhdWRpdF9zZXR0aW5ncyI6eyJ3aW5kb3dzX2xvY2FsX2FwcGx5Ijp0cnVlLCJsaW51eF9hdWRpdGRfcnVsZXMiOmZhbHNlfSwiZXZlbnRfbG9nX2NoYW5uZWxzIjp7IlNlY3VyaXR5IjpbNDYyNF19LCJzdGF0dXNfdWkiOiJ0cmF5In0.FVI0My4euy7OEb8nesVIhYNTNyA0GvW595laRhqVT2g6JbXOC8vLNHaxps1rO_aZbX6xX2wY7hvUH0bu_zeDDA",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-policy\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"]},{\"os\":\"linux\",\"sha256\":\"reuY1Z7PTJBbc2WddvfolNMiAvzgHDPw2vHSFgMAX4A\",\"sources\":[\"https://dist.example/sysmon/linux.xml\"]}],\"existing_sysmon\":\"keep\",\"windows_sysmon_package\":{\"version\":\"\",\"sha256\":\"Z1MdV-CrS0-FFgTSCUPgdy53BEJQrlURuYJNqGoICEU\",\"size\":4194304,\"sources\":[\"https://dist.example/sysmon/sysmon.zip\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
+        "expected_typ": "senta-policy",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": "schema_error"
+    },
+    {
+      "name": "senta-policy:windows_sysmon_package_sha256_31_bytes",
+      "description": "The sha256 of windows_sysmon_package is 31 bytes.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbeyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJNVVFWb1pXVk81WnVmQVctSW5wbDBkbUw4NVcyRVFfN1ZIRHFFVU15Zzc0Iiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vd2luZG93cy54bWwiXX0seyJvcyI6ImxpbnV4Iiwic2hhMjU2IjoicmV1WTFaN1BUSkJiYzJXZGR2Zm9sTk1pQXZ6Z0hEUHcydkhTRmdNQVg0QSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL2xpbnV4LnhtbCJdfV0sImV4aXN0aW5nX3N5c21vbiI6ImtlZXAiLCJ3aW5kb3dzX3N5c21vbl9wYWNrYWdlIjp7InZlcnNpb24iOiIxNS4xNSIsInNoYTI1NiI6IkJ3Y0hCd2NIQndjSEJ3Y0hCd2NIQndjSEJ3Y0hCd2NIQndjSEJ3Y0hCdyIsInNpemUiOjQxOTQzMDQsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL3N5c21vbi56aXAiXX0sImZpZWxkX2V4Y2x1c2lvbnMiOnsiMSI6WyJDb21tYW5kTGluZSJdfSwiYXVkaXRfc2V0dGluZ3MiOnsid2luZG93c19sb2NhbF9hcHBseSI6dHJ1ZSwibGludXhfYXVkaXRkX3J1bGVzIjpmYWxzZX0sImV2ZW50X2xvZ19jaGFubmVscyI6eyJTZWN1cml0eSI6WzQ2MjRdfSwic3RhdHVzX3VpIjoidHJheSJ9.zOOsK9G_iOkE4Hyic2g7E-ZaToNa5ypOLAbPU6NIlgQw6qn_oTYZyPbOHjCYQCQHaKg-5UqOqH1ui8GJvE5ABA",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-policy\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"]},{\"os\":\"linux\",\"sha256\":\"reuY1Z7PTJBbc2WddvfolNMiAvzgHDPw2vHSFgMAX4A\",\"sources\":[\"https://dist.example/sysmon/linux.xml\"]}],\"existing_sysmon\":\"keep\",\"windows_sysmon_package\":{\"version\":\"15.15\",\"sha256\":\"BwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBw\",\"size\":4194304,\"sources\":[\"https://dist.example/sysmon/sysmon.zip\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
+        "expected_typ": "senta-policy",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": "schema_error"
+    },
+    {
+      "name": "senta-policy:windows_sysmon_package_size_0",
+      "description": "The size of windows_sysmon_package is 0.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbeyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJNVVFWb1pXVk81WnVmQVctSW5wbDBkbUw4NVcyRVFfN1ZIRHFFVU15Zzc0Iiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vd2luZG93cy54bWwiXX0seyJvcyI6ImxpbnV4Iiwic2hhMjU2IjoicmV1WTFaN1BUSkJiYzJXZGR2Zm9sTk1pQXZ6Z0hEUHcydkhTRmdNQVg0QSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL2xpbnV4LnhtbCJdfV0sImV4aXN0aW5nX3N5c21vbiI6ImtlZXAiLCJ3aW5kb3dzX3N5c21vbl9wYWNrYWdlIjp7InZlcnNpb24iOiIxNS4xNSIsInNoYTI1NiI6IloxTWRWLUNyUzAtRkZnVFNDVVBnZHk1M0JFSlFybFVSdVlKTnFHb0lDRVUiLCJzaXplIjowLCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3N5c21vbi9zeXNtb24uemlwIl19LCJmaWVsZF9leGNsdXNpb25zIjp7IjEiOlsiQ29tbWFuZExpbmUiXX0sImF1ZGl0X3NldHRpbmdzIjp7IndpbmRvd3NfbG9jYWxfYXBwbHkiOnRydWUsImxpbnV4X2F1ZGl0ZF9ydWxlcyI6ZmFsc2V9LCJldmVudF9sb2dfY2hhbm5lbHMiOnsiU2VjdXJpdHkiOls0NjI0XX0sInN0YXR1c191aSI6InRyYXkifQ.NL7_VoHlc6BCXPOHaNTZmFMrOpHGAf8cf9Tt97XeCk66brpIwYIjqtU72UI0mJWqk90KuUWLH1XSxj1zYELRAw",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-policy\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"]},{\"os\":\"linux\",\"sha256\":\"reuY1Z7PTJBbc2WddvfolNMiAvzgHDPw2vHSFgMAX4A\",\"sources\":[\"https://dist.example/sysmon/linux.xml\"]}],\"existing_sysmon\":\"keep\",\"windows_sysmon_package\":{\"version\":\"15.15\",\"sha256\":\"Z1MdV-CrS0-FFgTSCUPgdy53BEJQrlURuYJNqGoICEU\",\"size\":0,\"sources\":[\"https://dist.example/sysmon/sysmon.zip\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
+        "expected_typ": "senta-policy",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": "schema_error"
+    },
+    {
+      "name": "senta-policy:windows_sysmon_package_empty_sources",
+      "description": "windows_sysmon_package has an empty sources.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbeyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJNVVFWb1pXVk81WnVmQVctSW5wbDBkbUw4NVcyRVFfN1ZIRHFFVU15Zzc0Iiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vd2luZG93cy54bWwiXX0seyJvcyI6ImxpbnV4Iiwic2hhMjU2IjoicmV1WTFaN1BUSkJiYzJXZGR2Zm9sTk1pQXZ6Z0hEUHcydkhTRmdNQVg0QSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL2xpbnV4LnhtbCJdfV0sImV4aXN0aW5nX3N5c21vbiI6ImtlZXAiLCJ3aW5kb3dzX3N5c21vbl9wYWNrYWdlIjp7InZlcnNpb24iOiIxNS4xNSIsInNoYTI1NiI6IloxTWRWLUNyUzAtRkZnVFNDVVBnZHk1M0JFSlFybFVSdVlKTnFHb0lDRVUiLCJzaXplIjo0MTk0MzA0LCJzb3VyY2VzIjpbXX0sImZpZWxkX2V4Y2x1c2lvbnMiOnsiMSI6WyJDb21tYW5kTGluZSJdfSwiYXVkaXRfc2V0dGluZ3MiOnsid2luZG93c19sb2NhbF9hcHBseSI6dHJ1ZSwibGludXhfYXVkaXRkX3J1bGVzIjpmYWxzZX0sImV2ZW50X2xvZ19jaGFubmVscyI6eyJTZWN1cml0eSI6WzQ2MjRdfSwic3RhdHVzX3VpIjoidHJheSJ9.9Mwq0AvzLMQXcjliMjCa71SPvfLy2WR5vndivjBD-Q71jaQtmlj3UJoENIIsNhxob4kiqL0PtN905I1pc7fGBw",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-policy\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"]},{\"os\":\"linux\",\"sha256\":\"reuY1Z7PTJBbc2WddvfolNMiAvzgHDPw2vHSFgMAX4A\",\"sources\":[\"https://dist.example/sysmon/linux.xml\"]}],\"existing_sysmon\":\"keep\",\"windows_sysmon_package\":{\"version\":\"15.15\",\"sha256\":\"Z1MdV-CrS0-FFgTSCUPgdy53BEJQrlURuYJNqGoICEU\",\"size\":4194304,\"sources\":[]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
+        "expected_typ": "senta-policy",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": "schema_error"
+    },
+    {
+      "name": "senta-policy:windows_sysmon_package_unknown_field",
+      "description": "windows_sysmon_package carries a field its schema does not define.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbeyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJNVVFWb1pXVk81WnVmQVctSW5wbDBkbUw4NVcyRVFfN1ZIRHFFVU15Zzc0Iiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vd2luZG93cy54bWwiXX0seyJvcyI6ImxpbnV4Iiwic2hhMjU2IjoicmV1WTFaN1BUSkJiYzJXZGR2Zm9sTk1pQXZ6Z0hEUHcydkhTRmdNQVg0QSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL2xpbnV4LnhtbCJdfV0sImV4aXN0aW5nX3N5c21vbiI6ImtlZXAiLCJ3aW5kb3dzX3N5c21vbl9wYWNrYWdlIjp7InZlcnNpb24iOiIxNS4xNSIsInNoYTI1NiI6IloxTWRWLUNyUzAtRkZnVFNDVVBnZHk1M0JFSlFybFVSdVlKTnFHb0lDRVUiLCJzaXplIjo0MTk0MzA0LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3N5c21vbi9zeXNtb24uemlwIl0sInVua25vd25fZmllbGQiOiJ2YWx1ZSJ9LCJmaWVsZF9leGNsdXNpb25zIjp7IjEiOlsiQ29tbWFuZExpbmUiXX0sImF1ZGl0X3NldHRpbmdzIjp7IndpbmRvd3NfbG9jYWxfYXBwbHkiOnRydWUsImxpbnV4X2F1ZGl0ZF9ydWxlcyI6ZmFsc2V9LCJldmVudF9sb2dfY2hhbm5lbHMiOnsiU2VjdXJpdHkiOls0NjI0XX0sInN0YXR1c191aSI6InRyYXkifQ.zTpPrU2uMcQfTqGSpr9HexxtG0vk2hFTFeTvgEboDK1S58EQFXDl81Aun9BNmC3e2abpFJfNYu4rHCG4eJAIAg",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-policy\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"]},{\"os\":\"linux\",\"sha256\":\"reuY1Z7PTJBbc2WddvfolNMiAvzgHDPw2vHSFgMAX4A\",\"sources\":[\"https://dist.example/sysmon/linux.xml\"]}],\"existing_sysmon\":\"keep\",\"windows_sysmon_package\":{\"version\":\"15.15\",\"sha256\":\"Z1MdV-CrS0-FFgTSCUPgdy53BEJQrlURuYJNqGoICEU\",\"size\":4194304,\"sources\":[\"https://dist.example/sysmon/sysmon.zip\"],\"unknown_field\":\"value\"},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\"}",
+        "expected_typ": "senta-policy",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": "schema_error"
+    },
+    {
+      "name": "senta-policy:sysmon_config_present",
+      "description": "The content also carries sysmon_config, the field sysmon_configs replaced.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXBvbGljeSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJjb2xsZWN0aW9uX21vZGUiOiJleHRlbmRlZCIsInN5c21vbl9jb25maWdzIjpbeyJvcyI6IndpbmRvd3MiLCJzaGEyNTYiOiJNVVFWb1pXVk81WnVmQVctSW5wbDBkbUw4NVcyRVFfN1ZIRHFFVU15Zzc0Iiwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9zeXNtb24vd2luZG93cy54bWwiXX0seyJvcyI6ImxpbnV4Iiwic2hhMjU2IjoicmV1WTFaN1BUSkJiYzJXZGR2Zm9sTk1pQXZ6Z0hEUHcydkhTRmdNQVg0QSIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc3lzbW9uL2xpbnV4LnhtbCJdfV0sImV4aXN0aW5nX3N5c21vbiI6ImtlZXAiLCJ3aW5kb3dzX3N5c21vbl9wYWNrYWdlIjp7InZlcnNpb24iOiIxNS4xNSIsInNoYTI1NiI6IloxTWRWLUNyUzAtRkZnVFNDVVBnZHk1M0JFSlFybFVSdVlKTnFHb0lDRVUiLCJzaXplIjo0MTk0MzA0LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3N5c21vbi9zeXNtb24uemlwIl19LCJmaWVsZF9leGNsdXNpb25zIjp7IjEiOlsiQ29tbWFuZExpbmUiXX0sImF1ZGl0X3NldHRpbmdzIjp7IndpbmRvd3NfbG9jYWxfYXBwbHkiOnRydWUsImxpbnV4X2F1ZGl0ZF9ydWxlcyI6ZmFsc2V9LCJldmVudF9sb2dfY2hhbm5lbHMiOnsiU2VjdXJpdHkiOls0NjI0XX0sInN0YXR1c191aSI6InRyYXkiLCJzeXNtb25fY29uZmlnIjp7InNoYTI1NiI6Ik1VUVZvWldWTzVadWZBVy1JbnBsMGRtTDg1VzJFUV83VkhEcUVVTXlnNzQiLCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3N5c21vbi93aW5kb3dzLnhtbCJdfX0.jrFvSrt3Ed_VUSK1XF3052nl0VMOUdsaNrHqwtFBhZpyg3nUjPed978ubG5cE1h37MVai6Xyndiot1QSbgnRBw",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-policy\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"version\":1767308460000,\"collection_mode\":\"extended\",\"sysmon_configs\":[{\"os\":\"windows\",\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"]},{\"os\":\"linux\",\"sha256\":\"reuY1Z7PTJBbc2WddvfolNMiAvzgHDPw2vHSFgMAX4A\",\"sources\":[\"https://dist.example/sysmon/linux.xml\"]}],\"existing_sysmon\":\"keep\",\"windows_sysmon_package\":{\"version\":\"15.15\",\"sha256\":\"Z1MdV-CrS0-FFgTSCUPgdy53BEJQrlURuYJNqGoICEU\",\"size\":4194304,\"sources\":[\"https://dist.example/sysmon/sysmon.zip\"]},\"field_exclusions\":{\"1\":[\"CommandLine\"]},\"audit_settings\":{\"windows_local_apply\":true,\"linux_auditd_rules\":false},\"event_log_channels\":{\"Security\":[4624]},\"status_ui\":\"tray\",\"sysmon_config\":{\"sha256\":\"MUQVoZWVO5ZufAW-Inpl0dmL85W2EQ_7VHDqEUMyg74\",\"sources\":[\"https://dist.example/sysmon/windows.xml\"]}}",
+        "expected_typ": "senta-policy",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": "schema_error"
     },
     {
       "name": "senta-assign:valid",
@@ -3372,9 +3915,9 @@
       "description": "A valid senta-update signed by endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1.",
       "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
       "input": {
-        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZV9zaGEyNTYiOiJfaGhhMng3NlRwcHBFTFVQR0pzWmpPcXpPdVUzODlZX3dHdTRHNjdBSnpnIiwicGFja2FnZV9zaXplIjoxMDQ4NTc2LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3NlbnRhLTEuMi4wLm1zaSJdLCJyb2xsYmFjayI6ZmFsc2UsImlzc3VlZF9hdCI6IjIwMjYtMDEtMDFUMjM6MDE6MDBaIiwiZXhwaXJlc19hdCI6IjIwMjYtMDEtMDJUMjM6MDE6MDBaIn0.cjizqa8qUblcyFdhkz-xB91EyUStIa7G6po-Gx48S89IwOby3T-QZmXhiP13mw7ShIDvQPBxHSyXt8QxFDhlCQ",
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZXMiOlt7InBsYXRmb3JtIjoid2luZG93cy14ODZfNjQtbXNpIiwic2hhMjU2IjoiSW9hQ3lYZ0JKYl9DUmR6MGxBalF1eHlBRXpFUjZBV2hzYVlEMm5aU2VjZyIsInNpemUiOjEwNDg1NzYsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvcGFja2FnZXMvMS4yLjAvd2luZG93cy14ODZfNjQtbXNpIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtZGViIiwic2hhMjU2IjoicW5BVzZDcE84dTNMU1RJejYtdGR2cEhMZ3hpRXlnMFdZLXNGMzlveUo0USIsInNpemUiOjkxNzUwNCwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtZGViIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtcnBtIiwic2hhMjU2IjoiMmpYMDd0WFY5aWtNdm9XenJwVEQzN3N0VTFublB5OC11ek9HTTVNMFF5YyIsInNpemUiOjkyNTY5Niwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtcnBtIl19XSwicm9sbGJhY2siOmZhbHNlLCJpc3N1ZWRfYXQiOiIyMDI2LTAxLTAxVDIzOjAxOjAwWiIsImV4cGlyZXNfYXQiOiIyMDI2LTAxLTAyVDIzOjAxOjAwWiJ9.nSQJhxBWj_nBn5O2B247STT_u5WgOfbJ5f3dD99f_fzzkJtMCzQBl5ECKSfQHpdg6tMD7j8oJo1CNGoVP4nXDA",
         "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-update\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
-        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"package_sha256\":\"_hha2x76TpppELUPGJsZjOqzOuU389Y_wGu4G67AJzg\",\"package_size\":1048576,\"sources\":[\"https://dist.example/senta-1.2.0.msi\"],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"packages\":[{\"platform\":\"windows-x86_64-msi\",\"sha256\":\"IoaCyXgBJb_CRdz0lAjQuxyAEzER6AWhsaYD2nZSecg\",\"size\":1048576,\"sources\":[\"https://dist.example/packages/1.2.0/windows-x86_64-msi\"]},{\"platform\":\"linux-x86_64-deb\",\"sha256\":\"qnAW6CpO8u3LSTIz6-tdvpHLgxiEyg0WY-sF39oyJ4Q\",\"size\":917504,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-deb\"]},{\"platform\":\"linux-x86_64-rpm\",\"sha256\":\"2jX07tXV9ikMvoWzrpTD37stU1nnPy8-uzOGM5M0Qyc\",\"size\":925696,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-rpm\"]}],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
         "expected_typ": "senta-update",
         "trusted_keys": [
           {
@@ -3398,7 +3941,7 @@
       },
       "expected": {
         "verified": {
-          "payload_sha256": "pbzuGD5TsDXnHNjJp-QMkSkOhWIsi8jgaqOFDAyiGdM"
+          "payload_sha256": "OD9yurivM1By-75EGjsmM_Yujch6nHW8kDoBNbL76ys"
         }
       }
     },
@@ -3407,9 +3950,9 @@
       "description": "The header's alg is ES256, not EdDSA.",
       "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
       "input": {
-        "jws": "eyJhbGciOiJFUzI1NiIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZV9zaGEyNTYiOiJfaGhhMng3NlRwcHBFTFVQR0pzWmpPcXpPdVUzODlZX3dHdTRHNjdBSnpnIiwicGFja2FnZV9zaXplIjoxMDQ4NTc2LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3NlbnRhLTEuMi4wLm1zaSJdLCJyb2xsYmFjayI6ZmFsc2UsImlzc3VlZF9hdCI6IjIwMjYtMDEtMDFUMjM6MDE6MDBaIiwiZXhwaXJlc19hdCI6IjIwMjYtMDEtMDJUMjM6MDE6MDBaIn0.2XIkikBwKPqZlY5ZM-CHUn2qrZPe_PlR6PuSrtrSYfVBkM_UXavf1gwb0-IteWsyfRHd3N9QsF3reLwLmFu4AQ",
+        "jws": "eyJhbGciOiJFUzI1NiIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZXMiOlt7InBsYXRmb3JtIjoid2luZG93cy14ODZfNjQtbXNpIiwic2hhMjU2IjoiSW9hQ3lYZ0JKYl9DUmR6MGxBalF1eHlBRXpFUjZBV2hzYVlEMm5aU2VjZyIsInNpemUiOjEwNDg1NzYsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvcGFja2FnZXMvMS4yLjAvd2luZG93cy14ODZfNjQtbXNpIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtZGViIiwic2hhMjU2IjoicW5BVzZDcE84dTNMU1RJejYtdGR2cEhMZ3hpRXlnMFdZLXNGMzlveUo0USIsInNpemUiOjkxNzUwNCwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtZGViIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtcnBtIiwic2hhMjU2IjoiMmpYMDd0WFY5aWtNdm9XenJwVEQzN3N0VTFublB5OC11ek9HTTVNMFF5YyIsInNpemUiOjkyNTY5Niwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtcnBtIl19XSwicm9sbGJhY2siOmZhbHNlLCJpc3N1ZWRfYXQiOiIyMDI2LTAxLTAxVDIzOjAxOjAwWiIsImV4cGlyZXNfYXQiOiIyMDI2LTAxLTAyVDIzOjAxOjAwWiJ9.bX0afkUADIq2oabtTyLB2pehirBx-gIAeTBX1bW6dfosqO8m14V5bQhLo6Sp05M21kqUtCtdaEYK8B5RKe3BDg",
         "header_json": "{\"alg\":\"ES256\",\"typ\":\"senta-update\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
-        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"package_sha256\":\"_hha2x76TpppELUPGJsZjOqzOuU389Y_wGu4G67AJzg\",\"package_size\":1048576,\"sources\":[\"https://dist.example/senta-1.2.0.msi\"],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"packages\":[{\"platform\":\"windows-x86_64-msi\",\"sha256\":\"IoaCyXgBJb_CRdz0lAjQuxyAEzER6AWhsaYD2nZSecg\",\"size\":1048576,\"sources\":[\"https://dist.example/packages/1.2.0/windows-x86_64-msi\"]},{\"platform\":\"linux-x86_64-deb\",\"sha256\":\"qnAW6CpO8u3LSTIz6-tdvpHLgxiEyg0WY-sF39oyJ4Q\",\"size\":917504,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-deb\"]},{\"platform\":\"linux-x86_64-rpm\",\"sha256\":\"2jX07tXV9ikMvoWzrpTD37stU1nnPy8-uzOGM5M0Qyc\",\"size\":925696,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-rpm\"]}],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
         "expected_typ": "senta-update",
         "trusted_keys": [
           {
@@ -3438,9 +3981,9 @@
       "description": "The header's typ is senta-command, not the expected senta-update.",
       "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
       "input": {
-        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLWNvbW1hbmQiLCJraWQiOiJlbmRwb2ludC0wZjhmYWQ1Yi1kOWNiLTQ2OWYtYTE2NS03MDg2NzcyODk1MGU6MSJ9.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZV9zaGEyNTYiOiJfaGhhMng3NlRwcHBFTFVQR0pzWmpPcXpPdVUzODlZX3dHdTRHNjdBSnpnIiwicGFja2FnZV9zaXplIjoxMDQ4NTc2LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3NlbnRhLTEuMi4wLm1zaSJdLCJyb2xsYmFjayI6ZmFsc2UsImlzc3VlZF9hdCI6IjIwMjYtMDEtMDFUMjM6MDE6MDBaIiwiZXhwaXJlc19hdCI6IjIwMjYtMDEtMDJUMjM6MDE6MDBaIn0.FcpXmCjV-vODdKWFKkeotTV5fw4Mdc1dQHuUtBEu3IHbyNuFgeMT1xlIbRPSx4tFhPquIoPvAb6bTG5f5NUzDg",
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLWNvbW1hbmQiLCJraWQiOiJlbmRwb2ludC0wZjhmYWQ1Yi1kOWNiLTQ2OWYtYTE2NS03MDg2NzcyODk1MGU6MSJ9.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZXMiOlt7InBsYXRmb3JtIjoid2luZG93cy14ODZfNjQtbXNpIiwic2hhMjU2IjoiSW9hQ3lYZ0JKYl9DUmR6MGxBalF1eHlBRXpFUjZBV2hzYVlEMm5aU2VjZyIsInNpemUiOjEwNDg1NzYsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvcGFja2FnZXMvMS4yLjAvd2luZG93cy14ODZfNjQtbXNpIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtZGViIiwic2hhMjU2IjoicW5BVzZDcE84dTNMU1RJejYtdGR2cEhMZ3hpRXlnMFdZLXNGMzlveUo0USIsInNpemUiOjkxNzUwNCwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtZGViIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtcnBtIiwic2hhMjU2IjoiMmpYMDd0WFY5aWtNdm9XenJwVEQzN3N0VTFublB5OC11ek9HTTVNMFF5YyIsInNpemUiOjkyNTY5Niwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtcnBtIl19XSwicm9sbGJhY2siOmZhbHNlLCJpc3N1ZWRfYXQiOiIyMDI2LTAxLTAxVDIzOjAxOjAwWiIsImV4cGlyZXNfYXQiOiIyMDI2LTAxLTAyVDIzOjAxOjAwWiJ9.gOsqpgyYRShW8uudlZWYpup-CZmRu3Xe6LHEP2M_Pjm1itSO-AQ8KOIRWIiDaMgW1gH8Vglpa01W0o8ETPS_AA",
         "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-command\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
-        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"package_sha256\":\"_hha2x76TpppELUPGJsZjOqzOuU389Y_wGu4G67AJzg\",\"package_size\":1048576,\"sources\":[\"https://dist.example/senta-1.2.0.msi\"],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"packages\":[{\"platform\":\"windows-x86_64-msi\",\"sha256\":\"IoaCyXgBJb_CRdz0lAjQuxyAEzER6AWhsaYD2nZSecg\",\"size\":1048576,\"sources\":[\"https://dist.example/packages/1.2.0/windows-x86_64-msi\"]},{\"platform\":\"linux-x86_64-deb\",\"sha256\":\"qnAW6CpO8u3LSTIz6-tdvpHLgxiEyg0WY-sF39oyJ4Q\",\"size\":917504,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-deb\"]},{\"platform\":\"linux-x86_64-rpm\",\"sha256\":\"2jX07tXV9ikMvoWzrpTD37stU1nnPy8-uzOGM5M0Qyc\",\"size\":925696,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-rpm\"]}],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
         "expected_typ": "senta-update",
         "trusted_keys": [
           {
@@ -3469,9 +4012,9 @@
       "description": "The header carries crit.",
       "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
       "input": {
-        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIiwiY3JpdCI6WyJiNjQiXX0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZV9zaGEyNTYiOiJfaGhhMng3NlRwcHBFTFVQR0pzWmpPcXpPdVUzODlZX3dHdTRHNjdBSnpnIiwicGFja2FnZV9zaXplIjoxMDQ4NTc2LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3NlbnRhLTEuMi4wLm1zaSJdLCJyb2xsYmFjayI6ZmFsc2UsImlzc3VlZF9hdCI6IjIwMjYtMDEtMDFUMjM6MDE6MDBaIiwiZXhwaXJlc19hdCI6IjIwMjYtMDEtMDJUMjM6MDE6MDBaIn0.CydG3Q128Kf1HSleonyFz8ES95V_I8Qi5lZzQb4IG5A9cwLWQ4t-U4XW2fAhXqql1iE2qk0FG5K5FryS4oH6Cg",
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIiwiY3JpdCI6WyJiNjQiXX0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZXMiOlt7InBsYXRmb3JtIjoid2luZG93cy14ODZfNjQtbXNpIiwic2hhMjU2IjoiSW9hQ3lYZ0JKYl9DUmR6MGxBalF1eHlBRXpFUjZBV2hzYVlEMm5aU2VjZyIsInNpemUiOjEwNDg1NzYsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvcGFja2FnZXMvMS4yLjAvd2luZG93cy14ODZfNjQtbXNpIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtZGViIiwic2hhMjU2IjoicW5BVzZDcE84dTNMU1RJejYtdGR2cEhMZ3hpRXlnMFdZLXNGMzlveUo0USIsInNpemUiOjkxNzUwNCwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtZGViIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtcnBtIiwic2hhMjU2IjoiMmpYMDd0WFY5aWtNdm9XenJwVEQzN3N0VTFublB5OC11ek9HTTVNMFF5YyIsInNpemUiOjkyNTY5Niwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtcnBtIl19XSwicm9sbGJhY2siOmZhbHNlLCJpc3N1ZWRfYXQiOiIyMDI2LTAxLTAxVDIzOjAxOjAwWiIsImV4cGlyZXNfYXQiOiIyMDI2LTAxLTAyVDIzOjAxOjAwWiJ9.gA3UAxemr0BrPXDF6uloSlkuZvDOBX2-MCwJC8kHJut8NA5cZdp2Ahutk1hSUoKwh6rWrt6F6PQ7w-OjYWGEBA",
         "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-update\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\",\"crit\":[\"b64\"]}",
-        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"package_sha256\":\"_hha2x76TpppELUPGJsZjOqzOuU389Y_wGu4G67AJzg\",\"package_size\":1048576,\"sources\":[\"https://dist.example/senta-1.2.0.msi\"],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"packages\":[{\"platform\":\"windows-x86_64-msi\",\"sha256\":\"IoaCyXgBJb_CRdz0lAjQuxyAEzER6AWhsaYD2nZSecg\",\"size\":1048576,\"sources\":[\"https://dist.example/packages/1.2.0/windows-x86_64-msi\"]},{\"platform\":\"linux-x86_64-deb\",\"sha256\":\"qnAW6CpO8u3LSTIz6-tdvpHLgxiEyg0WY-sF39oyJ4Q\",\"size\":917504,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-deb\"]},{\"platform\":\"linux-x86_64-rpm\",\"sha256\":\"2jX07tXV9ikMvoWzrpTD37stU1nnPy8-uzOGM5M0Qyc\",\"size\":925696,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-rpm\"]}],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
         "expected_typ": "senta-update",
         "trusted_keys": [
           {
@@ -3500,9 +4043,9 @@
       "description": "The header carries a member other than alg, typ and kid.",
       "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
       "input": {
-        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIiwiZXh0cmEiOiJ2YWx1ZSJ9.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZV9zaGEyNTYiOiJfaGhhMng3NlRwcHBFTFVQR0pzWmpPcXpPdVUzODlZX3dHdTRHNjdBSnpnIiwicGFja2FnZV9zaXplIjoxMDQ4NTc2LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3NlbnRhLTEuMi4wLm1zaSJdLCJyb2xsYmFjayI6ZmFsc2UsImlzc3VlZF9hdCI6IjIwMjYtMDEtMDFUMjM6MDE6MDBaIiwiZXhwaXJlc19hdCI6IjIwMjYtMDEtMDJUMjM6MDE6MDBaIn0.vDFtin8ph7PE3QpQA_gnUCPaW2hrXQlDTCVwCdccr9xtlUoaOzZygg5X_Zr-0BvRD5QIK3dl8ZiL87110RgzBg",
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIiwiZXh0cmEiOiJ2YWx1ZSJ9.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZXMiOlt7InBsYXRmb3JtIjoid2luZG93cy14ODZfNjQtbXNpIiwic2hhMjU2IjoiSW9hQ3lYZ0JKYl9DUmR6MGxBalF1eHlBRXpFUjZBV2hzYVlEMm5aU2VjZyIsInNpemUiOjEwNDg1NzYsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvcGFja2FnZXMvMS4yLjAvd2luZG93cy14ODZfNjQtbXNpIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtZGViIiwic2hhMjU2IjoicW5BVzZDcE84dTNMU1RJejYtdGR2cEhMZ3hpRXlnMFdZLXNGMzlveUo0USIsInNpemUiOjkxNzUwNCwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtZGViIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtcnBtIiwic2hhMjU2IjoiMmpYMDd0WFY5aWtNdm9XenJwVEQzN3N0VTFublB5OC11ek9HTTVNMFF5YyIsInNpemUiOjkyNTY5Niwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtcnBtIl19XSwicm9sbGJhY2siOmZhbHNlLCJpc3N1ZWRfYXQiOiIyMDI2LTAxLTAxVDIzOjAxOjAwWiIsImV4cGlyZXNfYXQiOiIyMDI2LTAxLTAyVDIzOjAxOjAwWiJ9.lJvHxwjyVzRVI89Ktx95pBdleZA9L8B3CVeDo9JHu1O9A2J2VsuMB7VajYe5aC--GIqNnx-aN5nzwTgfL_YcCw",
         "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-update\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\",\"extra\":\"value\"}",
-        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"package_sha256\":\"_hha2x76TpppELUPGJsZjOqzOuU389Y_wGu4G67AJzg\",\"package_size\":1048576,\"sources\":[\"https://dist.example/senta-1.2.0.msi\"],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"packages\":[{\"platform\":\"windows-x86_64-msi\",\"sha256\":\"IoaCyXgBJb_CRdz0lAjQuxyAEzER6AWhsaYD2nZSecg\",\"size\":1048576,\"sources\":[\"https://dist.example/packages/1.2.0/windows-x86_64-msi\"]},{\"platform\":\"linux-x86_64-deb\",\"sha256\":\"qnAW6CpO8u3LSTIz6-tdvpHLgxiEyg0WY-sF39oyJ4Q\",\"size\":917504,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-deb\"]},{\"platform\":\"linux-x86_64-rpm\",\"sha256\":\"2jX07tXV9ikMvoWzrpTD37stU1nnPy8-uzOGM5M0Qyc\",\"size\":925696,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-rpm\"]}],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
         "expected_typ": "senta-update",
         "trusted_keys": [
           {
@@ -3531,9 +4074,9 @@
       "description": "The content carries a field its schema does not define.",
       "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
       "input": {
-        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZV9zaGEyNTYiOiJfaGhhMng3NlRwcHBFTFVQR0pzWmpPcXpPdVUzODlZX3dHdTRHNjdBSnpnIiwicGFja2FnZV9zaXplIjoxMDQ4NTc2LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3NlbnRhLTEuMi4wLm1zaSJdLCJyb2xsYmFjayI6ZmFsc2UsImlzc3VlZF9hdCI6IjIwMjYtMDEtMDFUMjM6MDE6MDBaIiwiZXhwaXJlc19hdCI6IjIwMjYtMDEtMDJUMjM6MDE6MDBaIiwidW5rbm93bl9maWVsZCI6InZhbHVlIn0.z3GDQ-ksS_83jS5uUODfPq5bnSY2j9R5AulavUO1Vpc5GnulB91wcKjGNXERINa_-BlRB32_H2pQuPGj2VQxBA",
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZXMiOlt7InBsYXRmb3JtIjoid2luZG93cy14ODZfNjQtbXNpIiwic2hhMjU2IjoiSW9hQ3lYZ0JKYl9DUmR6MGxBalF1eHlBRXpFUjZBV2hzYVlEMm5aU2VjZyIsInNpemUiOjEwNDg1NzYsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvcGFja2FnZXMvMS4yLjAvd2luZG93cy14ODZfNjQtbXNpIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtZGViIiwic2hhMjU2IjoicW5BVzZDcE84dTNMU1RJejYtdGR2cEhMZ3hpRXlnMFdZLXNGMzlveUo0USIsInNpemUiOjkxNzUwNCwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtZGViIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtcnBtIiwic2hhMjU2IjoiMmpYMDd0WFY5aWtNdm9XenJwVEQzN3N0VTFublB5OC11ek9HTTVNMFF5YyIsInNpemUiOjkyNTY5Niwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtcnBtIl19XSwicm9sbGJhY2siOmZhbHNlLCJpc3N1ZWRfYXQiOiIyMDI2LTAxLTAxVDIzOjAxOjAwWiIsImV4cGlyZXNfYXQiOiIyMDI2LTAxLTAyVDIzOjAxOjAwWiIsInVua25vd25fZmllbGQiOiJ2YWx1ZSJ9.0dFV6cX_uQX-M66pRYd3OMoIaLGMhjMVb5ltWqXj-4use-86dAakv22UTnlSmTS86FYP1Xm7vjX8kVoAMmdWCQ",
         "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-update\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
-        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"package_sha256\":\"_hha2x76TpppELUPGJsZjOqzOuU389Y_wGu4G67AJzg\",\"package_size\":1048576,\"sources\":[\"https://dist.example/senta-1.2.0.msi\"],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\",\"unknown_field\":\"value\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"packages\":[{\"platform\":\"windows-x86_64-msi\",\"sha256\":\"IoaCyXgBJb_CRdz0lAjQuxyAEzER6AWhsaYD2nZSecg\",\"size\":1048576,\"sources\":[\"https://dist.example/packages/1.2.0/windows-x86_64-msi\"]},{\"platform\":\"linux-x86_64-deb\",\"sha256\":\"qnAW6CpO8u3LSTIz6-tdvpHLgxiEyg0WY-sF39oyJ4Q\",\"size\":917504,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-deb\"]},{\"platform\":\"linux-x86_64-rpm\",\"sha256\":\"2jX07tXV9ikMvoWzrpTD37stU1nnPy8-uzOGM5M0Qyc\",\"size\":925696,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-rpm\"]}],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\",\"unknown_field\":\"value\"}",
         "expected_typ": "senta-update",
         "trusted_keys": [
           {
@@ -3562,9 +4105,9 @@
       "description": "The content lacks its required field recovery_epoch.",
       "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
       "input": {
-        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJncm91cF9pZCI6IjE2ZmQyNzA2LThiYWYtNDMzYi04MmViLThjN2ZhZGE4NDdkYSIsInRhcmdldF92ZXJzaW9uIjoiMS4yLjAiLCJwYWNrYWdlX3NoYTI1NiI6Il9oaGEyeDc2VHBwcEVMVVBHSnNaak9xek91VTM4OVlfd0d1NEc2N0FKemciLCJwYWNrYWdlX3NpemUiOjEwNDg1NzYsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc2VudGEtMS4yLjAubXNpIl0sInJvbGxiYWNrIjpmYWxzZSwiaXNzdWVkX2F0IjoiMjAyNi0wMS0wMVQyMzowMTowMFoiLCJleHBpcmVzX2F0IjoiMjAyNi0wMS0wMlQyMzowMTowMFoifQ.vNuLWfnETKXVIQGQHedP6us2YzzEnDbvW2uXbmbR4GPoJS6L0EuaYt8KhnluCMJQ8JILrfX3aNEkhtd4XOQgDA",
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJ2ZXJzaW9uIjoxNzY3MzA4NDYwMDAwLCJncm91cF9pZCI6IjE2ZmQyNzA2LThiYWYtNDMzYi04MmViLThjN2ZhZGE4NDdkYSIsInRhcmdldF92ZXJzaW9uIjoiMS4yLjAiLCJwYWNrYWdlcyI6W3sicGxhdGZvcm0iOiJ3aW5kb3dzLXg4Nl82NC1tc2kiLCJzaGEyNTYiOiJJb2FDeVhnQkpiX0NSZHowbEFqUXV4eUFFekVSNkFXaHNhWUQyblpTZWNnIiwic2l6ZSI6MTA0ODU3Niwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC93aW5kb3dzLXg4Nl82NC1tc2kiXX0seyJwbGF0Zm9ybSI6ImxpbnV4LXg4Nl82NC1kZWIiLCJzaGEyNTYiOiJxbkFXNkNwTzh1M0xTVEl6Ni10ZHZwSExneGlFeWcwV1ktc0YzOW95SjRRIiwic2l6ZSI6OTE3NTA0LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3BhY2thZ2VzLzEuMi4wL2xpbnV4LXg4Nl82NC1kZWIiXX0seyJwbGF0Zm9ybSI6ImxpbnV4LXg4Nl82NC1ycG0iLCJzaGEyNTYiOiIyalgwN3RYVjlpa012b1d6cnBURDM3c3RVMW5uUHk4LXV6T0dNNU0wUXljIiwic2l6ZSI6OTI1Njk2LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3BhY2thZ2VzLzEuMi4wL2xpbnV4LXg4Nl82NC1ycG0iXX1dLCJyb2xsYmFjayI6ZmFsc2UsImlzc3VlZF9hdCI6IjIwMjYtMDEtMDFUMjM6MDE6MDBaIiwiZXhwaXJlc19hdCI6IjIwMjYtMDEtMDJUMjM6MDE6MDBaIn0.h5Pc3xRPeFMq2lihJI5cuzyZRs4z8r8aKpRaMsLrQWSFNykcPd9uq9WvWh11KVoZaI7cXMKdraR7cR1GsSz4Dw",
         "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-update\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
-        "payload_json": "{\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"package_sha256\":\"_hha2x76TpppELUPGJsZjOqzOuU389Y_wGu4G67AJzg\",\"package_size\":1048576,\"sources\":[\"https://dist.example/senta-1.2.0.msi\"],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
+        "payload_json": "{\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"packages\":[{\"platform\":\"windows-x86_64-msi\",\"sha256\":\"IoaCyXgBJb_CRdz0lAjQuxyAEzER6AWhsaYD2nZSecg\",\"size\":1048576,\"sources\":[\"https://dist.example/packages/1.2.0/windows-x86_64-msi\"]},{\"platform\":\"linux-x86_64-deb\",\"sha256\":\"qnAW6CpO8u3LSTIz6-tdvpHLgxiEyg0WY-sF39oyJ4Q\",\"size\":917504,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-deb\"]},{\"platform\":\"linux-x86_64-rpm\",\"sha256\":\"2jX07tXV9ikMvoWzrpTD37stU1nnPy8-uzOGM5M0Qyc\",\"size\":925696,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-rpm\"]}],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
         "expected_typ": "senta-update",
         "trusted_keys": [
           {
@@ -3593,9 +4136,9 @@
       "description": "The content writes its field recovery_epoch twice.",
       "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
       "input": {
-        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZV9zaGEyNTYiOiJfaGhhMng3NlRwcHBFTFVQR0pzWmpPcXpPdVUzODlZX3dHdTRHNjdBSnpnIiwicGFja2FnZV9zaXplIjoxMDQ4NTc2LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3NlbnRhLTEuMi4wLm1zaSJdLCJyb2xsYmFjayI6ZmFsc2UsImlzc3VlZF9hdCI6IjIwMjYtMDEtMDFUMjM6MDE6MDBaIiwiZXhwaXJlc19hdCI6IjIwMjYtMDEtMDJUMjM6MDE6MDBaIiwicmVjb3ZlcnlfZXBvY2giOjF9.UHS-btFiWxGBmuzqx7LCQqB9jalecxXRiW1qk5BuRAgIuyOupXyXO5uQ-BceP7W7Id3idX4mqfCabSAxDc9nDQ",
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZXMiOlt7InBsYXRmb3JtIjoid2luZG93cy14ODZfNjQtbXNpIiwic2hhMjU2IjoiSW9hQ3lYZ0JKYl9DUmR6MGxBalF1eHlBRXpFUjZBV2hzYVlEMm5aU2VjZyIsInNpemUiOjEwNDg1NzYsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvcGFja2FnZXMvMS4yLjAvd2luZG93cy14ODZfNjQtbXNpIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtZGViIiwic2hhMjU2IjoicW5BVzZDcE84dTNMU1RJejYtdGR2cEhMZ3hpRXlnMFdZLXNGMzlveUo0USIsInNpemUiOjkxNzUwNCwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtZGViIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtcnBtIiwic2hhMjU2IjoiMmpYMDd0WFY5aWtNdm9XenJwVEQzN3N0VTFublB5OC11ek9HTTVNMFF5YyIsInNpemUiOjkyNTY5Niwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtcnBtIl19XSwicm9sbGJhY2siOmZhbHNlLCJpc3N1ZWRfYXQiOiIyMDI2LTAxLTAxVDIzOjAxOjAwWiIsImV4cGlyZXNfYXQiOiIyMDI2LTAxLTAyVDIzOjAxOjAwWiIsInJlY292ZXJ5X2Vwb2NoIjoxfQ.MA41-ykPjYAKnKO_MH1IqJmJ4BoCTbgSW3E2ua4ak6vf_iiYuPFpPBLPfgXCZg6OD7vUF4HxnzEATeg_OZICBg",
         "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-update\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
-        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"package_sha256\":\"_hha2x76TpppELUPGJsZjOqzOuU389Y_wGu4G67AJzg\",\"package_size\":1048576,\"sources\":[\"https://dist.example/senta-1.2.0.msi\"],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\",\"recovery_epoch\":1}",
+        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"packages\":[{\"platform\":\"windows-x86_64-msi\",\"sha256\":\"IoaCyXgBJb_CRdz0lAjQuxyAEzER6AWhsaYD2nZSecg\",\"size\":1048576,\"sources\":[\"https://dist.example/packages/1.2.0/windows-x86_64-msi\"]},{\"platform\":\"linux-x86_64-deb\",\"sha256\":\"qnAW6CpO8u3LSTIz6-tdvpHLgxiEyg0WY-sF39oyJ4Q\",\"size\":917504,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-deb\"]},{\"platform\":\"linux-x86_64-rpm\",\"sha256\":\"2jX07tXV9ikMvoWzrpTD37stU1nnPy8-uzOGM5M0Qyc\",\"size\":925696,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-rpm\"]}],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\",\"recovery_epoch\":1}",
         "expected_typ": "senta-update",
         "trusted_keys": [
           {
@@ -3624,9 +4167,9 @@
       "description": "The content's version is 2^53, one above the largest integer accepted.",
       "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
       "input": {
-        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6OTAwNzE5OTI1NDc0MDk5MiwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZV9zaGEyNTYiOiJfaGhhMng3NlRwcHBFTFVQR0pzWmpPcXpPdVUzODlZX3dHdTRHNjdBSnpnIiwicGFja2FnZV9zaXplIjoxMDQ4NTc2LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3NlbnRhLTEuMi4wLm1zaSJdLCJyb2xsYmFjayI6ZmFsc2UsImlzc3VlZF9hdCI6IjIwMjYtMDEtMDFUMjM6MDE6MDBaIiwiZXhwaXJlc19hdCI6IjIwMjYtMDEtMDJUMjM6MDE6MDBaIn0.DPFkdYrOKCsM0ZgDCUMbEwalQ3wdMOTy_5KI2uFn2eO1vHQwLrNkJMQqBQ7cXIsseH5HZidLi8k3rM7ic7cuBA",
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6OTAwNzE5OTI1NDc0MDk5MiwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZXMiOlt7InBsYXRmb3JtIjoid2luZG93cy14ODZfNjQtbXNpIiwic2hhMjU2IjoiSW9hQ3lYZ0JKYl9DUmR6MGxBalF1eHlBRXpFUjZBV2hzYVlEMm5aU2VjZyIsInNpemUiOjEwNDg1NzYsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvcGFja2FnZXMvMS4yLjAvd2luZG93cy14ODZfNjQtbXNpIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtZGViIiwic2hhMjU2IjoicW5BVzZDcE84dTNMU1RJejYtdGR2cEhMZ3hpRXlnMFdZLXNGMzlveUo0USIsInNpemUiOjkxNzUwNCwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtZGViIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtcnBtIiwic2hhMjU2IjoiMmpYMDd0WFY5aWtNdm9XenJwVEQzN3N0VTFublB5OC11ek9HTTVNMFF5YyIsInNpemUiOjkyNTY5Niwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtcnBtIl19XSwicm9sbGJhY2siOmZhbHNlLCJpc3N1ZWRfYXQiOiIyMDI2LTAxLTAxVDIzOjAxOjAwWiIsImV4cGlyZXNfYXQiOiIyMDI2LTAxLTAyVDIzOjAxOjAwWiJ9.x3dR0VbwGZezj21TQFRmFfR8LvbPQq09vn4CA7RPlkd-mcv2RwWwtmhsmvlxjsqN6FzZw9h00qp9sGBKmYDzCQ",
         "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-update\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
-        "payload_json": "{\"recovery_epoch\":1,\"version\":9007199254740992,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"package_sha256\":\"_hha2x76TpppELUPGJsZjOqzOuU389Y_wGu4G67AJzg\",\"package_size\":1048576,\"sources\":[\"https://dist.example/senta-1.2.0.msi\"],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"version\":9007199254740992,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"packages\":[{\"platform\":\"windows-x86_64-msi\",\"sha256\":\"IoaCyXgBJb_CRdz0lAjQuxyAEzER6AWhsaYD2nZSecg\",\"size\":1048576,\"sources\":[\"https://dist.example/packages/1.2.0/windows-x86_64-msi\"]},{\"platform\":\"linux-x86_64-deb\",\"sha256\":\"qnAW6CpO8u3LSTIz6-tdvpHLgxiEyg0WY-sF39oyJ4Q\",\"size\":917504,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-deb\"]},{\"platform\":\"linux-x86_64-rpm\",\"sha256\":\"2jX07tXV9ikMvoWzrpTD37stU1nnPy8-uzOGM5M0Qyc\",\"size\":925696,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-rpm\"]}],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
         "expected_typ": "senta-update",
         "trusted_keys": [
           {
@@ -3654,9 +4197,9 @@
       "name": "senta-update:signature_bit_flipped",
       "description": "The valid document with the lowest bit of the first signature byte flipped.",
       "input": {
-        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZV9zaGEyNTYiOiJfaGhhMng3NlRwcHBFTFVQR0pzWmpPcXpPdVUzODlZX3dHdTRHNjdBSnpnIiwicGFja2FnZV9zaXplIjoxMDQ4NTc2LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3NlbnRhLTEuMi4wLm1zaSJdLCJyb2xsYmFjayI6ZmFsc2UsImlzc3VlZF9hdCI6IjIwMjYtMDEtMDFUMjM6MDE6MDBaIiwiZXhwaXJlc19hdCI6IjIwMjYtMDEtMDJUMjM6MDE6MDBaIn0.czizqa8qUblcyFdhkz-xB91EyUStIa7G6po-Gx48S89IwOby3T-QZmXhiP13mw7ShIDvQPBxHSyXt8QxFDhlCQ",
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZXMiOlt7InBsYXRmb3JtIjoid2luZG93cy14ODZfNjQtbXNpIiwic2hhMjU2IjoiSW9hQ3lYZ0JKYl9DUmR6MGxBalF1eHlBRXpFUjZBV2hzYVlEMm5aU2VjZyIsInNpemUiOjEwNDg1NzYsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvcGFja2FnZXMvMS4yLjAvd2luZG93cy14ODZfNjQtbXNpIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtZGViIiwic2hhMjU2IjoicW5BVzZDcE84dTNMU1RJejYtdGR2cEhMZ3hpRXlnMFdZLXNGMzlveUo0USIsInNpemUiOjkxNzUwNCwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtZGViIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtcnBtIiwic2hhMjU2IjoiMmpYMDd0WFY5aWtNdm9XenJwVEQzN3N0VTFublB5OC11ek9HTTVNMFF5YyIsInNpemUiOjkyNTY5Niwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtcnBtIl19XSwicm9sbGJhY2siOmZhbHNlLCJpc3N1ZWRfYXQiOiIyMDI2LTAxLTAxVDIzOjAxOjAwWiIsImV4cGlyZXNfYXQiOiIyMDI2LTAxLTAyVDIzOjAxOjAwWiJ9.nCQJhxBWj_nBn5O2B247STT_u5WgOfbJ5f3dD99f_fzzkJtMCzQBl5ECKSfQHpdg6tMD7j8oJo1CNGoVP4nXDA",
         "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-update\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
-        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"package_sha256\":\"_hha2x76TpppELUPGJsZjOqzOuU389Y_wGu4G67AJzg\",\"package_size\":1048576,\"sources\":[\"https://dist.example/senta-1.2.0.msi\"],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"packages\":[{\"platform\":\"windows-x86_64-msi\",\"sha256\":\"IoaCyXgBJb_CRdz0lAjQuxyAEzER6AWhsaYD2nZSecg\",\"size\":1048576,\"sources\":[\"https://dist.example/packages/1.2.0/windows-x86_64-msi\"]},{\"platform\":\"linux-x86_64-deb\",\"sha256\":\"qnAW6CpO8u3LSTIz6-tdvpHLgxiEyg0WY-sF39oyJ4Q\",\"size\":917504,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-deb\"]},{\"platform\":\"linux-x86_64-rpm\",\"sha256\":\"2jX07tXV9ikMvoWzrpTD37stU1nnPy8-uzOGM5M0Qyc\",\"size\":925696,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-rpm\"]}],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
         "expected_typ": "senta-update",
         "trusted_keys": [
           {
@@ -3685,9 +4228,9 @@
       "description": "The valid document in the flattened JWS JSON serialization.",
       "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
       "input": {
-        "jws": "{\"protected\":\"eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0\",\"payload\":\"eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZV9zaGEyNTYiOiJfaGhhMng3NlRwcHBFTFVQR0pzWmpPcXpPdVUzODlZX3dHdTRHNjdBSnpnIiwicGFja2FnZV9zaXplIjoxMDQ4NTc2LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3NlbnRhLTEuMi4wLm1zaSJdLCJyb2xsYmFjayI6ZmFsc2UsImlzc3VlZF9hdCI6IjIwMjYtMDEtMDFUMjM6MDE6MDBaIiwiZXhwaXJlc19hdCI6IjIwMjYtMDEtMDJUMjM6MDE6MDBaIn0\",\"signature\":\"cjizqa8qUblcyFdhkz-xB91EyUStIa7G6po-Gx48S89IwOby3T-QZmXhiP13mw7ShIDvQPBxHSyXt8QxFDhlCQ\"}",
+        "jws": "{\"protected\":\"eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0\",\"payload\":\"eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZXMiOlt7InBsYXRmb3JtIjoid2luZG93cy14ODZfNjQtbXNpIiwic2hhMjU2IjoiSW9hQ3lYZ0JKYl9DUmR6MGxBalF1eHlBRXpFUjZBV2hzYVlEMm5aU2VjZyIsInNpemUiOjEwNDg1NzYsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvcGFja2FnZXMvMS4yLjAvd2luZG93cy14ODZfNjQtbXNpIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtZGViIiwic2hhMjU2IjoicW5BVzZDcE84dTNMU1RJejYtdGR2cEhMZ3hpRXlnMFdZLXNGMzlveUo0USIsInNpemUiOjkxNzUwNCwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtZGViIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtcnBtIiwic2hhMjU2IjoiMmpYMDd0WFY5aWtNdm9XenJwVEQzN3N0VTFublB5OC11ek9HTTVNMFF5YyIsInNpemUiOjkyNTY5Niwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtcnBtIl19XSwicm9sbGJhY2siOmZhbHNlLCJpc3N1ZWRfYXQiOiIyMDI2LTAxLTAxVDIzOjAxOjAwWiIsImV4cGlyZXNfYXQiOiIyMDI2LTAxLTAyVDIzOjAxOjAwWiJ9\",\"signature\":\"nSQJhxBWj_nBn5O2B247STT_u5WgOfbJ5f3dD99f_fzzkJtMCzQBl5ECKSfQHpdg6tMD7j8oJo1CNGoVP4nXDA\"}",
         "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-update\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
-        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"package_sha256\":\"_hha2x76TpppELUPGJsZjOqzOuU389Y_wGu4G67AJzg\",\"package_size\":1048576,\"sources\":[\"https://dist.example/senta-1.2.0.msi\"],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"packages\":[{\"platform\":\"windows-x86_64-msi\",\"sha256\":\"IoaCyXgBJb_CRdz0lAjQuxyAEzER6AWhsaYD2nZSecg\",\"size\":1048576,\"sources\":[\"https://dist.example/packages/1.2.0/windows-x86_64-msi\"]},{\"platform\":\"linux-x86_64-deb\",\"sha256\":\"qnAW6CpO8u3LSTIz6-tdvpHLgxiEyg0WY-sF39oyJ4Q\",\"size\":917504,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-deb\"]},{\"platform\":\"linux-x86_64-rpm\",\"sha256\":\"2jX07tXV9ikMvoWzrpTD37stU1nnPy8-uzOGM5M0Qyc\",\"size\":925696,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-rpm\"]}],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
         "expected_typ": "senta-update",
         "trusted_keys": [
           {
@@ -3716,9 +4259,9 @@
       "description": "Signed by install-acme:1, a kind of key senta-update does not allow.",
       "signed_by": "install-acme:1",
       "input": {
-        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6Imluc3RhbGwtYWNtZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZV9zaGEyNTYiOiJfaGhhMng3NlRwcHBFTFVQR0pzWmpPcXpPdVUzODlZX3dHdTRHNjdBSnpnIiwicGFja2FnZV9zaXplIjoxMDQ4NTc2LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3NlbnRhLTEuMi4wLm1zaSJdLCJyb2xsYmFjayI6ZmFsc2UsImlzc3VlZF9hdCI6IjIwMjYtMDEtMDFUMjM6MDE6MDBaIiwiZXhwaXJlc19hdCI6IjIwMjYtMDEtMDJUMjM6MDE6MDBaIn0.sgk0h7OCxrOjjKzXrBVqHip9LLaqk63LkwWeedW3co68IH69ftkHG6GHj1R2k3h4uNldsNOaksLkymjqlDeEAA",
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6Imluc3RhbGwtYWNtZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZXMiOlt7InBsYXRmb3JtIjoid2luZG93cy14ODZfNjQtbXNpIiwic2hhMjU2IjoiSW9hQ3lYZ0JKYl9DUmR6MGxBalF1eHlBRXpFUjZBV2hzYVlEMm5aU2VjZyIsInNpemUiOjEwNDg1NzYsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvcGFja2FnZXMvMS4yLjAvd2luZG93cy14ODZfNjQtbXNpIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtZGViIiwic2hhMjU2IjoicW5BVzZDcE84dTNMU1RJejYtdGR2cEhMZ3hpRXlnMFdZLXNGMzlveUo0USIsInNpemUiOjkxNzUwNCwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtZGViIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtcnBtIiwic2hhMjU2IjoiMmpYMDd0WFY5aWtNdm9XenJwVEQzN3N0VTFublB5OC11ek9HTTVNMFF5YyIsInNpemUiOjkyNTY5Niwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtcnBtIl19XSwicm9sbGJhY2siOmZhbHNlLCJpc3N1ZWRfYXQiOiIyMDI2LTAxLTAxVDIzOjAxOjAwWiIsImV4cGlyZXNfYXQiOiIyMDI2LTAxLTAyVDIzOjAxOjAwWiJ9.tFprJVZ8iJDR_xu6OvxjEAvvuxDLdOTckf1Ojv4Q2hjWSVNaNg6Geb3iIVdiTlCbhKagG8Y0H3U6xlo4MWUcAw",
         "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-update\",\"kid\":\"install-acme:1\"}",
-        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"package_sha256\":\"_hha2x76TpppELUPGJsZjOqzOuU389Y_wGu4G67AJzg\",\"package_size\":1048576,\"sources\":[\"https://dist.example/senta-1.2.0.msi\"],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"packages\":[{\"platform\":\"windows-x86_64-msi\",\"sha256\":\"IoaCyXgBJb_CRdz0lAjQuxyAEzER6AWhsaYD2nZSecg\",\"size\":1048576,\"sources\":[\"https://dist.example/packages/1.2.0/windows-x86_64-msi\"]},{\"platform\":\"linux-x86_64-deb\",\"sha256\":\"qnAW6CpO8u3LSTIz6-tdvpHLgxiEyg0WY-sF39oyJ4Q\",\"size\":917504,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-deb\"]},{\"platform\":\"linux-x86_64-rpm\",\"sha256\":\"2jX07tXV9ikMvoWzrpTD37stU1nnPy8-uzOGM5M0Qyc\",\"size\":925696,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-rpm\"]}],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
         "expected_typ": "senta-update",
         "trusted_keys": [
           {
@@ -3741,6 +4284,483 @@
         "revoked_kids": []
       },
       "expected": "wrong_key_class"
+    },
+    {
+      "name": "senta-update:valid_null_target_version",
+      "description": "A valid senta-update of an endpoint whose target_version is null, without packages.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZW5kcG9pbnRfaWQiOiI3YzllNjY3OS03NDI1LTQwZGUtOTQ0Yi1lMDdmYzFmOTBhZTciLCJ0YXJnZXRfdmVyc2lvbiI6bnVsbCwicm9sbGJhY2siOmZhbHNlLCJpc3N1ZWRfYXQiOiIyMDI2LTAxLTAxVDIzOjAxOjAwWiIsImV4cGlyZXNfYXQiOiIyMDI2LTAxLTAyVDIzOjAxOjAwWiJ9.l3kh3epJoXJQqpmd_NUfCRsy752ihn1hM-qRhjQTC0RRhOAI8wRI9XSSh0l1HtQEu7RJ9p0tvtxcK74xLpBeBA",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-update\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"endpoint_id\":\"7c9e6679-7425-40de-944b-e07fc1f90ae7\",\"target_version\":null,\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
+        "expected_typ": "senta-update",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": {
+        "verified": {
+          "payload_sha256": "olDnugZji7l3fqACpGOWsjAberACrS1hrf150Jzv4tA"
+        }
+      }
+    },
+    {
+      "name": "senta-update:valid_one_platform",
+      "description": "A valid senta-update with a package for one platform.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZXMiOlt7InBsYXRmb3JtIjoid2luZG93cy14ODZfNjQtbXNpIiwic2hhMjU2IjoiSW9hQ3lYZ0JKYl9DUmR6MGxBalF1eHlBRXpFUjZBV2hzYVlEMm5aU2VjZyIsInNpemUiOjEwNDg1NzYsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvcGFja2FnZXMvMS4yLjAvd2luZG93cy14ODZfNjQtbXNpIl19XSwicm9sbGJhY2siOmZhbHNlLCJpc3N1ZWRfYXQiOiIyMDI2LTAxLTAxVDIzOjAxOjAwWiIsImV4cGlyZXNfYXQiOiIyMDI2LTAxLTAyVDIzOjAxOjAwWiJ9.UlaFWApCsPr3QZlWTCJH3YU0f6uXYBVd4gbsvoMQWqEJWLWeupEyuFzBxC1OQD_vbPiGUzULU-RqgOGYbzNnCA",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-update\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"packages\":[{\"platform\":\"windows-x86_64-msi\",\"sha256\":\"IoaCyXgBJb_CRdz0lAjQuxyAEzER6AWhsaYD2nZSecg\",\"size\":1048576,\"sources\":[\"https://dist.example/packages/1.2.0/windows-x86_64-msi\"]}],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
+        "expected_typ": "senta-update",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": {
+        "verified": {
+          "payload_sha256": "jLwUBjQ7fjZQPcVvj9o0mp_SIinFP2n18fRDf4tuMXU"
+        }
+      }
+    },
+    {
+      "name": "senta-update:valid_unknown_platform",
+      "description": "A valid senta-update with a package for macos-aarch64-pkg, a platform the endpoint may not know.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZXMiOlt7InBsYXRmb3JtIjoid2luZG93cy14ODZfNjQtbXNpIiwic2hhMjU2IjoiSW9hQ3lYZ0JKYl9DUmR6MGxBalF1eHlBRXpFUjZBV2hzYVlEMm5aU2VjZyIsInNpemUiOjEwNDg1NzYsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvcGFja2FnZXMvMS4yLjAvd2luZG93cy14ODZfNjQtbXNpIl19LHsicGxhdGZvcm0iOiJtYWNvcy1hYXJjaDY0LXBrZyIsInNoYTI1NiI6InlVcFlMX0dSbm5iQ0Z6NmE4N3VHWURta2ZCWEtFNk9vU3RfdE9HX3NiREkiLCJzaXplIjo5MjU2OTYsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvcGFja2FnZXMvMS4yLjAvbWFjb3MtYWFyY2g2NC1wa2ciXX1dLCJyb2xsYmFjayI6ZmFsc2UsImlzc3VlZF9hdCI6IjIwMjYtMDEtMDFUMjM6MDE6MDBaIiwiZXhwaXJlc19hdCI6IjIwMjYtMDEtMDJUMjM6MDE6MDBaIn0.Gtsz6l-IVtsFs5XpSBKVG96AuYMLmFin-PJx6jdA5bxZHei8VYn3s15O0a6pMB8YNxvxwFskHrHSDHVSwVmPDg",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-update\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"packages\":[{\"platform\":\"windows-x86_64-msi\",\"sha256\":\"IoaCyXgBJb_CRdz0lAjQuxyAEzER6AWhsaYD2nZSecg\",\"size\":1048576,\"sources\":[\"https://dist.example/packages/1.2.0/windows-x86_64-msi\"]},{\"platform\":\"macos-aarch64-pkg\",\"sha256\":\"yUpYL_GRnnbCFz6a87uGYDmkfBXKE6OoSt_tOG_sbDI\",\"size\":925696,\"sources\":[\"https://dist.example/packages/1.2.0/macos-aarch64-pkg\"]}],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
+        "expected_typ": "senta-update",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": {
+        "verified": {
+          "payload_sha256": "n6_7CIatdPlK_wPB48ddZMoc10d_SCiTgWGs2zcEhzs"
+        }
+      }
+    },
+    {
+      "name": "senta-update:packages_missing",
+      "description": "The target_version is a version and the content lacks packages.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicm9sbGJhY2siOmZhbHNlLCJpc3N1ZWRfYXQiOiIyMDI2LTAxLTAxVDIzOjAxOjAwWiIsImV4cGlyZXNfYXQiOiIyMDI2LTAxLTAyVDIzOjAxOjAwWiJ9.lBsCfIkBlcaHC5OiLTQ8yFnp8JslttxNQtANBH8o_bUUNxyj1Wa7e6dte1fckHfKWCxJxvCyJeuwrVV5yHolAQ",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-update\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
+        "expected_typ": "senta-update",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": "schema_error"
+    },
+    {
+      "name": "senta-update:packages_empty",
+      "description": "packages is empty.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZXMiOltdLCJyb2xsYmFjayI6ZmFsc2UsImlzc3VlZF9hdCI6IjIwMjYtMDEtMDFUMjM6MDE6MDBaIiwiZXhwaXJlc19hdCI6IjIwMjYtMDEtMDJUMjM6MDE6MDBaIn0.wjwXMeXZbCc0qxDSIgcrRV6GGkc7yODtZtvIIIImI7MsluO58M3U4OGxhcUDjldF6FYmvfKNzQo7511DJUMFCA",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-update\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"packages\":[],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
+        "expected_typ": "senta-update",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": "schema_error"
+    },
+    {
+      "name": "senta-update:packages_repeated_platform",
+      "description": "Two entries of packages have the platform windows-x86_64-msi.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZXMiOlt7InBsYXRmb3JtIjoid2luZG93cy14ODZfNjQtbXNpIiwic2hhMjU2IjoiSW9hQ3lYZ0JKYl9DUmR6MGxBalF1eHlBRXpFUjZBV2hzYVlEMm5aU2VjZyIsInNpemUiOjEwNDg1NzYsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvcGFja2FnZXMvMS4yLjAvd2luZG93cy14ODZfNjQtbXNpIl19LHsicGxhdGZvcm0iOiJ3aW5kb3dzLXg4Nl82NC1tc2kiLCJzaGEyNTYiOiJxbkFXNkNwTzh1M0xTVEl6Ni10ZHZwSExneGlFeWcwV1ktc0YzOW95SjRRIiwic2l6ZSI6OTE3NTA0LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3BhY2thZ2VzLzEuMi4wL2xpbnV4LXg4Nl82NC1kZWIiXX1dLCJyb2xsYmFjayI6ZmFsc2UsImlzc3VlZF9hdCI6IjIwMjYtMDEtMDFUMjM6MDE6MDBaIiwiZXhwaXJlc19hdCI6IjIwMjYtMDEtMDJUMjM6MDE6MDBaIn0.tOud8pYLOmuDDLD5gDFYXDuDzVIILsMYJDKpRAjhkpqoTEhp_yD_n2yQCH3og4FF30hh4L4GRTrivnElrH6DDw",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-update\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"packages\":[{\"platform\":\"windows-x86_64-msi\",\"sha256\":\"IoaCyXgBJb_CRdz0lAjQuxyAEzER6AWhsaYD2nZSecg\",\"size\":1048576,\"sources\":[\"https://dist.example/packages/1.2.0/windows-x86_64-msi\"]},{\"platform\":\"windows-x86_64-msi\",\"sha256\":\"qnAW6CpO8u3LSTIz6-tdvpHLgxiEyg0WY-sF39oyJ4Q\",\"size\":917504,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-deb\"]}],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
+        "expected_typ": "senta-update",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": "schema_error"
+    },
+    {
+      "name": "senta-update:packages_empty_platform",
+      "description": "An entry of packages has an empty platform.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZXMiOlt7InBsYXRmb3JtIjoid2luZG93cy14ODZfNjQtbXNpIiwic2hhMjU2IjoiSW9hQ3lYZ0JKYl9DUmR6MGxBalF1eHlBRXpFUjZBV2hzYVlEMm5aU2VjZyIsInNpemUiOjEwNDg1NzYsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvcGFja2FnZXMvMS4yLjAvd2luZG93cy14ODZfNjQtbXNpIl19LHsicGxhdGZvcm0iOiIiLCJzaGEyNTYiOiJxbkFXNkNwTzh1M0xTVEl6Ni10ZHZwSExneGlFeWcwV1ktc0YzOW95SjRRIiwic2l6ZSI6OTE3NTA0LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3BhY2thZ2VzLzEuMi4wL2xpbnV4LXg4Nl82NC1kZWIiXX1dLCJyb2xsYmFjayI6ZmFsc2UsImlzc3VlZF9hdCI6IjIwMjYtMDEtMDFUMjM6MDE6MDBaIiwiZXhwaXJlc19hdCI6IjIwMjYtMDEtMDJUMjM6MDE6MDBaIn0.c6xJUEro2pn1EmDM0oim81emwEOmPNAl6bwd7p7GARCUv512vclZZKop8dydSMNeipoEtEUQ6RVulsLX9foQBw",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-update\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"packages\":[{\"platform\":\"windows-x86_64-msi\",\"sha256\":\"IoaCyXgBJb_CRdz0lAjQuxyAEzER6AWhsaYD2nZSecg\",\"size\":1048576,\"sources\":[\"https://dist.example/packages/1.2.0/windows-x86_64-msi\"]},{\"platform\":\"\",\"sha256\":\"qnAW6CpO8u3LSTIz6-tdvpHLgxiEyg0WY-sF39oyJ4Q\",\"size\":917504,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-deb\"]}],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
+        "expected_typ": "senta-update",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": "schema_error"
+    },
+    {
+      "name": "senta-update:packages_empty_sources",
+      "description": "An entry of packages has an empty sources.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZXMiOlt7InBsYXRmb3JtIjoid2luZG93cy14ODZfNjQtbXNpIiwic2hhMjU2IjoiSW9hQ3lYZ0JKYl9DUmR6MGxBalF1eHlBRXpFUjZBV2hzYVlEMm5aU2VjZyIsInNpemUiOjEwNDg1NzYsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvcGFja2FnZXMvMS4yLjAvd2luZG93cy14ODZfNjQtbXNpIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtZGViIiwic2hhMjU2IjoicW5BVzZDcE84dTNMU1RJejYtdGR2cEhMZ3hpRXlnMFdZLXNGMzlveUo0USIsInNpemUiOjkxNzUwNCwic291cmNlcyI6W119XSwicm9sbGJhY2siOmZhbHNlLCJpc3N1ZWRfYXQiOiIyMDI2LTAxLTAxVDIzOjAxOjAwWiIsImV4cGlyZXNfYXQiOiIyMDI2LTAxLTAyVDIzOjAxOjAwWiJ9.ISE3iTZLPLKmL0LEsStll9BVpqF400kdp4F22Vh0s09hFgSKGQsSSq5D3pLCpGIV6MmVDX2l41yh9O2kp0ExBg",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-update\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"packages\":[{\"platform\":\"windows-x86_64-msi\",\"sha256\":\"IoaCyXgBJb_CRdz0lAjQuxyAEzER6AWhsaYD2nZSecg\",\"size\":1048576,\"sources\":[\"https://dist.example/packages/1.2.0/windows-x86_64-msi\"]},{\"platform\":\"linux-x86_64-deb\",\"sha256\":\"qnAW6CpO8u3LSTIz6-tdvpHLgxiEyg0WY-sF39oyJ4Q\",\"size\":917504,\"sources\":[]}],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
+        "expected_typ": "senta-update",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": "schema_error"
+    },
+    {
+      "name": "senta-update:packages_size_0",
+      "description": "An entry of packages has the size 0.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZXMiOlt7InBsYXRmb3JtIjoid2luZG93cy14ODZfNjQtbXNpIiwic2hhMjU2IjoiSW9hQ3lYZ0JKYl9DUmR6MGxBalF1eHlBRXpFUjZBV2hzYVlEMm5aU2VjZyIsInNpemUiOjEwNDg1NzYsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvcGFja2FnZXMvMS4yLjAvd2luZG93cy14ODZfNjQtbXNpIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtZGViIiwic2hhMjU2IjoicW5BVzZDcE84dTNMU1RJejYtdGR2cEhMZ3hpRXlnMFdZLXNGMzlveUo0USIsInNpemUiOjAsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvcGFja2FnZXMvMS4yLjAvbGludXgteDg2XzY0LWRlYiJdfV0sInJvbGxiYWNrIjpmYWxzZSwiaXNzdWVkX2F0IjoiMjAyNi0wMS0wMVQyMzowMTowMFoiLCJleHBpcmVzX2F0IjoiMjAyNi0wMS0wMlQyMzowMTowMFoifQ.7cn5yTG1U7Nlmf253Xpui5e32I9YPcknG52nMpEZiBQvWvLbraednoPH2X1IQkkjdAadADSKufW3kjecmDRbBQ",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-update\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"packages\":[{\"platform\":\"windows-x86_64-msi\",\"sha256\":\"IoaCyXgBJb_CRdz0lAjQuxyAEzER6AWhsaYD2nZSecg\",\"size\":1048576,\"sources\":[\"https://dist.example/packages/1.2.0/windows-x86_64-msi\"]},{\"platform\":\"linux-x86_64-deb\",\"sha256\":\"qnAW6CpO8u3LSTIz6-tdvpHLgxiEyg0WY-sF39oyJ4Q\",\"size\":0,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-deb\"]}],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
+        "expected_typ": "senta-update",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": "schema_error"
+    },
+    {
+      "name": "senta-update:packages_sha256_33_bytes",
+      "description": "The sha256 of an entry of packages is 33 bytes.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZXMiOlt7InBsYXRmb3JtIjoid2luZG93cy14ODZfNjQtbXNpIiwic2hhMjU2IjoiQndjSEJ3Y0hCd2NIQndjSEJ3Y0hCd2NIQndjSEJ3Y0hCd2NIQndjSEJ3Y0giLCJzaXplIjoxMDQ4NTc2LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3BhY2thZ2VzLzEuMi4wL3dpbmRvd3MteDg2XzY0LW1zaSJdfSx7InBsYXRmb3JtIjoibGludXgteDg2XzY0LWRlYiIsInNoYTI1NiI6InFuQVc2Q3BPOHUzTFNUSXo2LXRkdnBITGd4aUV5ZzBXWS1zRjM5b3lKNFEiLCJzaXplIjo5MTc1MDQsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvcGFja2FnZXMvMS4yLjAvbGludXgteDg2XzY0LWRlYiJdfV0sInJvbGxiYWNrIjpmYWxzZSwiaXNzdWVkX2F0IjoiMjAyNi0wMS0wMVQyMzowMTowMFoiLCJleHBpcmVzX2F0IjoiMjAyNi0wMS0wMlQyMzowMTowMFoifQ.a0T_cbd8PpEB_Q5HXys4VgOjtyAQW-9qxLW8roznFEdfVepT3CaRoODwhLjebgPXGev76OzgJGXnuxtJIs8rAg",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-update\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"packages\":[{\"platform\":\"windows-x86_64-msi\",\"sha256\":\"BwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcH\",\"size\":1048576,\"sources\":[\"https://dist.example/packages/1.2.0/windows-x86_64-msi\"]},{\"platform\":\"linux-x86_64-deb\",\"sha256\":\"qnAW6CpO8u3LSTIz6-tdvpHLgxiEyg0WY-sF39oyJ4Q\",\"size\":917504,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-deb\"]}],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
+        "expected_typ": "senta-update",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": "schema_error"
+    },
+    {
+      "name": "senta-update:packages_unknown_field",
+      "description": "An entry of packages carries a field its schema does not define.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZXMiOlt7InBsYXRmb3JtIjoid2luZG93cy14ODZfNjQtbXNpIiwic2hhMjU2IjoiSW9hQ3lYZ0JKYl9DUmR6MGxBalF1eHlBRXpFUjZBV2hzYVlEMm5aU2VjZyIsInNpemUiOjEwNDg1NzYsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvcGFja2FnZXMvMS4yLjAvd2luZG93cy14ODZfNjQtbXNpIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtZGViIiwic2hhMjU2IjoicW5BVzZDcE84dTNMU1RJejYtdGR2cEhMZ3hpRXlnMFdZLXNGMzlveUo0USIsInNpemUiOjkxNzUwNCwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtZGViIl0sInVua25vd25fZmllbGQiOiJ2YWx1ZSJ9XSwicm9sbGJhY2siOmZhbHNlLCJpc3N1ZWRfYXQiOiIyMDI2LTAxLTAxVDIzOjAxOjAwWiIsImV4cGlyZXNfYXQiOiIyMDI2LTAxLTAyVDIzOjAxOjAwWiJ9.ipx44qFsyeKHjyNWy-7hDYVtnnrqnTITVPpCpA7NiLAkX9LbcTrxvmos4nCJ_v-SsP7ceTnqChF_ob9MxLYxBw",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-update\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"packages\":[{\"platform\":\"windows-x86_64-msi\",\"sha256\":\"IoaCyXgBJb_CRdz0lAjQuxyAEzER6AWhsaYD2nZSecg\",\"size\":1048576,\"sources\":[\"https://dist.example/packages/1.2.0/windows-x86_64-msi\"]},{\"platform\":\"linux-x86_64-deb\",\"sha256\":\"qnAW6CpO8u3LSTIz6-tdvpHLgxiEyg0WY-sF39oyJ4Q\",\"size\":917504,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-deb\"],\"unknown_field\":\"value\"}],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\"}",
+        "expected_typ": "senta-update",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": "schema_error"
+    },
+    {
+      "name": "senta-update:null_target_version_with_packages",
+      "description": "The target_version is null and the content has packages.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZW5kcG9pbnRfaWQiOiI3YzllNjY3OS03NDI1LTQwZGUtOTQ0Yi1lMDdmYzFmOTBhZTciLCJ0YXJnZXRfdmVyc2lvbiI6bnVsbCwicm9sbGJhY2siOmZhbHNlLCJpc3N1ZWRfYXQiOiIyMDI2LTAxLTAxVDIzOjAxOjAwWiIsImV4cGlyZXNfYXQiOiIyMDI2LTAxLTAyVDIzOjAxOjAwWiIsInBhY2thZ2VzIjpbeyJwbGF0Zm9ybSI6IndpbmRvd3MteDg2XzY0LW1zaSIsInNoYTI1NiI6IklvYUN5WGdCSmJfQ1JkejBsQWpRdXh5QUV6RVI2QVdoc2FZRDJuWlNlY2ciLCJzaXplIjoxMDQ4NTc2LCJzb3VyY2VzIjpbImh0dHBzOi8vZGlzdC5leGFtcGxlL3BhY2thZ2VzLzEuMi4wL3dpbmRvd3MteDg2XzY0LW1zaSJdfV19.-RybRK-Cz3ET7A6j0SUhIwskg3twUzFaMUGhoXjksu57v8nV_4RYj0UW17lZz0Sy3-EcyUiItYJND6kLGUb6Cw",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-update\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"endpoint_id\":\"7c9e6679-7425-40de-944b-e07fc1f90ae7\",\"target_version\":null,\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\",\"packages\":[{\"platform\":\"windows-x86_64-msi\",\"sha256\":\"IoaCyXgBJb_CRdz0lAjQuxyAEzER6AWhsaYD2nZSecg\",\"size\":1048576,\"sources\":[\"https://dist.example/packages/1.2.0/windows-x86_64-msi\"]}]}",
+        "expected_typ": "senta-update",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": "schema_error"
+    },
+    {
+      "name": "senta-update:package_sha256_present",
+      "description": "The content also carries package_sha256, a field packages replaced.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZXMiOlt7InBsYXRmb3JtIjoid2luZG93cy14ODZfNjQtbXNpIiwic2hhMjU2IjoiSW9hQ3lYZ0JKYl9DUmR6MGxBalF1eHlBRXpFUjZBV2hzYVlEMm5aU2VjZyIsInNpemUiOjEwNDg1NzYsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvcGFja2FnZXMvMS4yLjAvd2luZG93cy14ODZfNjQtbXNpIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtZGViIiwic2hhMjU2IjoicW5BVzZDcE84dTNMU1RJejYtdGR2cEhMZ3hpRXlnMFdZLXNGMzlveUo0USIsInNpemUiOjkxNzUwNCwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtZGViIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtcnBtIiwic2hhMjU2IjoiMmpYMDd0WFY5aWtNdm9XenJwVEQzN3N0VTFublB5OC11ek9HTTVNMFF5YyIsInNpemUiOjkyNTY5Niwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtcnBtIl19XSwicm9sbGJhY2siOmZhbHNlLCJpc3N1ZWRfYXQiOiIyMDI2LTAxLTAxVDIzOjAxOjAwWiIsImV4cGlyZXNfYXQiOiIyMDI2LTAxLTAyVDIzOjAxOjAwWiIsInBhY2thZ2Vfc2hhMjU2IjoiX2hoYTJ4NzZUcHBwRUxVUEdKc1pqT3F6T3VVMzg5WV93R3U0RzY3QUp6ZyJ9.rUmG2UhOMYJc6wSkrRGFJQYl3eVfHMVo7wViQMLQ2hFfEOzXHOPb-SO31wenirZYOhs_wOJKW6jIqxlFH6S2AQ",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-update\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"packages\":[{\"platform\":\"windows-x86_64-msi\",\"sha256\":\"IoaCyXgBJb_CRdz0lAjQuxyAEzER6AWhsaYD2nZSecg\",\"size\":1048576,\"sources\":[\"https://dist.example/packages/1.2.0/windows-x86_64-msi\"]},{\"platform\":\"linux-x86_64-deb\",\"sha256\":\"qnAW6CpO8u3LSTIz6-tdvpHLgxiEyg0WY-sF39oyJ4Q\",\"size\":917504,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-deb\"]},{\"platform\":\"linux-x86_64-rpm\",\"sha256\":\"2jX07tXV9ikMvoWzrpTD37stU1nnPy8-uzOGM5M0Qyc\",\"size\":925696,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-rpm\"]}],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\",\"package_sha256\":\"_hha2x76TpppELUPGJsZjOqzOuU389Y_wGu4G67AJzg\"}",
+        "expected_typ": "senta-update",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": "schema_error"
+    },
+    {
+      "name": "senta-update:package_size_present",
+      "description": "The content also carries package_size, a field packages replaced.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZXMiOlt7InBsYXRmb3JtIjoid2luZG93cy14ODZfNjQtbXNpIiwic2hhMjU2IjoiSW9hQ3lYZ0JKYl9DUmR6MGxBalF1eHlBRXpFUjZBV2hzYVlEMm5aU2VjZyIsInNpemUiOjEwNDg1NzYsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvcGFja2FnZXMvMS4yLjAvd2luZG93cy14ODZfNjQtbXNpIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtZGViIiwic2hhMjU2IjoicW5BVzZDcE84dTNMU1RJejYtdGR2cEhMZ3hpRXlnMFdZLXNGMzlveUo0USIsInNpemUiOjkxNzUwNCwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtZGViIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtcnBtIiwic2hhMjU2IjoiMmpYMDd0WFY5aWtNdm9XenJwVEQzN3N0VTFublB5OC11ek9HTTVNMFF5YyIsInNpemUiOjkyNTY5Niwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtcnBtIl19XSwicm9sbGJhY2siOmZhbHNlLCJpc3N1ZWRfYXQiOiIyMDI2LTAxLTAxVDIzOjAxOjAwWiIsImV4cGlyZXNfYXQiOiIyMDI2LTAxLTAyVDIzOjAxOjAwWiIsInBhY2thZ2Vfc2l6ZSI6MTA0ODU3Nn0.olZ4JmRcIRK-3Kde0Kmyb01losENCWIdPd2g4ks1QPF3QFUHvonYNoG_O5Upn8wmbJvxBp9Wj7rf5-RkNJrhCw",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-update\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"packages\":[{\"platform\":\"windows-x86_64-msi\",\"sha256\":\"IoaCyXgBJb_CRdz0lAjQuxyAEzER6AWhsaYD2nZSecg\",\"size\":1048576,\"sources\":[\"https://dist.example/packages/1.2.0/windows-x86_64-msi\"]},{\"platform\":\"linux-x86_64-deb\",\"sha256\":\"qnAW6CpO8u3LSTIz6-tdvpHLgxiEyg0WY-sF39oyJ4Q\",\"size\":917504,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-deb\"]},{\"platform\":\"linux-x86_64-rpm\",\"sha256\":\"2jX07tXV9ikMvoWzrpTD37stU1nnPy8-uzOGM5M0Qyc\",\"size\":925696,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-rpm\"]}],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\",\"package_size\":1048576}",
+        "expected_typ": "senta-update",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": "schema_error"
+    },
+    {
+      "name": "senta-update:sources_present",
+      "description": "The content also carries sources, a field packages replaced.",
+      "signed_by": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+      "input": {
+        "jws": "eyJhbGciOiJFZERTQSIsInR5cCI6InNlbnRhLXVwZGF0ZSIsImtpZCI6ImVuZHBvaW50LTBmOGZhZDViLWQ5Y2ItNDY5Zi1hMTY1LTcwODY3NzI4OTUwZToxIn0.eyJyZWNvdmVyeV9lcG9jaCI6MSwidmVyc2lvbiI6MTc2NzMwODQ2MDAwMCwiZ3JvdXBfaWQiOiIxNmZkMjcwNi04YmFmLTQzM2ItODJlYi04YzdmYWRhODQ3ZGEiLCJ0YXJnZXRfdmVyc2lvbiI6IjEuMi4wIiwicGFja2FnZXMiOlt7InBsYXRmb3JtIjoid2luZG93cy14ODZfNjQtbXNpIiwic2hhMjU2IjoiSW9hQ3lYZ0JKYl9DUmR6MGxBalF1eHlBRXpFUjZBV2hzYVlEMm5aU2VjZyIsInNpemUiOjEwNDg1NzYsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvcGFja2FnZXMvMS4yLjAvd2luZG93cy14ODZfNjQtbXNpIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtZGViIiwic2hhMjU2IjoicW5BVzZDcE84dTNMU1RJejYtdGR2cEhMZ3hpRXlnMFdZLXNGMzlveUo0USIsInNpemUiOjkxNzUwNCwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtZGViIl19LHsicGxhdGZvcm0iOiJsaW51eC14ODZfNjQtcnBtIiwic2hhMjU2IjoiMmpYMDd0WFY5aWtNdm9XenJwVEQzN3N0VTFublB5OC11ek9HTTVNMFF5YyIsInNpemUiOjkyNTY5Niwic291cmNlcyI6WyJodHRwczovL2Rpc3QuZXhhbXBsZS9wYWNrYWdlcy8xLjIuMC9saW51eC14ODZfNjQtcnBtIl19XSwicm9sbGJhY2siOmZhbHNlLCJpc3N1ZWRfYXQiOiIyMDI2LTAxLTAxVDIzOjAxOjAwWiIsImV4cGlyZXNfYXQiOiIyMDI2LTAxLTAyVDIzOjAxOjAwWiIsInNvdXJjZXMiOlsiaHR0cHM6Ly9kaXN0LmV4YW1wbGUvc2VudGEtMS4yLjAubXNpIl19.iB7TGZAW97nfQ4C6aTzvHJiHc4_kOzyZ7wm_LcAwqO7tC0aBWtOGZbfQWjq5_pUn-Guc4hSHl-nj5cOhCUh1AA",
+        "header_json": "{\"alg\":\"EdDSA\",\"typ\":\"senta-update\",\"kid\":\"endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1\"}",
+        "payload_json": "{\"recovery_epoch\":1,\"version\":1767308460000,\"group_id\":\"16fd2706-8baf-433b-82eb-8c7fada847da\",\"target_version\":\"1.2.0\",\"packages\":[{\"platform\":\"windows-x86_64-msi\",\"sha256\":\"IoaCyXgBJb_CRdz0lAjQuxyAEzER6AWhsaYD2nZSecg\",\"size\":1048576,\"sources\":[\"https://dist.example/packages/1.2.0/windows-x86_64-msi\"]},{\"platform\":\"linux-x86_64-deb\",\"sha256\":\"qnAW6CpO8u3LSTIz6-tdvpHLgxiEyg0WY-sF39oyJ4Q\",\"size\":917504,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-deb\"]},{\"platform\":\"linux-x86_64-rpm\",\"sha256\":\"2jX07tXV9ikMvoWzrpTD37stU1nnPy8-uzOGM5M0Qyc\",\"size\":925696,\"sources\":[\"https://dist.example/packages/1.2.0/linux-x86_64-rpm\"]}],\"rollback\":false,\"issued_at\":\"2026-01-01T23:01:00Z\",\"expires_at\":\"2026-01-02T23:01:00Z\",\"sources\":[\"https://dist.example/senta-1.2.0.msi\"]}",
+        "expected_typ": "senta-update",
+        "trusted_keys": [
+          {
+            "kid": "vendor-release-1",
+            "kind": "vendor"
+          },
+          {
+            "kid": "install-acme:1",
+            "kind": "install_signing"
+          },
+          {
+            "kid": "endpoint-0f8fad5b-d9cb-469f-a165-70867728950e:1",
+            "kind": "customer"
+          },
+          {
+            "kid": "recovery-acme:1",
+            "kind": "recovery"
+          }
+        ],
+        "revoked_kids": []
+      },
+      "expected": "schema_error"
     },
     {
       "name": "senta-command:valid",

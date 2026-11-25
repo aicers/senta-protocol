@@ -1,0 +1,146 @@
+{
+  "format_version": 1,
+  "category": "active_list",
+  "keys": [],
+  "cases": [
+    {
+      "name": "list_update:full_every_state",
+      "description": "A whole list of five entries, one in each form of state.",
+      "value": {
+        "full": {
+          "version": 1767225600000,
+          "entries": [
+            {
+              "endpoint_id": "e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a01",
+              "spki_sha256": "HOqWysei+jTb/32qxd2yEMZ23PGmjlBrBuSfXfZDJbI=",
+              "customer_endpoint_id": "0f8fad5b-d9cb-469f-a165-70867728950e",
+              "state": "active"
+            },
+            {
+              "endpoint_id": "e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a02",
+              "spki_sha256": "axOd/R46iJow+PHCO6dS4mxwsicA/bPaxTi7KRCzC+g=",
+              "customer_endpoint_id": "1b4e28ba-2fa1-4d2e-a9c4-6f8e0f6a7c11",
+              "state": "license_pending"
+            },
+            {
+              "endpoint_id": "e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a03",
+              "spki_sha256": "1gx+c58jZPLeuuyBnmAb8d/ldoO1KvIS7zzeXOQm2uE=",
+              "customer_endpoint_id": "0f8fad5b-d9cb-469f-a165-70867728950e",
+              "state": {
+                "suspended": {
+                  "reason": "revoked"
+                }
+              }
+            },
+            {
+              "endpoint_id": "e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a04",
+              "spki_sha256": "v4lRhJfgKnaw4wMcLo3Q6AzxgWOKl/GssP6lnYYfIpA=",
+              "customer_endpoint_id": "1b4e28ba-2fa1-4d2e-a9c4-6f8e0f6a7c11",
+              "state": {
+                "suspended": {
+                  "reason": "operator"
+                }
+              }
+            },
+            {
+              "endpoint_id": "e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a05",
+              "spki_sha256": "vQcXPFl4JHtGLjWE2uU2GWUoKA39VXJz7UsJdMzSl/0=",
+              "customer_endpoint_id": "0f8fad5b-d9cb-469f-a165-70867728950e",
+              "state": {
+                "suspended": {
+                  "reason": "license"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "cbor": "oWRmdWxsomd2ZXJzaW9uGwAAAZt22qgAZ2VudHJpZXOFpGtlbmRwb2ludF9pZFDg7ryZnAtO+Ltta7m9OAoBa3Nwa2lfc2hhMjU2WCAc6pbKx6L6NNv/farF3bIQxnbc8aaOUGsG5J9d9kMlsnRjdXN0b21lcl9lbmRwb2ludF9pZFAPj61b2ctGn6FlcIZ3KJUOZXN0YXRlZmFjdGl2ZaRrZW5kcG9pbnRfaWRQ4O68mZwLTvi7bWu5vTgKAmtzcGtpX3NoYTI1NlggaxOd/R46iJow+PHCO6dS4mxwsicA/bPaxTi7KRCzC+h0Y3VzdG9tZXJfZW5kcG9pbnRfaWRQG04oui+hTS6pxG+OD2p8EWVzdGF0ZW9saWNlbnNlX3BlbmRpbmeka2VuZHBvaW50X2lkUODuvJmcC074u21rub04CgNrc3BraV9zaGEyNTZYINYMfnOfI2Ty3rrsgZ5gG/Hf5XaDtSryEu883lzkJtrhdGN1c3RvbWVyX2VuZHBvaW50X2lkUA+PrVvZy0afoWVwhncolQ5lc3RhdGWhaXN1c3BlbmRlZKFmcmVhc29uZ3Jldm9rZWSka2VuZHBvaW50X2lkUODuvJmcC074u21rub04CgRrc3BraV9zaGEyNTZYIL+JUYSX4Cp2sOMDHC6N0OgM8YFjipfxrLD+pZ2GHyKQdGN1c3RvbWVyX2VuZHBvaW50X2lkUBtOKLovoU0uqcRvjg9qfBFlc3RhdGWhaXN1c3BlbmRlZKFmcmVhc29uaG9wZXJhdG9ypGtlbmRwb2ludF9pZFDg7ryZnAtO+Ltta7m9OAoFa3Nwa2lfc2hhMjU2WCC9Bxc8WXgke0YuNYTa5TYZZSgoDf1VcnPtSwl0zNKX/XRjdXN0b21lcl9lbmRwb2ludF9pZFAPj61b2ctGn6FlcIZ3KJUOZXN0YXRloWlzdXNwZW5kZWShZnJlYXNvbmdsaWNlbnNl"
+    },
+    {
+      "name": "list_update:full_empty",
+      "description": "A whole list with no entry.",
+      "value": {
+        "full": {
+          "version": 1,
+          "entries": []
+        }
+      },
+      "cbor": "oWRmdWxsomd2ZXJzaW9uAWdlbnRyaWVzgA=="
+    },
+    {
+      "name": "list_update:diff_every_state",
+      "description": "A change upserting five entries, one in each form of state, and removing two endpoints.",
+      "value": {
+        "diff": {
+          "base_version": 1767225600000,
+          "version": 1767225600001,
+          "upserts": [
+            {
+              "endpoint_id": "e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a01",
+              "spki_sha256": "HOqWysei+jTb/32qxd2yEMZ23PGmjlBrBuSfXfZDJbI=",
+              "customer_endpoint_id": "0f8fad5b-d9cb-469f-a165-70867728950e",
+              "state": "active"
+            },
+            {
+              "endpoint_id": "e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a02",
+              "spki_sha256": "axOd/R46iJow+PHCO6dS4mxwsicA/bPaxTi7KRCzC+g=",
+              "customer_endpoint_id": "1b4e28ba-2fa1-4d2e-a9c4-6f8e0f6a7c11",
+              "state": "license_pending"
+            },
+            {
+              "endpoint_id": "e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a03",
+              "spki_sha256": "1gx+c58jZPLeuuyBnmAb8d/ldoO1KvIS7zzeXOQm2uE=",
+              "customer_endpoint_id": "0f8fad5b-d9cb-469f-a165-70867728950e",
+              "state": {
+                "suspended": {
+                  "reason": "revoked"
+                }
+              }
+            },
+            {
+              "endpoint_id": "e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a04",
+              "spki_sha256": "v4lRhJfgKnaw4wMcLo3Q6AzxgWOKl/GssP6lnYYfIpA=",
+              "customer_endpoint_id": "1b4e28ba-2fa1-4d2e-a9c4-6f8e0f6a7c11",
+              "state": {
+                "suspended": {
+                  "reason": "operator"
+                }
+              }
+            },
+            {
+              "endpoint_id": "e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a05",
+              "spki_sha256": "vQcXPFl4JHtGLjWE2uU2GWUoKA39VXJz7UsJdMzSl/0=",
+              "customer_endpoint_id": "0f8fad5b-d9cb-469f-a165-70867728950e",
+              "state": {
+                "suspended": {
+                  "reason": "license"
+                }
+              }
+            }
+          ],
+          "removals": [
+            "7c9e6679-7425-40de-944b-e07fc1f90ae7",
+            "9b2f3c44-1d5e-4f60-8a71-b2c3d4e5f601"
+          ]
+        }
+      },
+      "cbor": "oWRkaWZmpGxiYXNlX3ZlcnNpb24bAAABm3baqABndmVyc2lvbhsAAAGbdtqoAWd1cHNlcnRzhaRrZW5kcG9pbnRfaWRQ4O68mZwLTvi7bWu5vTgKAWtzcGtpX3NoYTI1NlggHOqWysei+jTb/32qxd2yEMZ23PGmjlBrBuSfXfZDJbJ0Y3VzdG9tZXJfZW5kcG9pbnRfaWRQD4+tW9nLRp+hZXCGdyiVDmVzdGF0ZWZhY3RpdmWka2VuZHBvaW50X2lkUODuvJmcC074u21rub04CgJrc3BraV9zaGEyNTZYIGsTnf0eOoiaMPjxwjunUuJscLInAP2z2sU4uykQswvodGN1c3RvbWVyX2VuZHBvaW50X2lkUBtOKLovoU0uqcRvjg9qfBFlc3RhdGVvbGljZW5zZV9wZW5kaW5npGtlbmRwb2ludF9pZFDg7ryZnAtO+Ltta7m9OAoDa3Nwa2lfc2hhMjU2WCDWDH5znyNk8t667IGeYBvx3+V2g7Uq8hLvPN5c5Cba4XRjdXN0b21lcl9lbmRwb2ludF9pZFAPj61b2ctGn6FlcIZ3KJUOZXN0YXRloWlzdXNwZW5kZWShZnJlYXNvbmdyZXZva2VkpGtlbmRwb2ludF9pZFDg7ryZnAtO+Ltta7m9OAoEa3Nwa2lfc2hhMjU2WCC/iVGEl+AqdrDjAxwujdDoDPGBY4qX8ayw/qWdhh8ikHRjdXN0b21lcl9lbmRwb2ludF9pZFAbTii6L6FNLqnEb44PanwRZXN0YXRloWlzdXNwZW5kZWShZnJlYXNvbmhvcGVyYXRvcqRrZW5kcG9pbnRfaWRQ4O68mZwLTvi7bWu5vTgKBWtzcGtpX3NoYTI1NlggvQcXPFl4JHtGLjWE2uU2GWUoKA39VXJz7UsJdMzSl/10Y3VzdG9tZXJfZW5kcG9pbnRfaWRQD4+tW9nLRp+hZXCGdyiVDmVzdGF0ZaFpc3VzcGVuZGVkoWZyZWFzb25nbGljZW5zZWhyZW1vdmFsc4JQfJ5meXQlQN6US+B/wfkK51CbLzxEHV5PYIpxssPU5fYB"
+    },
+    {
+      "name": "list_update:diff_removals_only",
+      "description": "A change that only removes one endpoint.",
+      "value": {
+        "diff": {
+          "base_version": 7,
+          "version": 8,
+          "upserts": [],
+          "removals": [
+            "e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a03"
+          ]
+        }
+      },
+      "cbor": "oWRkaWZmpGxiYXNlX3ZlcnNpb24HZ3ZlcnNpb24IZ3Vwc2VydHOAaHJlbW92YWxzgVDg7ryZnAtO+Ltta7m9OAoD"
+    }
+  ]
+}

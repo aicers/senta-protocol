@@ -3,10 +3,11 @@
 The files here are language-neutral test vectors for the trust contracts
 of this crate: JWS verification, the install configuration trust chain,
 the key set, document version and command state machines, enrollment
-results and the hardware identifier hash. A signer or a verifier written
-in another language reads them to check that it follows the same rules
-as the crate: it builds the same bytes from the same inputs, and reaches
-the same result for each case.
+results and the hardware identifier hash; and for the CBOR encoding of
+two control messages and of the active list's updates. A signer, a
+verifier, an encoder or a decoder written in another language reads them
+to check that it follows the same rules as the crate: it builds the same
+bytes from the same inputs, and reaches the same result for each case.
 
 Everything a reader needs is in the JSON files and this README; nothing
 requires reading Rust.
@@ -43,6 +44,8 @@ Each file holds one category, named by the file name without `.json`:
 | `enroll_result.json` | enrollment result checks |
 | `commands.json` | command state machine targets |
 | `hardware_hash.json` | hardware identifier hash |
+| `control_cbor.json` | CBOR of `EnrollRequest` and `StatusReport` |
+| `active_list.json` | CBOR of the active list's updates |
 
 There are no subdirectories, and no file here other than the JSON
 vector files and this README.
@@ -73,7 +76,9 @@ UUID and time is fixed, so generating again gives the same bytes.
 ## Notation
 
 - Field names are snake_case.
-- Bytes are unpadded base64url (RFC 4648 section 5, no `=`).
+- Bytes are unpadded base64url (RFC 4648 section 5, no `=`), except in
+  `control_cbor.json` and `active_list.json`, which write bytes in
+  standard base64 (see their section).
 - Times are RFC 3339 UTC strings, such as `2026-01-02T00:00:00Z`.
 - UUIDs are lowercase hyphenated strings.
 - Versions, sequence numbers (`seq`) and recovery epochs are JSON
@@ -89,7 +94,8 @@ Every file is one JSON object with these members, in this order:
 - `format_version`: the format version, an integer (see Versions).
 - `category`: the file's category, as in the table above.
 - `keys`: the keys the file's documents use; an empty list in
-  `hardware_hash.json`, which uses none.
+  `hardware_hash.json`, `control_cbor.json` and `active_list.json`,
+  which use none.
 - `cases`: the cases. Each has a `name`, unique within the file, and a
   `description` for people to read.
 
@@ -226,6 +232,205 @@ for `senta-policy`, `senta-assign`, `senta-addresses` and
 `senta-update`, and `seq` for `senta-command`. `senta-deployment-cert`
 and `senta-enroll` have no such case: their contents have no integer
 field, and a number added to them would be an unknown field instead.
+
+### The fields of `senta-policy` and `senta-update`
+
+The `valid` `senta-policy` has a `sysmon_configs` entry for `windows`
+and one for `linux`, `existing_sysmon` `keep`, and a
+`windows_sysmon_package`. The `valid` `senta-update` is for a group, and
+has `packages` for three platforms: `windows-x86_64-msi`,
+`linux-x86_64-deb` and `linux-x86_64-rpm`.
+
+The payload of every case of these two `typ`s that verifies writes its
+members in the order the crate serializes the content, so a signer in
+another language that writes the same content in that order signs the
+same bytes. The order is:
+
+- `senta-policy`: `recovery_epoch`, `group_id`, `version`,
+  `collection_mode`, `sysmon_configs`, `existing_sysmon`,
+  `windows_sysmon_package` (left out when there is none),
+  `field_exclusions`, `audit_settings`, `event_log_channels`,
+  `status_ui`.
+- an entry of `sysmon_configs`: `os`, `sha256`, `sources`.
+- `windows_sysmon_package`: `version`, `sha256`, `size`, `sources`.
+- `senta-update`: `recovery_epoch`, `version`, `group_id` or
+  `endpoint_id`, `target_version`, `packages` (left out when
+  `target_version` is `null`), `rollback`, `issued_at`, `expires_at`.
+- an entry of `packages`: `platform`, `sha256`, `size`, `sources`.
+
+Besides the cases above, these two `typ`s have the cases below, each a
+change of the `valid` content signed by the same key. Every case named
+`valid_…` is `verified`, with its payload hash; every other one is
+`schema_error`.
+
+`senta-policy`:
+
+- `valid_without_windows_sysmon_package`: leaves out
+  `windows_sysmon_package`.
+- `valid_empty_sysmon_configs`: `sysmon_configs` is `[]`.
+- `valid_unknown_os`: a `sysmon_configs` entry has the `os` `macos`.
+- `valid_existing_sysmon_take_over`: `existing_sysmon` is `take_over`.
+- `sysmon_configs_repeated_os`: two `sysmon_configs` entries have the
+  `os` `windows`.
+- `sysmon_configs_empty_os`: a `sysmon_configs` entry has the `os` `""`.
+- `sysmon_configs_empty_sources`: a `sysmon_configs` entry has the
+  `sources` `[]`.
+- `sysmon_configs_unknown_field`: a `sysmon_configs` entry has an
+  unknown field.
+- `existing_sysmon_missing`: leaves out `existing_sysmon`.
+- `existing_sysmon_unknown`: `existing_sysmon` is `replace`.
+- `windows_sysmon_package_null`: `windows_sysmon_package` is `null`.
+- `windows_sysmon_package_empty_version`: its `version` is `""`.
+- `windows_sysmon_package_sha256_31_bytes`: its `sha256` is 31 bytes.
+- `windows_sysmon_package_size_0`: its `size` is `0`.
+- `windows_sysmon_package_empty_sources`: its `sources` is `[]`.
+- `windows_sysmon_package_unknown_field`: it has an unknown field.
+- `sysmon_config_present`: also has `sysmon_config`, the field
+  `sysmon_configs` replaced.
+
+`senta-update`:
+
+- `valid_null_target_version`: an update of an endpoint whose
+  `target_version` is `null`, without `packages`.
+- `valid_one_platform`: `packages` has the `windows-x86_64-msi` entry
+  alone.
+- `valid_unknown_platform`: `packages` has an entry for
+  `macos-aarch64-pkg`.
+- `packages_missing`: leaves out `packages`.
+- `packages_empty`: `packages` is `[]`.
+- `packages_repeated_platform`: two `packages` entries have the
+  `platform` `windows-x86_64-msi`.
+- `packages_empty_platform`: a `packages` entry has the `platform` `""`.
+- `packages_empty_sources`: a `packages` entry has the `sources` `[]`.
+- `packages_size_0`: a `packages` entry has the `size` `0`.
+- `packages_sha256_33_bytes`: a `packages` entry has a `sha256` of 33
+  bytes.
+- `packages_unknown_field`: a `packages` entry has an unknown field.
+- `null_target_version_with_packages`: the `valid_null_target_version`
+  content with `packages`.
+- `package_sha256_present`: also has `package_sha256`, a field
+  `packages` replaced.
+- `package_size_present`: also has `package_size`, a field `packages`
+  replaced.
+- `sources_present`: also has a top-level `sources`, a field `packages`
+  replaced.
+
+## `control_cbor.json` and `active_list.json`
+
+These two files hold CBOR encodings, not signed documents.
+`control_cbor.json` holds bodies of two control messages the endpoint
+sends, `EnrollRequest` and `StatusReport`; `active_list.json` holds
+updates of the active list, `ListUpdate`. Each case is one value written
+twice: as its CBOR bytes, and as a JSON view of the same value. A
+decoder decodes `cbor` and compares what it gets with `value`; an
+encoder encodes the value `value` shows and compares its bytes with
+`cbor`.
+
+Each case has:
+
+- `name`: `<type>:<case>`, where `<type>` is `enroll_request` or
+  `status_report` in `control_cbor.json`, and `list_update` in
+  `active_list.json`.
+- `description`: for people to read.
+- `type` (`control_cbor.json` only): `enroll_request` or
+  `status_report`, the message the bytes are the body of.
+- `value`: the JSON view of the value (below).
+- `cbor`: the CBOR bytes, in **standard base64 with padding** (RFC 4648
+  section 4: the alphabet with `+` and `/`, padded with `=`). This is not
+  the unpadded base64url the other files use.
+
+The bytes of a `control_cbor.json` case are the message body alone, the
+`b` of the envelope `[t, b]`: neither the envelope nor the frame. The
+bytes of an `active_list.json` case are the whole update.
+
+Every map and array in the bytes has a definite length, every integer is
+in its shortest form, every map's keys are text strings in the order the
+JSON view lists them, and an optional field without a value is left out,
+never written as null. An encoder that follows these rules and the view
+writes exactly `cbor`.
+
+### The JSON view
+
+The view follows the CBOR value:
+
+- a map is an object with the same keys in the same order;
+- an array is an array;
+- a text string is a string, an integer a number (negative where the
+  CBOR integer is), and `true` and `false` themselves;
+- an enum is written as its CBOR form is: a variant without content is
+  its tag, a string (`"tpm"`), and one with content an object of one
+  member, the tag mapped to the content (`{"suspended": {"reason":
+  "revoked"}}`). A tag the crate does not know is kept as it is, so the
+  view shows it as any other tag.
+
+The fields below are where the view differs from that rule. A UUID,
+which CBOR writes as a byte string of its 16 bytes, is the lowercase
+hyphenated string. A point in time, which CBOR writes as an integer
+count of nanoseconds since the Unix epoch, is an RFC 3339 UTC string
+ending in `Z`, with a fraction of a second only when it has one and no
+trailing zero: `2026-01-02T00:00:00Z`, `2026-01-01T23:58:29.876543211Z`.
+Any other byte string is standard base64 with padding, as `cbor` is.
+`[]` stands for every element of a list:
+
+- `EnrollRequest`:
+  - UUIDs: `attempt_id`.
+  - Times: none.
+  - Other byte strings: `hardware.machine_id_hash`.
+- `StatusReport`:
+  - UUIDs: `documents[].target.group`, `documents[].target.endpoint`,
+    `documents[].target.customer`, `transport.entries[].entry_id`.
+  - Times: `transport.entries[].last_success_at`,
+    `clock.offset.measured_at`.
+  - Other byte strings: `hardware.machine_id_hash`.
+- `ListUpdate`:
+  - UUIDs: `full.entries[].endpoint_id`,
+    `full.entries[].customer_endpoint_id`,
+    `diff.upserts[].endpoint_id`, `diff.upserts[].customer_endpoint_id`,
+    `diff.removals[]`.
+  - Times: none.
+  - Other byte strings: `full.entries[].spki_sha256`,
+    `diff.upserts[].spki_sha256`.
+
+Every other string of a view is a CBOR text string, and every number a
+CBOR integer. The `enroll_token` of an `EnrollRequest` is a fixed test
+value in the form of a compact JWS; nothing verifies it.
+
+### Cases
+
+`control_cbor.json`:
+
+- `enroll_request:with_smbios`: a Windows endpoint's request whose
+  hardware has `smbios_uuid` and `smbios_serial`.
+- `enroll_request:without_smbios`: a Linux endpoint's request in VDI
+  mode whose hardware has neither.
+- `status_report:optional_fields_absent`: every optional field left out:
+  a slot without `target`, `verified_version`, `applied_version` and
+  `in_use`, a Sysmon without `version`, an entry without
+  `last_success_at`, a clock without `offset`, hardware without SMBIOS
+  fields.
+- `status_report:empty_lists`: no document slot, no telemetry entry and
+  no problem.
+- `status_report:optional_fields_present`: every optional field present:
+  slots of each target kind and slot state, a document in use from a
+  prior epoch, a Sysmon version, a last success with nanoseconds, a
+  negative clock offset, both SMBIOS fields.
+- `status_report:every_problem`: every `Problem`, among them
+  `sysmon_stopped`, `sysmon_config_changed` and `unexpected_restart`, a
+  `signature_rejected` with and without `typ` and `kid`, and a tag the
+  crate does not know, `disk_full`.
+- `status_report:unknown_tags`: a tag the crate does not know in each
+  field that takes one.
+
+`active_list.json`:
+
+- `list_update:full_every_state`: a `full` list of five entries, one in
+  each state: `active`, `license_pending`, and `suspended` for
+  `revoked`, `operator` and `license`.
+- `list_update:full_empty`: a `full` list with no entry.
+- `list_update:diff_every_state`: a `diff` upserting five entries, one
+  in each state, and removing two endpoints.
+- `list_update:diff_removals_only`: a `diff` that only removes one
+  endpoint.
 
 ## `trust_chain.json`
 
